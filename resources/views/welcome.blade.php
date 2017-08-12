@@ -101,7 +101,7 @@
                     <img width="100"src="images/map-marker-icon.png" alt="">
                 </div>
                 <div class="title m-b-md">
-                    USAMEXGPS RASTREO SATELITAL PC
+                    DIGITAL ADMIN TRACK RASTREO SATELITAL
                 </div>
                 <div class="subtitle m-b-md">
                     PROXIMAMENTE
