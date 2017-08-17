@@ -229,6 +229,14 @@ class DevicesController extends Controller
             }else{
             $device->virtual = 1;
             }
+
+            if(request()->get('engine_block')==null){
+            $device->engine_block = 0;
+            }else{
+            $device->engine_block = 1;
+            }
+
+
             $device->save();
             $clients = Clients::all();
             $device = Devices::find(request()->get('id'));

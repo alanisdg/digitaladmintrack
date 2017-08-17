@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Clients extends Model
 {
-    protected $fillable = ['name','description','phone','phone_2','client_id'];
+    protected $fillable = ['name','description','phone','phone_2','client_id','boxs'];
 
     public function devices(){
         return $this->belongsToMany(Devices::class);

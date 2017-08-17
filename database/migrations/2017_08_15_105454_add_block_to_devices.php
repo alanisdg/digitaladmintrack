@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddMoreForeignKeyToDevices extends Migration
+class AddBlockToDevices extends Migration
 {
     /**
      * Run the migrations.
@@ -14,13 +14,7 @@ class AddMoreForeignKeyToDevices extends Migration
     public function up()
     {
         Schema::table('devices', function (Blueprint $table) {
-            $table->integer('driver_id')->unsigned()->nullable();
-            $table->foreign('driver_id')->references('id')->on('drivers');
-
-            $table->integer('subclient_id')->unsigned()->nullable();
-            $table->foreign('subclient_id')->references('id')->on('subclients');
-
-
+            $table->integer('engine_block')->unsigned()->nullable();
         });
     }
 

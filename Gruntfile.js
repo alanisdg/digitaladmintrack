@@ -51,7 +51,8 @@ module.exports = function(grunt) {
                         'js/timer.js',
                         'js/markerclusterer.js',
                         'js/infobox.js',
-                        'js/loader.js'
+                        'js/loader.js',
+                        'js/jquery-confirm.js'
                     ]
                 }
             ]

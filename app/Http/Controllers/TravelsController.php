@@ -1072,8 +1072,8 @@ class TravelsController extends Controller
         $od_geofences = array();
         $origin_geofence = Geofences::find($travel->route->origin_id);
         $dest_geofence = Geofences::find($travel->route->destination_id);
-		array_push($od_geofences,$origin_geofence);
-		array_push($od_geofences,$dest_geofence);
+        array_push($od_geofences,$origin_geofence);
+        array_push($od_geofences,$dest_geofence);
 
         $origin_entrance = Signes::where('device_id',$travel->device_id)
         ->where('geofence_id',$origin)
@@ -1149,12 +1149,12 @@ class TravelsController extends Controller
         }
 
         //dd($real_departure,$real_arrival);
-
+        
         if($travel->tstate_id==4){ 
             $packets = Packets::where('devices_id',$travel->device_id)->whereBetween('updateTime',[$travel->departure_date,$destination_arrival_time])->get();
              $report = $this->parseReport($packets,$travel->device->id,$travel->departure_date,$destination_arrival_time);
       
-        }else{
+        }elseif($travel->tstate_id==2 OR $travel->tstate_id==3 OR $travel->tstate_id==5 OR $travel->tstate_id==8 OR $travel->tstate_id==7){
             if($origin_arrival_time != 'No disponible'){
                
                 $packets = Packets::where('devices_id',$travel->device_id)->whereBetween('updateTime',[$origin_arrival_time,$travel->arrival_date])->get();
@@ -1172,6 +1172,13 @@ class TravelsController extends Controller
             $packets = Packets::where('devices_id',$travel->device_id)->whereBetween('updateTime',[$travel->departure_date,$destination_arrival_time])->get();
             $report = $this->parseReport($packets,$travel->device->id,$travel->departure_date,$destination_arrival_time);
         }
+
+        if($travel->tstate_id==1){ 
+            $packets = Packets::where('devices_id',$travel->device_id)->whereBetween('updateTime',[$travel->departure_date,$travel->arrival_date])->get();
+            $report = $this->parseReport($packets,$travel->device->id,$travel->departure_date,$travel->arrival_date);
+        }
+
+
 $descarga_time ='x';
         if($travel->tstate_id==9){
 

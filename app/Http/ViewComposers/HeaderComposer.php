@@ -7,6 +7,7 @@ use App\User;
 use App\Devices;
 use App\Packets;
 use App\Travels;
+use App\Clients;
 use App\Notifications;
 use Auth;
 use DB;
@@ -23,7 +24,7 @@ class HeaderComposer{
     public function compose(View $view)
     {
  
-        
+        $client = Clients::find(Auth::User()->client_id);
         $total_devices = Devices::where('client_id',Auth::User()->client_id)->where('type_id',1)->get()->count();
         $available_boxes = Devices::where('client_id',Auth::User()->client_id)->where('type_id',2)->get()->count();
         $pending_orders = Travels::where('client_id',Auth::User()->client_id)->where('tstate_id',5)->where('active',1)->get()->count();
@@ -39,6 +40,7 @@ class HeaderComposer{
         $notifications = Notifications::where('client_id',Auth::User()->client_id)->where('user_id',Auth::User()->id)->orderBy('created_at','desc')->take(5)->get();
 
         $view->with('total_devices',$total_devices);
+        $view->with('client',$client);
         //$view->with('onroad_devices',$onroad_devices);
         //$view->with('available_devices',$available_devices);
         //$view->with('waiting_devices',$waiting_devices);

@@ -193,6 +193,7 @@ use Faker\Factory as Faker;
 
 // SMS
 Route::post('/nexmo/send', 'NexmoController@send',function(){});
+//Route::get('/nexmo/send', 'NexmoController@send',function(){});
 
 
 //ADMIN ROUTES
@@ -233,6 +234,9 @@ Route::group(['middleware'=>'userRole:1,0,0,0,0,0'],function(){
     Route::get('dashboard/clients', 'ClientsController@index',function(){});
     Route::get('dashboard/clients/add', 'ClientsController@add',function(){});
     Route::post('dashboard/client/store', 'ClientsController@store',function(){});
+    Route::get('dashboard/client/{id}', 'ClientsController@read',function(){});
+    Route::post('dashboard/client/update', 'ClientsController@update',function(){});
+     
 
 
 

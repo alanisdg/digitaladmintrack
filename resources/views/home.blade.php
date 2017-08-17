@@ -120,6 +120,10 @@
                                 {!! $device->battery_alarm($config->battery_alarm,$device->lastpacket->power_bat) !!}
                                 {!! $device->rssi_alarm($config->rssi_alarm,$device->lastpacket->rssi) !!}  </a>
 
+                                @if($device->engine_block == 1)
+                                <button id="blockEngine" ide="{{ $device->id }}" name="{{ $device->name }}" number="{{ $device->number }}">B</button>
+                                @endif
+
                                     <p class="text11 mb0" style="float:right">
                                     </p>
                                     <div class="clear"></div>
@@ -177,7 +181,42 @@ $(".devices-right .device").each(function(index) {
 
  
 });
+ 
 
+$('#blockEngine').click(function(){
+          ide= $(this).attr('ide')
+          num= $(this).attr('number')
+          elname= $(this).attr('name')
+          console.log('enviando')
+          $.confirm({
+            title: 'Bloqueo de Motor',
+            content: '<label>Deseas detener el motor de la unidad '+elname+'</label>' ,
+            buttons: {
+                confirm: function () {
+                    $.ajax({
+                        url:'/nexmo/send',
+                        type:'POST',
+                        dataType: 'json',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        data: { number: num, code:'!R3,8,0', device_id:ide },
+                        success: function(success){
+                          console.log(success)
+                        },
+                        error: function(data){
+                            var errors = data.responseJSON;
+                            console.log(errors);
+                        }
+                    })
+                },
+                cancel: function () {
+                    $.alert('Cancelado');
+                }
+            }
+        });
+    
+})
 
 
 $("#search_left").on("keyup", function() {

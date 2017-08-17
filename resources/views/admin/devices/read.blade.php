@@ -44,6 +44,13 @@
             </div>
         </div>
         <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Bloqueo de motor<span class="required">*</span>
+            </label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <input type="checkbox"  name="engine_block" @if($device->engine_block==1) checked @endif  class="form-control col-md-7 col-xs-12">
+            </div>
+        </div> 
+        <div class="form-group">
             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Equipo Virtual <span class="required">*</span>
             </label>
             <div class="col-md-6 col-sm-6 col-xs-12">

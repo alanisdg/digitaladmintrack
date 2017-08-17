@@ -12,7 +12,7 @@ var functions = require('./functions')
 var Server = function(){
     var s = this;
     this.packet;
-    this.mysql_conf = { user: "root", password: "56fg.tyyhY", database: "notes" };
+    this.mysql_conf = { user: "root", password: "547aj154", database: "tracking" };
     this.listener = dgram.createSocket("udp4");
     this.lport = 3001; //7777;
 
@@ -32,7 +32,7 @@ var Server = function(){
 
     this.load_listener = function(){
         s.listener.bind(s.lport);
-        s.listener.on("listening", function(){ console.log("[Listener Server is running and waiting for packets on port: "+s.lport+"]"); });
+        s.listener.on("listening", function(){ console.log("[Escuchando: "+s.lport+"]"); });
         s.listener.on("message", function(packet,guest){
 
             buffer_str = packet.toString('hex');
@@ -69,6 +69,7 @@ var Server = function(){
         this.packet.Secuence = buffer_str.substring(28,32);
         this.packet.timeOfFix =  moment(  this.get_decimal (buffer_str.substring(40,48))*1000 ).utcOffset('0').format("YYYY-MM-DD HH:mm:ss");
         this.packet.updateTime = moment(  this.get_decimal (buffer_str.substring(32,40))*1000 ).utcOffset('0').format("YYYY-MM-DD HH:mm:ss");
+        console.log(this.packet.updateTime + ' time')
         this.packet.lat = this.parse_LatLng( buffer_str.substring(48,56) );
         this.packet.lng =this.parse_LatLng( buffer_str.substring(56,64) );
         this.packet.Altitude = this.get_decimal(buffer_str.substring(64,72));
@@ -294,7 +295,7 @@ var Server = function(){
                 s.mysql_link.query(s.query_insert, function(err, rows, fields){
                     if(err){ console.log("MySQL ERROR 'query_insert' "); throw err; }else{
                         console.log('-> INSERTADO EN BASE ' + packet.device_name)
-                        
+                        s.return_ack(packet,guest.port,guest.address);
                         // REVISAR ENCENDIDO Y SIN MOVIMIENTO 
                                if(packet.engine_status == 1 && packet.odometro < 100){ 
                                     if(packet.bad_engine == 0){
@@ -338,6 +339,13 @@ var Server = function(){
 	                    }
                         //---------->::termina encendido apagado
 
+
+                        //------->::EVENTCODE
+                        console.log('emitir evento')
+                        //io.sockets.emit('event'+packet.client_id, packet.EventCode );
+                        //________>::EVENTCODE
+
+
                         // ACTUALIZAR EQUIPO COMO EL Dstate_id
                         s.mysql_link.query('UPDATE devices set dstate_id='+packet.dstate_id+' WHERE id='+packet.device_id, function(err, rows, fields){
                         })
@@ -347,9 +355,13 @@ var Server = function(){
                         packet.geofences_in =[];
                         packet.geofences_out =[];
                         if(packet.actual_geofences == null){
-                            geofences = JSON.parse(packet.geofence)
+                            console.log(packet.geofence)
+                            console.log('xxx')
+                            
                             //RECORRER LOS ID DE GEOCERCAS PARA VER CUAL ENTRO
-                            for (i = 0; i < ides_geofence.length; ++i) {
+                            if(packet.geofence != '}'){
+                                geofences = JSON.parse(packet.geofence)
+                               for (i = 0; i < ides_geofence.length; ++i) {
                                 // SI ENTRO GUARDAR EL SIGNES COMO ENTRADA
                                 if(geofences[ides_geofence[i]] == 1){ 
                                     packet_id = rows.insertId;
@@ -364,8 +376,11 @@ var Server = function(){
                                     })
                                 }else{
                                 }
+                            } 
                             }
-                        }else{
+                            
+                        }else{ 
+                            if(packet.geofence != '}'){
                             actual_geofences = JSON.parse(packet.actual_geofences)
                             geofences = JSON.parse(packet.geofence)
                             packet_id = rows.insertId;
@@ -436,7 +451,7 @@ var Server = function(){
                                 }
                             }
                         }
-
+                    }
                         if(packet.geofence  ){
 						    s.mysql_link.query("UPDATE devices set geofences ='"+packet.geofence+"'  WHERE id="+packet.device_id, function(err, rows, fields){
 						        // console.log('SE ACTUALIZO DEVICE 1')

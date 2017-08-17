@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class EditGeofencesFiels extends Migration
+class AddBoxToClients extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,8 @@ class EditGeofencesFiels extends Migration
      */
     public function up()
     {
-        Schema::getConnection()->getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
-
-        Schema::table('geofences', function (Blueprint $table) {
-            $table->longText('poly_data')->default('')->change();
+        Schema::table('clients', function (Blueprint $table) {
+            $table->integer('boxs')->unsigned()->nullable();
         });
     }
 
@@ -27,7 +25,7 @@ class EditGeofencesFiels extends Migration
      */
     public function down()
     {
-        Schema::table('geofences', function (Blueprint $table) {
+        Schema::table('clients', function (Blueprint $table) {
             //
         });
     }

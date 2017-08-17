@@ -31,16 +31,18 @@ class NexmoController extends Controller
      */
     public function send()
     { 
+
         $number = request()->get('number');
         $code = request()->get('code');
         $device_id = request()->get('device_id');
-   
+        
+      
         $test = Nexmo::message()->send([
             'to' => '+521'.$number,
             'from' => 'NEXMO SMS',
             'text' => $code
-        ]);
-        return redirect()->to('dashboard/devices/sms/'.$device_id);
+        ]); 
+        return 'ok';
  
     }
 
