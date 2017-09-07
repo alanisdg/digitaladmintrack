@@ -341,8 +341,52 @@ var Server = function(){
 
 
                         //------->::EVENTCODE
-                        console.log('emitir evento')
-                        //io.sockets.emit('event'+packet.client_id, packet.EventCode );
+                        console.log('emitir evento') 
+                        if(packet.EventCode == '116'){
+                             s.mysql_link.query('UPDATE devices set elock=2, stepBlock = 0 WHERE id='+packet.device_id, function(err, rows, fields){
+                        })
+                        }
+
+                        if(packet.EventCode == '118'){
+                            console.log()
+                             s.mysql_link.query('UPDATE devices set elock=null,stepBlock = 0 WHERE id='+packet.device_id, function(err, rows, fields){
+                        })
+                        }
+
+                        if(packet.EventCode == '68'){
+                             s.mysql_link.query('UPDATE devices set unplugged=1 WHERE id='+packet.device_id, function(err, rows, fields){
+                        })
+                        }
+
+                        if(packet.EventCode == '60'){
+                            console.log('panico')
+                             s.mysql_link.query('UPDATE devices set panic=1 WHERE id='+packet.device_id, function(err, rows, fields){
+                        })
+                        }
+
+                        if(packet.EventCode == '61'){
+                             s.mysql_link.query('UPDATE devices set panic=1 WHERE id='+packet.device_id, function(err, rows, fields){
+                        })
+                        }
+
+
+                        if(packet.EventCode == '69'){
+                             s.mysql_link.query('UPDATE devices set unplugged=0 WHERE id='+packet.device_id, function(err, rows, fields){
+                        })
+                        }
+
+                        
+
+
+                        io.sockets.emit('event'+packet.client_id,  {
+                                        response:[
+                                            packet.EventCode,
+                                            packet.device_name,
+                                            packet.device_id
+                                        ]
+                                    });
+
+
                         //________>::EVENTCODE
 
 
@@ -380,7 +424,10 @@ var Server = function(){
                             }
                             
                         }else{ 
-                            if(packet.geofence != '}'){
+                            try
+{
+   var json = JSON.parse(packet.actual_geofence);
+       console.log(packet.actual_geofences)
                             actual_geofences = JSON.parse(packet.actual_geofences)
                             geofences = JSON.parse(packet.geofence)
                             packet_id = rows.insertId;
@@ -450,6 +497,13 @@ var Server = function(){
                                     })
                                 }
                             }
+}
+catch(e)
+{
+   console.log('noooooooo ')
+}
+                            if(packet.geofence != '}'){
+                            
                         }
                     }
                         if(packet.geofence  ){

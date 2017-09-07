@@ -5,7 +5,7 @@
     <form class="form-horizontal form-label-left" action="/dashboard/devices/update" method="post">
         {!! csrf_field() !!}
         <div class="form-group">
-            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Nombre
+            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Nombref
                 <span class="required">*</span>
             </label>
             <div class="col-md-6 col-sm-6 col-xs-12">
@@ -66,7 +66,12 @@
         <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ $client->name }}</label>
         <input type="checkbox" class="" name="clients[]" value="{{ $client->id }}"
             <?php
+            if($device->type_id == 1){
             $devices = $client->getDevicesAtrribute();
+            }else{
+                $devices = $client->getBoxsAtrribute();
+            } 
+
             foreach ($devices as $device_selected) {
                 if($device_selected == $device->id){ ?>
                     checked

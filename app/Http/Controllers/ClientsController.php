@@ -38,7 +38,7 @@ class ClientsController extends Controller
         $client->name=request()->get('name');
         if($file['logo'] != null){
             $file = Input::file('logo');
-                $path = public_path().'/clients/';
+                $path = public_path().'/client_profile/';
                 $image = \Image::make(Input::file('logo'));
 
                 $extension = Input::file('logo')->getClientOriginalExtension(); // getting image extension
@@ -49,7 +49,7 @@ class ClientsController extends Controller
                  
                 
 
-                $client->logo = '/clients/'.$fileName;
+                $client->logo = '/client_profile/'.$fileName;
 
 
         }

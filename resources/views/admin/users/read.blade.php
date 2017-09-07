@@ -3,7 +3,7 @@
 <div class="right_col" role="main">
             <h3 class="title">Administrar usuario {{ $user_read->name }} </h3>
             <h6>Ultima sesion {{ $lastSession }}</h6>
-            {!! Form::open(['url' => 'dashboard/user/store']) !!}
+            {!! Form::open(['url' => 'dashboard/user/edit']) !!}
             <div class="form-group">
             {{ Form::label('email', 'E-Mail Address', ['class' => 'form-label']) }}
             {{ Form::text('email', $user_read->email , ['class' => 'form-control']) }}
@@ -18,6 +18,13 @@
             {{ Form::label('role', 'role', ['class' => 'form-label']) }}
             {{ Form::select('role_id', array('0' => 'Selecciona un rol de usuario') + $roles , $user->role->id, ['class' => 'form-control'] )  }}
             </div>
+
+            <div class="form-group"> 
+           {{ Form::hidden('client_id', $user_read->client_id , ['class' => 'form-control']) }}
+           {{ Form::hidden('user_id', $user_read->id , ['class' => 'form-control']) }}
+            </div>
+
+
 
             {{ Form::hidden('id', $user_read->id) }}
             <div class="form-group">

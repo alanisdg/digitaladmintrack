@@ -6,7 +6,7 @@
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-default">
                 <div class="panel-heading" style="text-align: center; height: 90px;">
-                    <img width="200" style="margin-top: 9px" src="/profile/logo.png">
+                    DIGITAL ADMIN TRACK
                 </div>
                 <div class="panel-body">
                     <form class="form-horizontal" role="form" method="POST" action="{{ url('/login') }}">

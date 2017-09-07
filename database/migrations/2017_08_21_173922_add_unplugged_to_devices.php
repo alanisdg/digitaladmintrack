@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddBlockToDevices extends Migration
+class AddUnpluggedToDevices extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class AddBlockToDevices extends Migration
     public function up()
     {
         Schema::table('devices', function (Blueprint $table) {
-            $table->integer('engine_block')->unsigned()->nullable();
+            $table->integer('unplugged')->default(0)->nullable();
         });
     }
 

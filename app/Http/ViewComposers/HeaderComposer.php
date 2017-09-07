@@ -40,7 +40,7 @@ class HeaderComposer{
         $notifications = Notifications::where('client_id',Auth::User()->client_id)->where('user_id',Auth::User()->id)->orderBy('created_at','desc')->take(5)->get();
 
         $view->with('total_devices',$total_devices);
-        $view->with('client',$client);
+        $view->with('client_profile',$client);
         //$view->with('onroad_devices',$onroad_devices);
         //$view->with('available_devices',$available_devices);
         //$view->with('waiting_devices',$waiting_devices);

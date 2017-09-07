@@ -9,7 +9,7 @@ use DateTime;
 
 class Devices extends Model
 {
-    protected $fillable = ['name','imei','client_id','number','type_id','virtual','new','plate','block_engine'];
+    protected $fillable = ['name','imei','client_id','number','type_id','virtual','new','plate','block_engine','bbuton','stepBlock'];
 
     public function User(){
         return $this->belongsTo(User::class);
@@ -138,6 +138,32 @@ class Devices extends Model
             return 'Sin Reportes';
         }     
     }
+
+    public function bbuton($lastPacket){
+         
+        if(!empty($lastPacket)){
+            $lastReportPacket = new Carbon($lastPacket, 'America/Monterrey');
+
+            $now = Carbon::now('America/Monterrey');
+            $timeforhumans = $now->diffForHumans($lastReportPacket);
+            $timeforComputer = $now->diffInMinutes($lastReportPacket);
+
+
+
+            if($timeforComputer > 30){
+                $data =  '<span style="background-color:red" class="badge">'.$timeforhumans.'</span>';
+            }else{
+                $data =  '<span   class="badge">'.$timeforhumans.'</span>';
+            }
+
+
+            return $timeforComputer;
+        }else{
+            return 0;
+        }     
+    }
+
+
 
      public function statusadmin($device){
         $lastPacket = DB::table('packets')

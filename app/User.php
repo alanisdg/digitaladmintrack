@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
+use Auth;
 class User extends Authenticatable
 {
     use Notifiable;
@@ -30,7 +30,10 @@ class User extends Authenticatable
     public function devices_by_user(){
         return $this->belongsToMany(Devices::class)->where('type_id',1)->orderBy('name','asc');
     }
- 
+    
+    public function all_devices_by_user(){
+        return $this->belongsToMany(Devices::class)->orderBy('name','asc');
+    }
 
     public function role(){
         return $this->belongsto(Roles::class);
@@ -43,6 +46,10 @@ class User extends Authenticatable
     public function getDevices($user){
         if($user->role_id==1){
             $devices = Devices::where('client_id',$user->client_id)->where('type_id',1)->orderBy('name','asc')->get();
+            $user = User::find($user->id);
+        $client_id = $user->client_id;
+        $client = Clients::find($client_id);
+        $devices = $client->devices;
 
         }else {
             $devices = $user->devices_by_user;
@@ -60,14 +67,34 @@ class User extends Authenticatable
     }
 
     public function getAllDevices($user){
-        $devices = Devices::where('client_id',$user->client_id)->orderBy('type_id','asc')->get();
+                if($user->role_id==1){
+            
+            $user = User::find($user->id);
+        $client_id = $user->client_id;
+        $client = Clients::find($client_id);
+        $devices = $client->allDevices;
+
+        }else {
+            $devices = $user->all_devices_by_user;
+        }
+        foreach ($devices as $device) {
+             $lastPacket = Packets_live::where('devices_id',$device->id)->orderBy('id','desc')->first();
+            // dd($lastPacket);
+           if($lastPacket == null){
+             $lastPacket = Packets::where('devices_id',$device->id)->orderBy('id','desc')->first();
+             
+         }; 
+         $device->lastpacket=$lastPacket;
+        }
         return $devices;
     }
 
     public function getBoxes($user){ 
-            $devices = Devices::where('client_id',$user->client_id)->where('type_id',2)->orderBy('status','desc')->get();
-        
-         
+
+        $client_id = Auth::user()->client_id;
+        $client = Clients::find($client_id);
+        $devices = $client->boxes;
+ 
         foreach ($devices as $device) {
              $lastPacket = Packets_live::where('devices_id',$device->id)->orderBy('updateTime','desc')->first();
             
@@ -77,11 +104,27 @@ class User extends Authenticatable
          }; 
          $device->lastpacket=$lastPacket;
          $travel = Travels::where('box_id',$device->id)->first();
+         
+         
+           /* if($device->geofences !=null){
+            $geofences = json_decode($device->geofences,true) ;
+                foreach ($geofences as $geofence => $valor ) {
+                    if($geofence == $id){
+                        if($valor == 1){
+                            array_push($devices,$truck->id);
+                        }
+                    }
+                }
+            } */
+      
+
+
+         //BUSCABA LA ULTIMA UBICACION QUE TUVO LA CAJA EN UN VIAJE
+         /*
          if(isset($travel->route->destination_id)){
             $geofence = Geofences::find($travel->route->destination_id);
-         
-         $device->lastDestination = $geofence;
-         }
+            $device->lastDestination = $geofence;
+         } */
             
         }
         return $devices;

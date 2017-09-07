@@ -93,6 +93,10 @@ class DriversController extends Controller
             $driver_last_day =null;
         }
 
+        if($driver_test_validity == ''){
+            $driver_test_validity =null;
+        }
+
 
         if ($validator->fails()) {
             $driver = Drivers::find($driver_id);
@@ -185,7 +189,11 @@ class DriversController extends Controller
             $driver_last_day =null;
         }
 
-        if ($validator->fails()) {
+        if($driver_test_validity == ''){
+            $driver_test_validity =null;
+        }
+
+        if ($validator->fails()) { 
             $driver = Drivers::create([
                 'name' => $name,
                 'client_id' =>$client_id,

@@ -36,17 +36,17 @@ class HomeController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
+    
     public function index()
     {
-
-
         $user = User::find(Auth::user()->id);
         $devices = $user->getDevices($user);
+        $alldevices = $user->getAllDevices($user);
+        $boxes = $user->getBoxes($user);
         $config = Configs::where('client_id',$user->client_id)->first();
         $devices_availables =0;
-        
-        return view('home', compact('user','devices','devices_availables','config'));
 
+        return view('home', compact('user','devices','devices_availables','config','boxes','alldevices'));
     }
 
     public function mapa()

@@ -108,6 +108,9 @@ Route::get('trucks', 'DevicesController@trucks',function(){});
 Route::get('boxes', 'DevicesController@boxes',function(){});
 Route::post('/trucks/get', 'DevicesController@trucksget',function(){});
 Route::post('/device/updateDevice', 'DevicesController@updateDevice',function(){});
+Route::post('device/updateBlock', 'DevicesController@updateBlock',function(){});
+Route::post('device/getPanic', 'DevicesController@getPanic',function(){});
+Route::post('device/finishPanic', 'DevicesController@finishPanic',function(){});
 
 
 
@@ -246,5 +249,6 @@ Route::group(['middleware'=>'userRole:1,0,0,0,0,0'],function(){
     Route::get('dashboard/user/add', 'UserController@addClient',function(){});
     // Route::post('dashboard/user/store', 'UserController@storeClient',function(){});
     Route::post('dashboard/user/store', 'UserController@create_user',function(){});
+    Route::post('dashboard/user/edit', 'UserController@editinfo',function(){});
 
 });

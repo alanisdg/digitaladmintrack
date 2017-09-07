@@ -9,6 +9,8 @@ use App\Packets;
 use App\Routes;
 use App\Geofences;
 use App\User;
+use Carbon\Carbon;
+
 use Auth;
 /**
  *
@@ -33,6 +35,45 @@ class DevicesController extends Controller
         return redirect()->to('/device/'.$id);
 
     }
+
+    public function updateBlock(){
+        $id = request()->get('device_id');
+        $now = Carbon::now('America/Monterrey');
+        $device = Devices::find($id);
+        $device->elock = 1;
+        $device->stepBlock = request()->get('step');
+        $device->bbuton = $now;
+        $device->save(); 
+        return response()->json([
+            'devices'=>$now
+        ]);
+
+    }
+
+    public function getPanic(){
+        $id = request()->get('id');
+   
+        $packet = Packets::where('devices_id',$id)->where('eventCode',61)->limit(1)->orderBy('id', 'DESC')->get();
+
+        return response()->json([
+            'panic'=>$packet
+        ]);
+    }
+
+     public function finishPanic(){
+        $id = request()->get('id');
+   
+        $device = Devices::find($id);
+        $device->panic = 0;
+        $device->save();
+
+        return response()->json([
+            'panic'=>'finish'
+        ]);
+    }
+
+
+
     public function devices(){
         $devices = Devices::all();
         $user = User::find(Auth::user()->id);
@@ -216,7 +257,7 @@ class DevicesController extends Controller
 
     public function update(){
             $device = Devices::find(request()->get('id'));
-
+            
             $device->clients()->sync(request()->get('clients'));
             $device->name = request()->get('name');
             $device->imei = request()->get('imei');
