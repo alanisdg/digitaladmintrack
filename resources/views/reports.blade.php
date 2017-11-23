@@ -31,6 +31,7 @@
                         </div>
                         <div class="form-group">
                             <select class="form-control hour_init" name="">
+                                <option value="00:00">00:00</option>
                                 <option value="01:00">01:00</option>
                                 <option value="02:00">02:00</option>
                                 <option value="03:00">03:00</option>
@@ -87,7 +88,8 @@
                                 <option value="20:00">20:00</option>
                                 <option value="21:00">21:00</option>
                                 <option value="22:00">22:00</option>
-                                <option value="23:00" selected>23:00</option>
+                                <option value="23:00">23:00</option>
+                                <option value="23:59" selected>23:59</option>
                             </select>
                         </div>
                         <div class="form-group">

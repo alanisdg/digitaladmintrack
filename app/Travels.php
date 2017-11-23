@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Travels extends Model
 {
-    protected $fillable = ['name','postage','toclient_id','user_id','reference','active','tcode_id','client_id','route_id','driver_id','subclient_id','device_id','departure_date','arrival_date','tstate_id','location_id','boxs_number','box_id','additionalbox_id','user_id'];
+    protected $fillable = ['name','postage','toclient_id','user_id','reference','active','tcode_id','client_id','route_id','driver_id','subclient_id','device_id','departure_date','arrival_date','tstate_id','location_id','boxs_number','box_id','additionalbox_id','user_id','endtraveltime','motivo'];
 
     public function device(){
         return $this->belongsTo(Devices::class);

@@ -256,9 +256,9 @@ trait DevicesTraits
             }else{
                 
             }
-        	$kms = $kms + $packet->odometro;
+            $kms = $kms + $packet->odometro;
             if ($i == 0) {
-            	$fisrtLatLng = array($packet->lat,$packet->lng);
+                $fisrtLatLng = array($packet->lat,$packet->lng);
             $first_odometer = $packet->odometro;
             if($packet->speed==0){
                 $s = array($packet->lat,$packet->lng);

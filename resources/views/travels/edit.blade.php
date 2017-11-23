@@ -23,16 +23,24 @@
                         <select class="origin_client form-control chosen-select">
                             <option value=""> Selecciona un cliente</option>
                             @foreach($subclients  as $subclient)
-                             
+                            @if($subclient->id == $client_origin)
+                            <option value="{{ $subclient->id }}" selected>{{ $subclient->name }}</option>
+                            @else
                             <option value="{{ $subclient->id }}">{{ $subclient->name }}</option>
-                        
+                            @endif
                             @endforeach
                         </select>
                     </div>
                     <div class="form-group col-md-6">
                         <label for="exampleInputEmail1">Locación Origen</label>
                         <select name="origin_id" class="origin_id form-control col-md-6">
-                            <option value=""> Selecciona un origen</option>
+                            @foreach($locations_origin  as $location)
+                            @if($location->id == $location_origin_id)
+                            <option value="{{ $location->id }}" rel="{{ $location->geofences_id }}" selected>{{ $location->name }}</option>
+                            @else
+                            <option value="{{ $location->id }}" rel="{{ $location->geofences_id }}">{{ $location->name }} </option>
+                            @endif
+                            @endforeach
                       
                         </select>
                     </div>

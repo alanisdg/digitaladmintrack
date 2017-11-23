@@ -11,7 +11,7 @@ $('.cliente').change(function(){
         success: function(locations){
             $('.location').empty() 
             $('.routes').empty()
-            $('.location').append('<option >Selecciona una locacion</option>')
+            $('.location').append('<option value="">Selecciona una locacion u</option>')
             if(locations == ''){
                 $('.location').append('<option >Este cliente no cuenta con locaciones - cliente</option>')
             }
@@ -38,7 +38,7 @@ $('.origin_client').change(function(){
         data: { id: $('.origin_client').val() },
         success: function(locations){
             $('.origin_id').empty()
-            $('.origin_id').append('<option >Selecciona una locacion</option>')
+            $('.origin_id').append('<option value="">Selecciona una locacion i</option>')
             if(locations == ''){
                 $('.origin_id').append('<option >Este cliente no cuenta con locaciones - cliente</option>')
             }
@@ -366,13 +366,13 @@ function cancel_travel(){
             content: '' +
             '<form action="" class="formName">' +
             '<div class="form-group">' +
-            '<label>Porfavor ingresa el motivo de cancelación</label>' +
-            '<input type="text" placeholder="Your name" class="name form-control" required />' +
+            '<label>Porfavor ingresa el motivo de cancelación.</label>' +
+            '<input type="text" placeholder=" " class="name form-control" required />' +
             '</div>' +
-            '</form>',
+            '</form>', 
             buttons: { 
                 formSubmit: {
-                    text: 'Submit',
+                    text: 'Enviar',
                     btnClass: 'btn-blue',
                     action: function () {
                         var name = this.$content.find('.name').val();
@@ -424,13 +424,13 @@ $('.cancel_travel').click(function(){
         content: '' +
         '<form action="" class="formName">' +
         '<div class="form-group">' +
-        '<label>Porfavor ingresa el motivo de cancelación</label>' +
-        '<input type="text" placeholder="Your name" class="name form-control" required />' +
+        '<label>Porfavor ingresa el motivo de cancelación.</label>' +
+        '<input type="text" placeholder=" " class="name form-control" required />' +
         '</div>' +
         '</form>',
         buttons: {
             formSubmit: {
-                text: 'Submit',
+                text: 'Enviar',
                 btnClass: 'btn-blue',
                 action: function () {
                     var name = this.$content.find('.name').val();

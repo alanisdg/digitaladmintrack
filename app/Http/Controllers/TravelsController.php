@@ -198,6 +198,7 @@ class TravelsController extends Controller
     }
 
     public function edit($id){
+
       $travel = Travels::find($id);
 
         $drivers = Drivers::where('drivers.client_id',Auth::user()->client_id)
@@ -217,6 +218,11 @@ class TravelsController extends Controller
         $location = Locations::find( $travel->location_id);
         $locations = Locations::where('locations.subclients_id',$travel->subclient_id)->get();
 
+        $location_origin = Locations::where('locations.geofences_id',$travel->route->origin_id)->first();
+        //dd($location_origin);
+        $location_origin_id = $location_origin->id;
+        $client_origin = $location_origin->subclients_id;
+         $locations_origin = Locations::where('locations.subclients_id',$client_origin)->get();
 
         $destinations = Toclients::where('subclients_id',$travel->subclient_id)->get();
  
@@ -247,11 +253,12 @@ class TravelsController extends Controller
                 ->orderBy('created_at', 'asc')
                 ->get();
 
-
-        return view('travels.edit',compact('devices','drivers','references','routes','subclients','travel','location','locations','arrival_year','arrival_hour','boxes','route_saved','driver_saved','device_saved','box_saved','destination_saved','destinations'));
+ 
+        return view('travels.edit',compact('devices','drivers','references','routes','subclients','travel','location','locations','arrival_year','arrival_hour','boxes','route_saved','driver_saved','device_saved','box_saved','destination_saved','destinations','location_origin_id','client_origin','locations_origin'));
     }
 
     public function editsave(){ 
+        
         $travel = Travels::find(request()->get('travel_id'));
         $travel->departure_date =request()->get('init');
         $travel->arrival_date =request()->get('end');
@@ -274,8 +281,12 @@ class TravelsController extends Controller
         $origin_id = request()->get('origin_id');
         $location_id = request()->get('location_id');
 
-         
+        if($origin_id == ''){
+            $origin_id = $travel->location_id;
+  
+        } 
         $origin_location = Locations::find($origin_id);
+      
         $origin = Geofences::find($origin_location->geofences_id);
           
         $location = Locations::find($location_id);
@@ -459,8 +470,10 @@ class TravelsController extends Controller
     public function cancel(){
 
         $travel_id = request()->get('id');
+        $motivo = request()->get('motivo');
         $travel = Travels::find($travel_id);
         $travel->tstate_id=7;
+        $travel->motivo=$motivo;
 
         $device = Devices::find($travel->device_id);
         $device->status = 0;
@@ -507,14 +520,29 @@ class TravelsController extends Controller
     }
     public function newtravel()
     {
-        $drivers = Drivers::where('drivers.client_id',Auth::user()->client_id)
-                    ->where('status',0)
+        $drivers_check = Drivers::where('drivers.client_id',Auth::user()->client_id)
                     ->orderBy('created_at', 'asc')
                     ->get();
+                    $drivers = array();
+         foreach ($drivers_check as $driver) {
+            if($driver->status ==1){
+
+                $travel = Travels::where('driver_id',$driver->id)->orderBy('created_at', 'desc')->first();
+                
+                if($travel->tstate_id ==9){
+                    array_push($drivers, $driver);
+                }
+            }else{
+                if($driver->status ==0){
+                    array_push($drivers, $driver);
+                }
+            }
+         }
         $devices = Devices::where('devices.client_id',Auth::user()->client_id)
                     ->where('devices.type_id',1)
                     ->orderBy('created_at', 'asc')
                     ->get();
+
         $boxes = Devices::where('devices.client_id',Auth::user()->client_id)
                     ->where('devices.type_id',2)
                     ->where('devices.status',0)
@@ -578,10 +606,24 @@ class TravelsController extends Controller
     {
 
         $travel = Travels::find($id);
-        $drivers = Drivers::where('drivers.client_id',Auth::user()->client_id)
-                    ->where('status',0)
+
+        $drivers_check = Drivers::where('drivers.client_id',Auth::user()->client_id)
                     ->orderBy('created_at', 'asc')
                     ->get();
+                    $drivers = array();
+         foreach ($drivers_check as $driver) {
+
+            if($driver->status ==1){ 
+                $travel_ = Travels::where('driver_id',$driver->id)->where('route_id','!=',null)->orderBy('created_at', 'desc')->first();
+                if($travel_->tstate_id ==9){
+                    array_push($drivers, $driver);
+                }
+            }else{
+                if($driver->status ==0){
+                    array_push($drivers, $driver);
+                }
+            }
+         }
         $devices = Devices::where('devices.client_id',Auth::user()->client_id)
                     ->where('devices.type_id',1)
                     ->orderBy('created_at', 'asc')
@@ -607,8 +649,7 @@ class TravelsController extends Controller
         $routes = Routes::where('routes.client_id',Auth::user()->client_id)
                     ->where('destination_id',$toclient->geofences_id)
                     ->orderBy('created_at', 'asc')
-                    ->get();*/  
- 
+                    ->get();*/   
         $routes = Routes::where('routes.client_id',Auth::user()->client_id)
                     ->where('destination_id',$travel->location->geofences->id)
                     ->orderBy('created_at', 'asc')
@@ -701,7 +742,58 @@ class TravelsController extends Controller
     }
     public function authsave()
     {  
+        $this->validate(request(),[
+            'device_id' => ['required']
+        ]);
+        $device = Devices::find(request()->get('device_id'));
+        $force_state = 0;
 
+        if($device->status == 1){
+            //tiene viaje, terminar viaje y seguir
+            if($device->travel->tstate_id==9){
+                //tiene viaje descargando. terminar viaje
+
+                $force_state = 8;
+                $previous_travel_id = $device->travel->id;
+                $previous_travel = Travels::find($previous_travel_id);
+               
+                $now = Carbon::now('America/Monterrey');
+                $previous_travel->endtraveltime = $now;
+                $previous_travel->tstate_id=4;
+                $previous_travel->save();
+
+
+                $device->status = 0;
+                $device->travel_id=null;
+                $device->boxs_id=null;
+                $device->tcode_id=null;
+                $device->save();
+                //ACUATULIZAR CAJA 1
+                if($previous_travel->box_id != null){
+                    $box = Devices::find($travel->box_id);
+                    $box->status = 0;
+                    $box->travel_id=null;
+                    $box->boxs_id=null;
+                    $box->save();
+                }
+
+                //ACTUALIZAR CHOFER
+                $previous_driver = Drivers::find($previous_travel->driver_id);
+                $previous_driver->status=0;
+                $previous_driver->save();
+
+                //ACTUALIZAR CAJA 2
+                if($previous_travel->additionalbox_id != null){
+                    $additionalbox = Devices::find($travel->additionalbox_id);
+                    $additionalbox->status = 0;
+                    $additionalbox->travel_id=null;
+                    $additionalbox->boxs_id=null;
+                    $additionalbox->save();
+                }
+
+
+            }
+        }
         $this->validate(request(),[
             'client_id' => ['required'],
             'init' => ['required'],
@@ -803,7 +895,14 @@ class TravelsController extends Controller
         $device = Devices::find($device_id);
         //$travel->tstate_id = $this->getTravelStatus($salida,$llegada,$device->id,$device);
 
-        $travel->tstate_id = $this->getTravelStatusByGeofence($salida,$llegada,$device,$route->id);
+        if($force_state != 0){
+            // SI SE HACE UN NUEVO VIAJE MIENTRAS EL ANTERIOR ESTA DESCARGANDO, FORZAR ESTADO A CARGANDO
+            $travel->tstate_id = 8;
+        }else{
+            $travel->tstate_id = $this->getTravelStatusByGeofence($salida,$llegada,$device,$route->id);
+        }
+        
+
 
         $travel->save();
         $update_travel_id = Devices::find($device_id);
@@ -860,7 +959,6 @@ class TravelsController extends Controller
                 'link'=> '/travel/'.request()->get('tcode_id')
             ]);
         }
-
         flash('Viaje '.request()->get('name').' creado!');
         return redirect()->to('/travels')->with('travel', Auth::user()->id);
         //return view('travels.confirmation',compact('travel'));
@@ -1074,7 +1172,7 @@ class TravelsController extends Controller
         $dest_geofence = Geofences::find($travel->route->destination_id);
         array_push($od_geofences,$origin_geofence);
         array_push($od_geofences,$dest_geofence);
-
+ 
         $origin_entrance = Signes::where('device_id',$travel->device_id)
         ->where('geofence_id',$origin)
         ->where('status',1)
@@ -1083,6 +1181,8 @@ class TravelsController extends Controller
         ->first(); 
         //2017-06-12 15:28:03
         //2017-06-16 06:59:14
+
+
         if(!empty($origin_entrance)){
             $origin_arrival_time = $origin_entrance->updateTime;
              
@@ -1091,13 +1191,17 @@ class TravelsController extends Controller
             $to = Carbon::now('America/Monterrey');
             $geofences = Signes::where('device_id',$travel->device_id)->whereBetween('updateTime',[$origin_entrance->updateTime,$to])->get();
         } 
+
+
         foreach ($geofences as $geofence) {    
             if($geofence->geofence_id == $origin AND $geofence->status==0){
                  
                 $real_departure = $geofence->packet->updateTime;
 
                 $salida = new Carbon($real_departure, 'America/Monterrey');
+               
                 $llegada = new Carbon($origin_arrival_time, 'America/Monterrey');
+            
                 $carga = $salida->diffInMinutes($llegada);
                  if($carga > 60){
                   $hours = floor($carga / 60); // Get the number of whole hours
@@ -1149,12 +1253,12 @@ class TravelsController extends Controller
         }
 
         //dd($real_departure,$real_arrival);
-        
+         
         if($travel->tstate_id==4){ 
             $packets = Packets::where('devices_id',$travel->device_id)->whereBetween('updateTime',[$travel->departure_date,$destination_arrival_time])->get();
              $report = $this->parseReport($packets,$travel->device->id,$travel->departure_date,$destination_arrival_time);
       
-        }elseif($travel->tstate_id==2 OR $travel->tstate_id==3 OR $travel->tstate_id==5 OR $travel->tstate_id==8 OR $travel->tstate_id==7){
+        }elseif($travel->tstate_id==2 OR $travel->tstate_id==3 OR $travel->tstate_id==5 OR $travel->tstate_id==7){
             if($origin_arrival_time != 'No disponible'){
                
                 $packets = Packets::where('devices_id',$travel->device_id)->whereBetween('updateTime',[$origin_arrival_time,$travel->arrival_date])->get();
@@ -1168,9 +1272,13 @@ class TravelsController extends Controller
             
         }
 
-        if($travel->tstate_id==9){ 
-            $packets = Packets::where('devices_id',$travel->device_id)->whereBetween('updateTime',[$travel->departure_date,$destination_arrival_time])->get();
-            $report = $this->parseReport($packets,$travel->device->id,$travel->departure_date,$destination_arrival_time);
+        if($travel->tstate_id==9 OR $travel->tstate_id==8){ 
+            // DUDAS** pondremos un now, para que busque el ultimo paquete cuando esta descargando, antes teniamos $destination_arrival_time
+
+            $aquiyahora = Carbon::now('America/Monterrey');
+
+            $packets = Packets::where('devices_id',$travel->device_id)->whereBetween('updateTime',[$travel->departure_date,$aquiyahora])->get();
+            $report = $this->parseReport($packets,$travel->device->id,$travel->departure_date,$aquiyahora);
         }
 
         if($travel->tstate_id==1){ 
@@ -1178,7 +1286,7 @@ class TravelsController extends Controller
             $report = $this->parseReport($packets,$travel->device->id,$travel->departure_date,$travel->arrival_date);
         }
 
-
+ 
 $descarga_time ='x';
         if($travel->tstate_id==9){
 
@@ -1222,6 +1330,7 @@ $descarga_time ='x';
         $max  = $report[9]; 
         $stop_parse = $report[10];
             $bad_engine = $report[11];   
+
         return view('travels.read',compact('travel','descarga_time','comments','head','body','title','real_departure','real_arrival','map_info','points','total_travel','max','origin_arrival_time','destination_arrival_time','descarga','carga','od_geofences','stop_parse','bad_engine'));
     }
     public function history($id)

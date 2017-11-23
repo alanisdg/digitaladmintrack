@@ -131,7 +131,7 @@
                             @foreach($drivers  as $driver)
                             <option value="{{ $driver->id }}" 
                             @if(isset($travel->driver->id))
-                            @if($travel->driver->id == $driver->id) selected @endif @endif>{{ $driver->name }}</option>
+                            @if($travel->driver->id == $driver->id) selected @endif @endif>{{ $driver->name }} @if($driver->status == 1)  Chofer descargando @endif</option>
                             @endforeach
                         </select>
                     </div>
@@ -140,12 +140,21 @@
                         <select name="device_id" class="chosen-select devices form-control">
                             <option value=""> Selecciona una unidad</option>
                             @foreach($devices  as $device)
-                            @if($device->status ==0)
-                            
-                            <option value="{{ $device->id }}" 
-                            @if(isset($travel->device->id))
-                            @if($travel->device->id == $device->id) selected @endif @endif>{{ $device->name }}</option>
-                            @endif
+                                @if($device->status ==0)
+                                    <option value="{{ $device->id }}" 
+                                    @if(isset($travel->device->id))
+                                    @if($travel->device->id == $device->id) selected @endif @endif>{{ $device->name }}</option>
+                                @endif
+
+                                @if($device->travel != null)
+                                    @if($device->travel->tstate_id == 9)
+                                    <option value="{{ $device->id }}" 
+                                    @if(isset($travel->device->id))
+                                    @if($travel->device->id == $device->id) selected @endif @endif>{{ $device->name }} (Unidad Descargando)</option>
+                                    @endif
+                                @endif
+
+
                             @endforeach
                         </select>
                     </div>

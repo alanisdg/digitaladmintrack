@@ -6,6 +6,8 @@
             <table class="table table-hover table-striped white-table">
                 <thead>
                     <td>Update Time</td>
+                    
+                    <td>Server Time</td>
                     <td>Latitud</td>
                     <td>Longitud</td>
                     <td>Altitud</td>
@@ -37,6 +39,7 @@
                     @foreach($packets as $packet)
                     <tr>
                         <td>{{ $packet->updateTime }}</td>
+                        <td>{{ $packet->serverTime }}</td>
                         <td>{{ $packet->lat }}</td>
                         <td>{{ $packet->lng }}</td>
                         <td>{{ $packet->altitude }}</td>

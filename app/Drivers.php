@@ -12,6 +12,10 @@ class Drivers extends Model
         return $this->belongsTo(Devices::class);
     }
 
+    public function travel(){
+        return $this->belongsTo(Travels::class);
+    }
+
     public function licence_status($limit){
         $now = Carbon::now('America/Monterrey');
         $limits =  new Carbon($limit, 'America/Monterrey');

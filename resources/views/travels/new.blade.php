@@ -23,7 +23,7 @@
 
         <div class="form-group">
             <label for="exampleInputEmail1">Cliente</label>
-            <select name="subclient_id" class="cliente form-control">
+            <select name="subclient_id" class="cliente form-control chosen-select">
                 <option value=""> Selecciona un cliente</option>
                 @foreach($subclients  as $subclient)
                 <option value="{{ $subclient->id }}">{{ $subclient->name }}</option>
@@ -39,11 +39,13 @@
         </div>
         <div class="form-group col-md-6">
                         <label for="exampleInputEmail1">Chofer</label>
-                        <select name="driver_id" class="chosen-select form-control">
+                        <select name="driver_id" class="chosen-select form-control chosen-select">
                             <option value=""> Selecciona un chofer</option>
                             @foreach($drivers  as $driver)
-                            <option value="{{ $driver->id }}">{{ $driver->name }}</option>
+
+                            <option value="{{ $driver->id }}">{{ $driver->name }} @if($driver->status == 1)  Chofer descargando @endif</option>
                             @endforeach
+
                         </select>
                     </div>
                     <div class="form-group col-md-6">
@@ -51,9 +53,17 @@
                         <select name="device_id" class="chosen-select devices form-control">
                             <option value=""> Selecciona una unidad</option>
                             @foreach($devices  as $device)
+                            
                             @if($device->status ==0)
                             <option value="{{ $device->id }}">{{ $device->name }}</option>
                             @endif
+                            @if($device->travel != null)
+                            @if($device->travel->tstate_id == 9)
+                            <option value="{{ $device->id }}">{{ $device->name }} (Unidad Descargando)</option>
+                            @endif
+                            @endif
+
+
                             @endforeach
                         </select>
                     </div>
@@ -83,15 +93,15 @@
                             @endforeach
                         </select>
                     </div> 
-        <div class="form-group">
+        <div class="form-group col-md-6">
             <label for="exampleInputEmail1">Referencia ( usa la barra espazciadora para agregar más referencias)</label>
             <input id="multiple" class="form-control" type="text" name="reference" value="">
         </div>
-        <div class="form-group">
+        <div class="form-group col-md-6">
             <label for="exampleInputEmail1">Folio carta porte</label>
             <input id="multiple" class="form-control" type="text" name="postage" value="">
         </div>
-        <div class="form-group">
+        <div class="form-group col-md-6">
             <label for="exampleInputEmail1">Número de cajas</label>
             <select class="boxs_number" name="boxs_number">
                 <option value="1">1</option>
@@ -121,7 +131,7 @@
 $('.datepicker_auth').datetimepicker({
     format: 'YYYY-MM-DD H:m'
 });
-
+$(".chosen-select").chosen()
 
 $('.cliente').change(function(){
     console.log('cambio')

@@ -46,6 +46,77 @@
             </div>
             @endif
             @endforeach
+
+            @foreach ($boxes as $device)
+            @if($device->type_id == 2)
+            <div class="form-group equipo_"  >
+            <label>{{ $device->name }}</label>
+            <input type="checkbox" name="devices[]" 
+            @foreach ($devices_by_user as $device_by_user)
+                @if($device_by_user->id == $device->id)
+                    checked
+                @endif
+            @endforeach
+            value="{{ $device->id }}">
+            </div>
+            @endif
+            @endforeach
+
+
+
+
+            <br>
+            Permisos
+             
+            @if($user->permissions == '')
+            <div class="form-group equipo_"  >
+            <label>Ver Cajas</label>
+            <input type="checkbox" name="permissions[]" value="box">
+            </div>
+
+            <div class="form-group equipo_"  >
+            <label>Crear Pedidos</label>
+            <input type="checkbox" name="permissions[]" value="orders">
+             
+            </div>
+            @else
+
+            <?php 
+            $permissions = json_decode($user->permissions,true);
+            ?>
+            <div class="form-group equipo_"  >
+            <label>Ver Cajas</label>
+            <input type="checkbox" name="permissions[]" value="box"
+            <?php 
+            foreach($permissions as $permission){
+                if($permission == 'box'){
+                    echo "checked";
+                }
+            }
+            ?>
+            >
+            </div>
+
+            <div class="form-group equipo_"  >
+            <label>Crear Pedidos</label>
+            <input type="checkbox" name="permissions[]" value="orders"
+
+            <?php 
+            foreach($permissions as $permission){
+                if($permission == 'orders'){
+                    echo "checked";
+                }
+            }
+            ?>
+            >
+             
+            </div>
+            @endif
+            
+             
+
+
+
             <div class="form-group">
                 <input type="hidden" name="user_id" value="{{ $user->id }}">
                 <input type="submit" class="btn btn-primary"   value="Editar">

@@ -9,7 +9,7 @@ use DateTime;
 
 class Devices extends Model
 {
-    protected $fillable = ['name','imei','client_id','number','type_id','virtual','new','plate','block_engine','bbuton','stepBlock'];
+    protected $fillable = ['name','imei','client_id','number','type_id','virtual','new','plate','block_engine','bbuton'];
 
     public function User(){
         return $this->belongsTo(User::class);
@@ -139,31 +139,24 @@ class Devices extends Model
         }     
     }
 
+    
     public function bbuton($lastPacket){
          
         if(!empty($lastPacket)){
             $lastReportPacket = new Carbon($lastPacket, 'America/Monterrey');
-
             $now = Carbon::now('America/Monterrey');
             $timeforhumans = $now->diffForHumans($lastReportPacket);
             $timeforComputer = $now->diffInMinutes($lastReportPacket);
-
-
-
             if($timeforComputer > 30){
                 $data =  '<span style="background-color:red" class="badge">'.$timeforhumans.'</span>';
             }else{
                 $data =  '<span   class="badge">'.$timeforhumans.'</span>';
             }
-
-
             return $timeforComputer;
         }else{
             return 0;
         }     
     }
-
-
 
      public function statusadmin($device){
         $lastPacket = DB::table('packets')
@@ -201,9 +194,9 @@ class Devices extends Model
 
 
             if($timeforComputer > 30){
-                $data =  '<span style="background-color:red" class="badge">'.$timeforhumans.'</span>';
+                $data =  '<span style="color:#e25d5d" class="uptime'.$lastPacket->devices_id.'">'.$timeforhumans.'</span>';
             }else{
-                $data =  '<span   class="badge">'.$timeforhumans.'</span>';
+                $data =  '<span   class="badge uptime'.$lastPacket->devices_id.'">'.$timeforhumans.'</span>';
             }
 
 
@@ -225,7 +218,7 @@ class Devices extends Model
         $from_time = strtotime($last);
         $result =  round(abs($to_time - $from_time) / 60,2);
             if($result <= 60){ return round($result). 'm'; }
-            if($result >= 60 && $result	 <=1440){ return number_format(($result/60),0).'h'; }
+            if($result >= 60 && $result  <=1440){ return number_format(($result/60),0).'h'; }
             if($result >= 1440){ return number_format(($result/1440),0). 'd'; }
         return $result;
     }

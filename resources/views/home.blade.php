@@ -28,13 +28,59 @@
             <?php $color_class = 'bg-purple'; $state = 'descargando';?>
             <!--descargando-->
             @endif
-            <div class="device <?php echo $color_class ?> animate device_{{ $device->id }}" name="{{ $device->name }}">
+            <div class="device device-off  animate device_{{ $device->id }}" name="{{ $device->name }}">
                 <div class="">
-                    <a class="black goto text11 mb0" lat="{{ $device->lastpacket->lat }}"
+                    
+                         <div class="byside2" style="width:25%"><input type="checkbox" class="showDevice" ide="{{ $device->id }}" checked>
+                            <a class="white goto text11 mb0" lat="{{ $device->lastpacket->lat }}"
                         lng = "{{ $device->lastpacket->lng }}" style="float:left">
-                        <input type="checkbox" class="showDevice" ide="{{ $device->id }}" checked>
                         <span data-toggle="tooltip" data-placement="top" title="@if($device->boxs_id != null) -> {{ $device->boxs->name }} @endif">{{ ucfirst($device->name) }}  </span>
-                                     
+                                        </a> </div>
+
+                        <div class="byside2" style="width:46%">
+
+                                     <span  data-toggle="modal" data-target="#myModal{{ $device->id }}"  ide="{{ $device->id }}" class="panic{{ $device->id }} glyphicon  icon-stop red panicmodal @if($device->panic == 0)   none @endif " aria-hidden="true"></span>
+                                     <!-- Button trigger modal -->
+  
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="myModal{{ $device->id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                      <div class="modal-dialog" role="document">
+                                        <div class="modal-content panicContent">
+                                          <div class="modal-header"> 
+                                            <div id="panicMap{{ $device->id }}" class="panicMap"></div>
+                                            
+                                          </div>
+                                          <div class="modal-body ">
+                                            
+                                            <div class="col-md-12">
+                                                    <h4 class="modal-title elh4rojo" id="myModalLabel">Boton de Pánico - {{ $device->name }}</h4>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <p class="laproja">Fecha <br> <span class="elspan" id="timePanic{{ $device->id }}"></span></p>
+                                                    <p class="laproja">Velocidad <br> <span class="elspan" id="speedPanic{{ $device->id }}"></span></p>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <p class="laproja">Motor <br> <span class="elspan" id="motorPanic{{ $device->id }}"></span></p>
+                                                    <p class="laproja">Rssi <br> <span class="elspan" id="rssiPanic{{ $device->id }}"></span></p>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <p class="laproja">Latitud <br> <span class="elspan" id="latPanic{{ $device->id }}"></span></p>
+                                                    <p class="laproja">Longitud <br> <span class="elspan" id="lngPanic{{ $device->id }}"></span></p>
+                                                </div>
+                                              
+                                            
+                                             
+                                          </div>
+                                          <div class="modal-footer">
+                                                <button type="button" class="btn btn-red finishPanic" ide="{{ $device->id }}" data-dismiss="modal">Terminar Alerta</button> 
+                                            <button type="button" class="btn btn-blue" data-dismiss="modal">Cerrar</button> 
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+
                                     @if($device->engine == 1)
                                     <span class="engine{{ $device->id }}  icon-engine leicon green" data-toggle="tooltip" data-placement="top" title="Unidad Encendida"></span>
                                     @endif 
@@ -49,19 +95,23 @@
                                     {{ $device->speed  }}<span class="icon-arrow-circle-up move{{ $device->id }} fa-rotate-{{ $device->lastpacket->heading }} leicon red" data-toggle="tooltip" data-placement="top" title="Unidad Detenida"></span> 
                                     @endif
                                     
-                                    <span class="icon-speedometer leicon " data-toggle="tooltip" data-placement="top" title="{{ $device->lastpacket->speed }}"></span> <span class="speed{{ $device->id }}"> {{ $device->lastpacket->speed }} </span>
+                                    @if( $device->lastpacket->speed > 100)
+                                    <span class="icon-speedometer leicon red  speed{{ $device->id }}" data-toggle="tooltip" data-placement="top" title="{{ $device->lastpacket->speed }} km/h"></span> <!--<span class="red"> {{ $device->lastpacket->speed }} km/h</span>-->
+                                    @else
+                                    <span class="icon-speedometer leicon shutdown  speed{{ $device->id }}" data-toggle="tooltip" data-placement="top" title="{{ $device->lastpacket->speed }} km/h"></span> <!--<span class="red speed{{ $device->id }}"> {{ $device->lastpacket->speed }} km/h</span>-->
+                                    @endif
+
                                     
                                     {!! $device->battery_alarm($config->battery_alarm,$device->lastpacket->power_bat) !!}
                                     {!! $device->rssi_alarm($config->rssi_alarm,$device->lastpacket->rssi) !!}  </a>
 
-                        <p class="text11 mb0" style="float:right">
-                                <a href="/travel/{{ $device->travel->tcode->id }}">{{ str_limit(ucfirst($device->travel->route->destination->name), $limit = 15, $end = '...') }} </a>
-                                 
-                            </p>
+                       
                             <div class="clear"></div>
                         </div>
+                        <div class="byside2" style="width:25%; font-size:10px;"><span class="<?php echo $color_class ?> device_{{ $device->id }}" id="state_{{ $device->id }}"><?php echo strtoupper($state) ?> </span></div>
+                        <div class="clear"></div>
                         <div class="down">
-                            <p class="text11" style="float:left">
+                            <p class="text11 timerText" style="float:left">
                                 <?php  if( $device->status($device->lastpacket) > 60){
                                     echo $device->statusForHumans($device->lastpacket);
                                 }else{
@@ -69,9 +119,13 @@
                                 }   ?>
                             </p>
                             <p class="text11" style="float:right">
-                                <span id="state_{{ $device->id }}"><?php echo $state ?> </span>
-                               <!-- <span class="badge device_timer_{{ $device->id }}"></span>-->
+                                
+                               
+                                <a href="/travel/{{ $device->travel->tcode->id }}">{{ str_limit(ucfirst($device->travel->route->destination->name), $limit = 15, $end = '...') }} </a>
+                              
                             </p>
+                            <div class="clear"></div>
+                                    </div>
                             <div class="clear"></div>
                         </div>
                         <div class="clear"></div>
@@ -85,12 +139,19 @@
                         <p style="padding: 10px; text-align: center; color: grey;">No tienes equipos en ruta</p>
                         @endif
                     </div>
+                    
+                    <div   id="map" style="float:right">
+                         
+                    </div>
 
-                    <div   id="map" style="float:right"></div>
                     <div class="col-md-3 devices-right">
-                        <a id="" class="btn btn-primary  butonSelect btn-xs select_type" dev="0">Equipos</a><a id="" class="btn btn-primary butonSelect btn-xs select_type" dev="1">Cajas</a>
+                        <div class="content_devices none"></div>
+                        <div class="one selectedone oneone select_type" dev="0"><a id="" class="  butonSelect  " >Equipos</a></div>
+                        <div class="one select_type" dev="1"><a id="" class=" butonSelect  " >Cajas</a></div>
+                        
                         <input type="text" id="search_right" style="width:100%" placeholder="  Buscar Unidad"></input>
                     <span class="rightTop"></span>
+                        <p class="asign">UNIDADES SIN ASIGNAR</p>
                         @foreach($devices  as $device)
                         @if($device->status==0)
                         <?php $devices_availables++ ?>
@@ -98,12 +159,15 @@
                         
                                 @if(isset($device->lastpacket->lat ))
                                 <div class="device device-off device_{{ $device->id }}  @if($device->dstate_id==1) flash animated msv @endif" name="{{ $device->name }}">
-                            <div class="">
-                                <input type="checkbox" class="showDevice" ide="{{ $device->id }}" checked><a class="black goto text11 mb0" lat="{{ $device->lastpacket->lat }}"
+                            <div class="" style="padding-top:3px">
+                                    <div class="byside"><input type="checkbox" class="showDevice" ide="{{ $device->id }}" checked>
+                                <a class="white goto text11 mb0" lat="{{ $device->lastpacket->lat }}"
                                     lng = "{{ $device->lastpacket->lng }}" style="float:left"> {{ str_limit(ucfirst($device->name), $limit = 15, $end = '...') }} </a>
-                                     
+                                     </div>
+                                    <div class="byside">
+                                
 
-                                     <span  data-toggle="modal" data-target="#myModal{{ $device->id }}"  ide="{{ $device->id }}" class="panic{{ $device->id }} glyphicon unplugged{{ $device->id }} icon-stop red panicmodal @if($device->panic == 0)   none @endif " aria-hidden="true"></span>
+                                     <span  data-toggle="modal" data-target="#myModal{{ $device->id }}"  ide="{{ $device->id }}" class="panic{{ $device->id }} glyphicon  icon-stop red panicmodal @if($device->panic == 0)   none @endif " aria-hidden="true"></span>
                                      <!-- Button trigger modal -->
   
 
@@ -148,18 +212,21 @@
                                     <span class="engine{{ $device->id }}  icon-engine leicon green" data-toggle="tooltip" data-placement="top" title="Unidad Encendida"></span>
                                     @endif 
                                     @if($device->engine === 0)
-                                    <span class="engine{{ $device->id }} icon-engine leicon red" data-toggle="tooltip" data-placement="top" title="Unidad Apagada"></span> 
+                                    <span class="engine{{ $device->id }} icon-engine leicon shutdown" data-toggle="tooltip" data-placement="top" title="Unidad Apagada"></span> 
                                     @endif 
 
 
                                     @if($device->stop == 0)
                                     {{ $device->speed  }}<span class="icon-arrow-circle-up move{{ $device->id }} fa-rotate-{{ $device->lastpacket->heading }} leicon green" data-toggle="tooltip" data-placement="top" title="Unidad en movimiento"></span> 
                                     @else
-                                     {{ $device->speed  }}<span class="icon-arrow-circle-up move{{ $device->id }} fa-rotate-{{ $device->lastpacket->heading }} leicon red" data-toggle="tooltip" data-placement="top" title="Unidad Detenida"></span> 
+                                     {{ $device->speed  }}<span class="icon-arrow-circle-up move{{ $device->id }} fa-rotate-{{ $device->lastpacket->heading }} leicon shutdown" data-toggle="tooltip" data-placement="top" title="Unidad Detenida"></span> 
                                     @endif
                                     
-                                    <span class="icon-speedometer leicon " data-toggle="tooltip" data-placement="top" title="{{ $device->lastpacket->speed }}"></span> <span class="speed{{ $device->id }}"> {{ $device->lastpacket->speed }} </span>
-                                    
+                                    @if( $device->lastpacket->speed > 100)
+                                    <span class="icon-speedometer leicon red  speed{{ $device->id }}" data-toggle="tooltip" data-placement="top" title="{{ $device->lastpacket->speed }} km/h"></span> <!--<span class="red speed{{ $device->id }}"> {{ $device->lastpacket->speed }} km/h</span>-->
+                                    @else
+                                    <span class="icon-speedometer leicon shutdown  speed{{ $device->id }}" data-toggle="tooltip" data-placement="top" title="{{ $device->lastpacket->speed }} km/h"></span> <!--<span class="red speed{{ $device->id }}"> {{ $device->lastpacket->speed }} km/h</span>-->
+                                    @endif
                                     {!! $device->battery_alarm($config->battery_alarm,$device->lastpacket->power_bat) !!}
                                     {!! $device->rssi_alarm($config->rssi_alarm,$device->lastpacket->rssi) !!}  
 
@@ -199,8 +266,11 @@
                                         </p>
                                         <div class="clear"></div>
                                     </div>
+
+                                    <div class="clear"></div> 
+                                    </div>
                                     <div class="down"> 
-                                        <p class="text11" style="float:left">
+                                        <p class="text11 timerText" style="float:left">
                                             <?php  if( $device->status($device->lastpacket) > 60){
                                                 echo $device->statusForHumans($device->lastpacket);
                                             }else{
@@ -215,8 +285,8 @@
                                 </div>
                                 @else
                                 <!--EQUIPO SIN PAQUETES-->
-                                <div class="device">
-                                {{ ucfirst($device->name) }} Equipo nuevo.
+                                <div class="device device-off">
+                                    <p style="color:white">{{ ucfirst($device->name) }} Equipo nuevo. </p>
                                 </div>
                                 @endif
                                 @endif
@@ -231,7 +301,12 @@
 
                             <!--CAJAS-->
                                             <div class="col-md-3 devices-right none boxes_container">
-                                                <a id="" class="btn btn-primary  butonSelect btn-xs select_type" dev="0">Equipos</a><a id="" class="btn btn-primary  butonSelect btn-xs select_type" dev="1">Cajas</a>
+                                                <div class="none content_devices"></div>
+                                                <div class="one  oneone select_type" dev="0"><a id="" class="  butonSelect  " >Equipos</a></div>
+                        <div class="one selectedone select_type" dev="1"><a id="" class=" butonSelect  " >Cajas</a></div>
+
+
+                                                 
                         <input type="text" id="search_right" style="width:100%" placeholder="  Buscar Unidad"></input>
                     <span class="rightTop"></span>
                         @foreach($boxes  as $device)
@@ -242,7 +317,7 @@
                                 @if(isset($device->lastpacket->lat ))
                                 <div class="device device-off device_{{ $device->id }}  @if($device->dstate_id==1) flash animated msv @endif" name="{{ $device->name }}">
                             <div class="">
-                                <input type="checkbox" class="showDevice" ide="{{ $device->id }}" checked><a class="black goto text11 mb0" lat="{{ $device->lastpacket->lat }}"
+                                <input type="checkbox" class="showDevice" ide="{{ $device->id }}" checked><a class="white goto text11 mb0" lat="{{ $device->lastpacket->lat }}"
                                     lng = "{{ $device->lastpacket->lng }}" style="float:left">{{ ucfirst($device->name) }} 
                                      
                                     @if($device->engine == 1)
@@ -315,6 +390,22 @@
         background: #ffffff;
         border-radius: 4px;
         border: 1px solid #bbbbbb;
+    }
+
+ 
+
+
+
+    .content_devices{ 
+        line-height: 25px;
+    width: 100%;
+    border: 1px solid #3d444e;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    color: grey;
+    top: 0;
+    background-color: #252b33;
     }
     .eicon{
         margin-top: -2px;
@@ -400,6 +491,8 @@ h4, .h4, h5, .h5, h6, .h6 {
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD5unzpQgOVgur7TbgtMpBdMKM7c7XGzWw" type="text/javascript"></script>
     <script src="/js/master.js"></script>
     <script>
+    var infowindow;
+      var letimer;
 $('.finishPanic').click(function(){
     ide = $(this).attr('ide');
             $.ajax({
@@ -411,8 +504,7 @@ $('.finishPanic').click(function(){
             },
             data: { id: ide },
                 success: function(panic){  
-                console.log(panic)
-                console.log('.panic'+ide) 
+                
                     $('.panic'+ide).hide()
             },
             error: function(data){
@@ -423,8 +515,7 @@ $('.finishPanic').click(function(){
             })
 }) 
     $('.panicmodal').click(function(){
-        ide = $(this).attr('ide');
-        console.log('buscar ' + ide);
+        ide = $(this).attr('ide'); 
         $.ajax({
             url:'/device/getPanic',
             type:'POST',
@@ -435,13 +526,7 @@ $('.finishPanic').click(function(){
             data: { id: ide },
                 success: function(panic){
                    
-                     
-                    console.log(panic['panic'][0].lat)
                     var myLatlng = new google.maps.LatLng(panic['panic'][0].lat, panic['panic'][0].lng);
-                    console.log(myLatlng)
-                    
-
-
                         var mapOptions = {
                             zoom: 18,
                             center: myLatlng,
@@ -469,7 +554,6 @@ $('.finishPanic').click(function(){
                     
             },
             error: function(data){
-                console.log(data)
                 var errors = data.responseJSON;
                 console.log(errors);
                 }
@@ -478,9 +562,9 @@ $('.finishPanic').click(function(){
 
 
     $('.select_type').click(function(){
-        console.log('cliecj')
+      
         typeOfs = $(this).attr('dev');
-        console.log(typeOfs);
+ 
         if(typeOfs == 0){
             $('.devices_container').show();
             $('.boxes_container').hide();
@@ -497,7 +581,7 @@ $('.finishPanic').click(function(){
     var value = value.toLowerCase();
 
     $(".devices-right .device").each(function(index) {
-        name = $(this).attr('name'); console.log(name)
+        name = $(this).attr('name'); 
 
         if (name.indexOf(value) !== 0) {
                 $(this).hide()
@@ -522,10 +606,7 @@ $('.finishPanic').click(function(){
 
 
               elname= $(this).attr('name')
-              console.log('enviando')
-              console.log(ide)
-              console.log(elname)
-              console.log(num)
+           
               $.confirm({
                 title: 'Bloqueo de Motor',
                 content: '<label>Deseas '+des+' el motor de la unidad '+elname+'</label>' ,
@@ -540,9 +621,6 @@ $('.finishPanic').click(function(){
                             },
                             data: { number: num, code:elcode, device_id:ide },
                             success: function(success){
-                                console.log(success)
-                                console.log('se fue el bloqueo con codigo ' + elcode)
-                                console.log(ide)
 
                                 if(step == '1'){
                                     $('.block'+ide).removeClass('unlock')
@@ -556,7 +634,6 @@ $('.finishPanic').click(function(){
                                     $('.block'+ide).html('')
                                 }
                                 
-                              console.log(success) 
      
 
                                 $.ajax({
@@ -568,12 +645,10 @@ $('.finishPanic').click(function(){
                                     },
                                     data: { lock: 1 , device_id:ide , step:step},
                                     success: function(success){
-                                        console.log(success) 
                                     },
                                     error: function(data){
-                                        console.log(data)
                                         var errors = data.responseJSON;
-                                        console.log(errors);
+                                  
                                     }
                                 })
 
@@ -581,9 +656,7 @@ $('.finishPanic').click(function(){
 
                             },
                             error: function(data){
-                                console.log(data)
                                 var errors = data.responseJSON;
-                                console.log(errors);
                             }
                         })
                     },
@@ -602,7 +675,7 @@ $('.finishPanic').click(function(){
     var value = value.toLowerCase();
 
     $(".devices-left .device").each(function(index) {
-        name = $(this).attr('name'); console.log(name)
+        name = $(this).attr('name'); 
 
         if (name.indexOf(value) !== 0) {
                 $(this).hide()
@@ -619,7 +692,7 @@ $('.finishPanic').click(function(){
 
 
     $(".devices-right .devices").each(function(index) {
-        console.log(index)
+    
     })
 
     function resizeMap(){
@@ -654,9 +727,13 @@ $('.finishPanic').click(function(){
                         var mapOptions = {
                             zoom: 12,
                             center: myLatlng,
+
                             mapTypeId: google.maps.MapTypeId.ROADMAP
+
                         }
                         map = new google.maps.Map(document.getElementById('map'), mapOptions);
+                        var geocoder = new google.maps.Geocoder;
+                        var infowindow = new google.maps.InfoWindow;
                         marker = new google.maps.Marker({
                             //marker = new SlidingMarker({
                             map: map,
@@ -671,15 +748,14 @@ $('.finishPanic').click(function(){
                  @if(isset($device->lastpacket->lat ))
                  van++
                  sec = {{ $device->status($device->lastpacket) }} * 60;
-                 console.log({{ $device->bbuton($device->bbuton) }})
+               
                  if({{ $device->bbuton($device->bbuton) }} != 0){
                     secToBbutton = {{ $device->bbuton($device->bbuton) }} * 60;
-                 console.log('sec')
-                 console.log(secToBbutton)
+        
                  if(secToBbutton > 30){
                     ides = {{ $device->id }}
                     if( {{ $device->stepBlock  }} == 2 ){
-                        console.log('aqui')
+                  
                                 $('.block'+ides).removeClass('locking')
                                 $('.block'+ides).addClass('locked')
                                 $('.block'+ides).attr('code','!R3,17,10')
@@ -691,7 +767,7 @@ $('.finishPanic').click(function(){
                             }
 
                             if( {{$device->stepBlock  }} == 1){
-                                    console.log('aca')
+                     
                                 $('.block'+ides).removeClass('locking')
                                 $('.block'+ides).removeClass('locked')
                                 $('.block'+ides).addClass('unlock')
@@ -721,7 +797,8 @@ $('.finishPanic').click(function(){
                             },
 
                             rotation:50,
-                            id:{{ $device->id }}
+                            id:{{ $device->id }},
+                            name: "{{$device->name}}"
                         });
 
                   boxText{{ $device->id }} = document.createElement("div");
@@ -743,7 +820,7 @@ $('.finishPanic').click(function(){
                         @if($device->stop == 0)
                                     <?php $heading = '<span class="icon-arrow-circle-up move'. $device->id .' fa-rotate-'.$device->lastpacket->heading.' leicon green" data-toggle="tooltip" data-placement="top" title="Unidad en movimiento"></span>'; ?>
                                     @else
-                                    <?php $heading = '<span class="icon-arrow-circle-up move'. $device->id .' fa-rotate-'. $device->lastpacket->heading .' leicon red" data-toggle="tooltip" data-placement="top" title="Unidad Detenida"></span>'; ?>
+                                    <?php $heading = '<span class="icon-arrow-circle-up move'. $device->id .' fa-rotate-'. $device->lastpacket->heading .' leicon shutdown" data-toggle="tooltip" data-placement="top" title="Unidad Detenida"></span>'; ?>
                         @endif
 
 
@@ -761,10 +838,10 @@ $('.finishPanic').click(function(){
         }else{
             stopped_time = stopped_time + ' minutos'
         }
-                        boxText{{ $device->id }}.innerHTML = '{{$device->name}} - {!! $heading !!} '+ "<br>Fecha: {{ $device->lastpacket->updateTime }}<br> Tiempo Detenido: "+ stopped_time + "<br> Velocidad: {{ $device->lastpacket->speed }} k/h <br> Motor: {!! $motor !!}";
+                        boxText{{ $device->id }}.innerHTML = '{{$device->name}} - {!! $heading !!} '+ "<br>Fecha: {{ $device->lastpacket->updateTime }}<br> Tiempo Detenido: "+ stopped_time + "<br> Velocidad: {{ $device->lastpacket->speed }} k/h <br> Motor: {!! $motor !!} <br> <span class='getdirections'  onclick='getdirection({{ $device->lastpacket->lat }},{{$device->lastpacket->lng }})'>Obtener dirección</span>";
 
                         @else
-                        boxText{{ $device->id }}.innerHTML ='{{$device->name}} - {!! $heading !!} '+ "<br>Fecha: {{ $device->lastpacket->updateTime }}<br> Velocidad: {{ $device->lastpacket->speed }} k/h <br> Motor: {!! $motor !!}";
+                        boxText{{ $device->id }}.innerHTML ='{{$device->name}} - {!! $heading !!} '+ "<br>Fecha: {{ $device->lastpacket->updateTime }}<br> Velocidad: {{ $device->lastpacket->speed }} k/h <br> Motor: {!! $motor !!} <br> <span class='getdirections' onclick='getdirection({{ $device->lastpacket->lat }},{{$device->lastpacket->lng }})'>Obtener dirección</span>";
 
                         @endif
 
@@ -798,10 +875,10 @@ $('.finishPanic').click(function(){
                         
                             @if($device->engine == 1)
 
-                                    var labelText = '{{$device->name}} - {!! $heading !!} '
+                                    var labelText = '{{$device->name}} -: {!! $heading !!} '
                                     @endif 
                                     @if($device->engine == 0)
-                                    var labelText = '{{$device->name}} - {!! $heading !!} ' 
+                                    var labelText = '{{$device->name}} -: {!! $heading !!} ' 
                             @endif 
                              
 
@@ -832,11 +909,12 @@ $('.finishPanic').click(function(){
                             position: myLatlng{{ $device->id }},
 
                             icon: " ",
-                            labelContent: "<div   onclick='showinfo({{$device->id}})'><span class='glyphicon @if($device->dstate_id==1) movement  @endif  glyphicon-circle-arrow-up fa-rotate-{{$device->lastpacket->heading}}' aria-hidden='true'></span> {{$device->name}} @if($device->boxs_id != null) -> {{ $device->boxs->name }} @endif</div><div class='none windowinfo window{{$device->id}}'>Velocidad: <span >{{$device->lastpacket->speed }}</span></div>",
+                            labelContent: "<div   onclick='showinfo({{$device->id}})'><span class='glyphicon @if($device->dstate_id==1) movement  @endif  glyphicon-circle-arrow-up fa-rotate-{{$device->lastpacket->heading}}' aria-hidden='true'></span> {{$device->name}} @if($device->boxs_id != null) -> {{ $device->boxs->name }} @endif</div><div class='none windowinfo window{{$device->id}}'>Velocidad:**** <span >{{$device->lastpacket->speed }}</span></div>",
                             labelAnchor: new google.maps.Point(22, 0),
                             labelClass: "labels", // the CSS class for the label
                             labelStyle: {opacity: 0.75},
-                            id:{{ $device->id }}
+                            id:{{ $device->id }},
+                            name: "{{$device->name}}"
                         });
                           mwl.push(label{{ $device->id }})
                    m.push(marker{{ $device->id }})
@@ -863,12 +941,63 @@ $('.finishPanic').click(function(){
             });
 
             // var markerClusterLbl = new MarkerClusterer(map, mwl, options2);
-
+mo = []
            google.maps.event.addListener(markerCluster, "mouseover", function (c) {
-              console.log("mouseover: ");
-              console.log("&mdash;Center of cluster: " + c.getCenter());
-              console.log("&mdash;Number of managed markers in cluster: " + c.getSize());
+             
+              var centro = c.getCenter();
+             
+
+             var elcentro = centro + '<';
+             console.log(elcentro)
+
+             var result = elcentro.slice(1, -2);
+             console.log(result)
+
+             var res = result.split(",");
+             
+             lat = res[0];
+             lng = res[1]
+
+             myLatilng= new google.maps.LatLng(lat,lng);
+              console.log(myLatilng)
+              console.log("cuantos " + c.getSize());
+              console.log("marcadores: " + c.getMarkers());
+              names = '<button type="button" class="close closealo" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
+              $.each(c.getMarkers(),function(index,value){
+              
+             
+                names =  names + 'Equipo: <span style="color:white">'+ value.name + ' </span><br> ';
+
+              })
+
+               $('.content_devices').html(names)
+               $('.content_devices').slideDown( "slow", function() {
+    // Animation complete.
+  });
+  $('.closealo').click(function(){
+    console.log('slo')
+    $('.content_devices').slideUp( "slow", function() {
+    // Animation complete.
+  });
+})
+/*
+  var letimer = setTimeout(function(){ $('.content_devices').slideUp( "slow", function() {
+    // Animation complete.
+  });  console.log('timer activadi')}, 5000); */
+             
+              
             });
+
+    google.maps.event.addListener(markerCluster, "mouseout", function (c) {
+              $('.content_devices').slideUp( "slow", function() {
+    // Animation complete.
+  });
+
+             
+
+
+            });
+
 
                  $('.showDevice').click(function(){
                     id=$(this).attr('ide');
@@ -877,6 +1006,7 @@ $('.finishPanic').click(function(){
                        $.each(m, function( index, value ) {
 
                 if(value.id == id){ 
+                    console.log()
                     m[index].setVisible(true)
                 }
             })
@@ -906,6 +1036,35 @@ $('.finishPanic').click(function(){
                         //marker.setVisible(false
                     }
                 })
+
+                 function getdirection(lati,langi){
+            
+                
+                var latlng = {lat: lati, lng: langi};
+
+                 geocoder.geocode({'location': latlng}, function(results, status) {
+       
+                     if (status === 'OK') {
+                        if (results[1]) {
+                          map.setZoom(11);
+                          var marker = new google.maps.Marker({
+                            position: latlng,
+                            map: map
+                          });
+                          infowindow.setContent(results[1].formatted_address);
+                          infowindow.open(map, marker);
+                        } else {
+                          window.alert('No results found');
+                        }
+                      } else {
+                        window.alert('Geocoder failed due to: ' + status);
+                      }
+
+                 })
+             }
+               
+
+
                         function showinfo(id){ 
                             $('.window'+id).toggleClass('none')
                         }
@@ -940,18 +1099,20 @@ $('.finishPanic').click(function(){
                             if(stop==1){
                                 //poner rojo
                                 $('.move'+id).removeClass('green')
-                                $('.move'+id).addClass('red')
+                                $('.move'+id).addClass('shutdown')
                                 $('.move'+id).attr('data-original-title','Unidad detenida n')
-                                icon_move =  '<span class="icon-arrow-circle-up move10 leicon red  fa-rotate-'+heading+'" data-toggle="tooltip" data-placement="top" title="" data-original-title="Unidad en Movimiento n"></span>'
+                                icon_move =  '<span class="icon-arrow-circle-up move10 leicon shutdown  fa-rotate-'+heading+'" data-toggle="tooltip" data-placement="top" title="" data-original-title="Unidad en Movimiento n"></span>'
                            } 
                             if(stop==0){
                                 //poner rojo
-                                $('.move'+id).removeClass('red')
+                                $('.move'+id).removeClass('shutdown')
                                 $('.move'+id).addClass('green')
                                 $('.move'+id).addClass('sepusoverde')
                                 $('.move'+id).attr('data-original-title','Unidad en Movimiento n')
                                 icon_move =  '<span class="icon-arrow-circle-up move10 leicon green  fa-rotate-'+heading+'" data-toggle="tooltip" data-placement="top" title="" data-original-title="Unidad en Movimiento n"></span>'
                             }
+                            $(".uptime"+id).timer('remove');
+                            $(".uptime"+id).css('color','#6d6d6d');
                             $(".timer"+id).timer('remove');
                             $(".timer"+id).timer(); 
                             if(movement == true){
@@ -974,14 +1135,29 @@ $('.finishPanic').click(function(){
                             //$.notify("nuevo paquete", "info");
                             akaname = 'marker'+id
                             buble = 'ib'+id
-
+                             
                             lalabel = 'ibLabel'+id
      
                             if(stop == 1){
-                               this[buble].setContent(device_name + ' '+icon_move+ '<br> Fecha: '+updateTime+'<br> Tiempo Detenido: '+stop_time+' minutos <br> Velocidad: '+speed+' K/h.')
-                            }else{
-                               this[buble].setContent(device_name + ' '+icon_move+ '<br> Fecha: '+updateTime+'<br> Velocidad-: '+speed+' K/h.') 
-                            }
+
+                            if(stop_time > 60){
+        var hours = Math.floor( stop_time / 60);          
+    var minutes = stop_time % 60;
+    stopped_time = hours + ':' + minutes + ' horas'
+    if(hours > 24){
+        days = Math.floor( hours / 24); 
+        var horas = hours % 24;
+        stopped_time = days + ' días con ' + horas + ' horas';
+    }
+    }else{
+        stopped_time = stop_time + ' minutos'
+    }
+
+
+                           this[buble].setContent(device_name + ' '+icon_move+ '<br> Fecha: '+updateTime+'<br> Tiempo Detenido--: '+stopped_time+' <br> Velocidad: '+speed+' K/h.<br> <span class="getdirections"  onclick="getdirection('+lat+','+lng+')">Obtener dirección</span>')
+                        }else{
+                           this[buble].setContent(device_name + ' '+icon_move+ '<br> Fecha: '+updateTime+'<br> Velocidad-: '+speed+' K/h.<br> <span class="getdirections"  onclick="getdirection('+lat+','+lng+')">Obtener dirección</span>') 
+                        }
 
 
                             
@@ -989,15 +1165,15 @@ $('.finishPanic').click(function(){
                                
                             if(EventCode == 20){
                                 $('.engine'+id).removeClass('green')
-                                $('.engine'+id).addClass('red')
+                                $('.engine'+id).addClass('shutdown')
                                 $('.engine'+id).attr('data-original-title','Unidad Apagada')
-                                elengine = '<span class="engine'+id+' glyphicon glyphicon-record red" data-toggle="tooltip" data-placement="top" title="Unidad Apagada *"></span>'
-                                lalabelcontent = device_name + '*<span class="engine'+id+' glyphicon glyphicon-record red" data-toggle="tooltip" data-placement="top" title="Unidad Encendida"></span>'
+                                elengine = '<span class="engine'+id+' glyphicon glyphicon-record shutdown" data-toggle="tooltip" data-placement="top" title="Unidad Apagada *"></span>'
+                                lalabelcontent = device_name + '*<span class="engine'+id+' glyphicon glyphicon-record shutdown" data-toggle="tooltip" data-placement="top" title="Unidad Encendida"></span>'
                                  
                             }
      
                             if(EventCode == 21){
-                                $('.engine'+id).removeClass('red')
+                                $('.engine'+id).removeClass('shutdown')
                                 $('.engine'+id).addClass('green') 
                                 $('.engine'+id).attr('data-original-title','Unidad Encendida')
                                 elengine = '*<span class="engine'+id+' glyphicon glyphicon-record green" data-toggle="tooltip" data-placement="top" title="Unidad Encendida *"></span>'
@@ -1010,13 +1186,14 @@ $('.finishPanic').click(function(){
                             labelname = 'label'+id
                             myLatlng = new google.maps.LatLng(lat, lng); 
                             this[labelname].setPosition( myLatlng );
-                            this[labelname].labelContent = "---<div   onclick='showinfo("+id+")'><span class='glyphicon glyphicon-circle-arrow-up "+ movement_class +" fa-rotate-"+heading+"' aria-hidden='true'></span>"+device_name+" namedevice</div><div class='none windowinfo window"+id+"'>Fecha: "+updateTime+" <br>Velocidad: "+speed+"</div>";
+                            this[labelname].labelContent = "---<div   onclick='showinfo("+id+")'><span class='glyphicon glyphicon-circle-arrow-up "+ movement_class +" fa-rotate-"+heading+"' aria-hidden='true'></span>"+device_name+" namedevice</div><div class='none windowinfo window"+id+"'>Fecha: "+updateTime+" <br>Velocidad: "+speed+"<br> <span class='getdirections' onclick='getdirection("+lat+","+lng+")'>Obtener dirección</span></div>";
                             this[labelname].label.setContent();
 
                             this[akaname].setDuration(1000)
                             this[akaname].setEasing('linear');
                             this[akaname].setPosition(myLatlng);
-                            $('.speed'+id).html(speed)
+                           
+                            $('.speed'+id).attr('data-original-title',speed + ' km/h.')
 
                             refresh(id)
                             $.ajax({
@@ -1028,6 +1205,7 @@ $('.finishPanic').click(function(){
                                 },
                                 data: { device_id: id ,geofence:geofence},
                                 success: function(r){ 
+                                    
                                     $('.device_timer_'+id).html(r['time'])
                                 },
                                 error: function(data){
@@ -1055,19 +1233,17 @@ $('.finishPanic').click(function(){
                         var socket = io(':3000');
                         //var socket = io(':3004');
                         socket.on("message<?php echo Auth::user()->client_id  ?>", function(data){
-                            console.log(' ')
-                            console.log(data['device_name'])
-                            console.log('FROM SERVER',data);
+                      
+                         
                             go(data['device_id'],data['lat'], data['lng'],data['geofence'],data['dstate_id'],data['Speed'],data['device_name'],data['Heading'],data['movement'],data['status'],data['EventCode'],data['updateTime'],data['stop_time'],data['stop'],data['odometro'],data['previous_heading'])
                         })
 
                         socket.on("event<?php echo Auth::user()->client_id  ?>", function(data){
-                            console.log('evento ')
+                       
                             evento = data['response'][0];
                             name = data['response'][1];
                             ide = data['response'][2];
 
-                            console.log('el camion ' + name + ' evento' + evento + ' su id:' + ide)
 
 
                             //DESBLOQUEAR
@@ -1114,7 +1290,7 @@ $('.finishPanic').click(function(){
 
                             if(evento == 69){
                                 //CONEXION
-                                $('.unplugged'+ide).hidden()
+                                $('.unplugged'+ide).hide()
                                
                             }
 
@@ -1135,8 +1311,7 @@ $('.finishPanic').click(function(){
                                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                                 },
                                 data: { id: ide },
-                                success: function(r){
-                                    console.log(r)
+                                success: function(r){ 
                                     device_name = data['response'][1];
                                     status = data['response'][2];
                                     if(status == 'in'){
@@ -1149,7 +1324,7 @@ $('.finishPanic').click(function(){
                                         llng = r.lng;
                                     }else{
                                         poly_data = r.poly_data
-                                        console.log(poly_data)
+                                         
                                         poly_data = JSON.parse(poly_data);
                                         llat = poly_data[0].lat;
                                         llng = poly_data[0].lng;
@@ -1164,11 +1339,15 @@ $('.finishPanic').click(function(){
                                           "white-space": "nowrap",
                                           "background-color": "#dedede",
                                           "padding": "10px",
-                                          "height":'50px'
+                                          "height":'35px'
+                                        },
+                                        corner: {
+                                           
+                                          "margin":'10px'
                                         },
                                         superblues: {
-                                          "color": "grey",
-                                          "background-color": "white"
+                                          "color": "white",
+                                          "background-color": "#1991eb"
                                         }
                                       }
                                     });  
@@ -1176,11 +1355,10 @@ $('.finishPanic').click(function(){
       style: 'happyblues',
       className: 'superblues',
       clickToHide: false,
-      autoHideDelay: 30000,
+      autoHideDelay: 5000,
       position: 'bottom right'
     });
-                            
-                                    console.log('el go')
+                             
                             $('.goto').click(function(){ 
                             map.setZoom(15);
                             map.panTo(new google.maps.LatLng($(this).attr('lat'), $(this).attr('lng')));
@@ -1202,13 +1380,14 @@ $('.finishPanic').click(function(){
                              console.log(data)
                             $('.device_'+data).removeClass('bg-orange')
                             $('.device_'+data).addClass('bg-green') 
+                            $('#state_'+data).html('CARGANDO')
                             $.notify("COMENZO carga", "info");
                         })
                         socket.on("travel_start<?php echo Auth::user()->client_id  ?>", function(data){
                             
                             $('.device_'+data).removeClass('bg-green')
                             $('.device_'+data).addClass('bg-blue')
-                            $('#state_'+data).html('en ruta')
+                            $('#state_'+data).html('EN RUTA')
                              
                             $.notify("COMENZO VIAJE", "info");
                         })
@@ -1216,7 +1395,7 @@ $('.finishPanic').click(function(){
                              
                             $('.device_'+data).removeClass('bg-blue')
                             $('.device_'+data).addClass('bg-purple') 
-                            $('#state_'+data).html('descargando')
+                            $('#state_'+data).html('DESCARGANDO')
                             $.notify("COMENZO descarga", "info");
                         })
                         socket.on("travel_end<?php echo Auth::user()->client_id  ?>", function(data){
@@ -1254,19 +1433,28 @@ $('.finishPanic').click(function(){
                             width: 100%;
                             height: 300px;
                         }
+                        .selectedone .butonSelect{
+                            color: white
+                        }
                         .butonSelect{
+                            color: #717171;
                             margin: 5px !important;
                         }
                         .movement{
                             color: green;
                         }
-                        .gotoa{ 
-                            color: #45a2dc
-                        }
-                       
-    .notifyjs-happyblues-superblues {
-     
-            background-color: #dedede;
-        border: 1px solid #c1c1c1;
-    }
+                        .gotoa {
+    text-decoration: underline;
+    color: #ffffff;
+}
+                       .notifyjs-happyblues-superblues {
+    color: white;
+    padding-top: 20px;
+    background-color: #1991eb;
+}
+      .notifyjs-happyblues-superblues {
+    color: white;
+    border-radius: 24px;
+    background-color: #3fb6ff;
+}
                         </style>

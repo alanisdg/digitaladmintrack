@@ -10,8 +10,8 @@ use App\Routes;
 use App\Geofences;
 use App\User;
 use Carbon\Carbon;
-
 use Auth;
+use DB;
 /**
  *
  */
@@ -36,6 +36,17 @@ class DevicesController extends Controller
 
     }
 
+    public function clean(){
+      
+        $ayer = Carbon::yesterday();
+         $user = User::find(1);
+         $user->name = 'Horacio Cron 4';
+            $user->save();
+            
+        DB::table('packets_lives')->where('updateTime', '<', $ayer)->delete();
+
+    }
+
     public function updateBlock(){
         $id = request()->get('device_id');
         $now = Carbon::now('America/Monterrey');
@@ -47,33 +58,26 @@ class DevicesController extends Controller
         return response()->json([
             'devices'=>$now
         ]);
-
     }
-
     public function getPanic(){
         $id = request()->get('id');
    
         $packet = Packets::where('devices_id',$id)->where('eventCode',61)->limit(1)->orderBy('id', 'DESC')->get();
-
         return response()->json([
             'panic'=>$packet
         ]);
     }
-
      public function finishPanic(){
         $id = request()->get('id');
    
         $device = Devices::find($id);
         $device->panic = 0;
         $device->save();
-
         return response()->json([
             'panic'=>'finish'
         ]);
     }
-
-
-
+    
     public function devices(){
         $devices = Devices::all();
         $user = User::find(Auth::user()->id);
@@ -161,8 +165,21 @@ class DevicesController extends Controller
 
     }
     public function trucks(){
-        $trucks = Devices::where('client_id',Auth::user()->client_id)
-                    ->where('type_id',1)->get();
+        
+        $user = User::find(Auth::user()->id);
+        
+
+        if($user->role_id==1){
+             
+        $client_id = $user->client_id;
+        $client = Clients::find($client_id);
+        $trucks = $client->devices;
+
+        }else {
+            $trucks = $user->devices_by_user;
+        }
+
+
         $geofences = Geofences::where('id_client',Auth::user()->client_id)->get();
 
         return view('devices.trucks', compact('trucks','geofences'));
@@ -171,13 +188,28 @@ class DevicesController extends Controller
     public function get_trucks_by_geofence( ){
         $id = request()->get('id');
 
+        $user = User::find(Auth::user()->id);
+        
+
+        if($user->role_id==1){
+             
+        $client_id = $user->client_id;
+        $client = Clients::find($client_id);
+        $trucks = $client->devices;
+
+        }else {
+            $trucks = $user->devices_by_user;
+        }
+
+
         if($id == 'all'){
-            $trucks = Devices::where('client_id',Auth::user()->client_id)->get();
+
+             
             return response()->json([
                 'devices'=>$trucks
             ]);
         }
-        $trucks = Devices::where('client_id',Auth::user()->client_id)->get();
+         
 
         $devices=array();
         foreach ($trucks as $truck) {
@@ -235,7 +267,9 @@ class DevicesController extends Controller
 
         $device = Devices::find($id);
         $user = User::find(Auth::user()->id);
-        return view('admin/devices/read', compact('device','clients','user'));
+
+        $client = Clients::find($device->client_id);
+        return view('admin/devices/read', compact('device','clients','user','client'));
     }
 
     public function sms($id){
@@ -251,13 +285,14 @@ class DevicesController extends Controller
         $patios = Geofences::where('id_client',Auth::user()->client_id)->where('gcat_id',2)->get();
         $user = User::find(Auth::user()->id);
         $boxs = $user->getBoxes($user); 
+         
         return view('devices/boxs', compact('boxs','geofences','patios'));
     }
 
 
     public function update(){
             $device = Devices::find(request()->get('id'));
-            
+
             $device->clients()->sync(request()->get('clients'));
             $device->name = request()->get('name');
             $device->imei = request()->get('imei');

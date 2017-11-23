@@ -30,10 +30,16 @@ class User extends Authenticatable
     public function devices_by_user(){
         return $this->belongsToMany(Devices::class)->where('type_id',1)->orderBy('name','asc');
     }
-    
+
+    public function boxes_by_user(){
+        return $this->belongsToMany(Devices::class)->where('type_id',2)->orderBy('name','asc');
+    }
+
+
     public function all_devices_by_user(){
         return $this->belongsToMany(Devices::class)->orderBy('name','asc');
     }
+ 
 
     public function role(){
         return $this->belongsto(Roles::class);
@@ -65,17 +71,16 @@ class User extends Authenticatable
         }
         return $devices;
     }
-
-    public function getAllDevices($user){
-                if($user->role_id==1){
-            
+  public function getBoxes($user){
+        if($user->role_id==1){
+           
             $user = User::find($user->id);
         $client_id = $user->client_id;
         $client = Clients::find($client_id);
-        $devices = $client->allDevices;
+        $devices = $client->boxes;
 
         }else {
-            $devices = $user->all_devices_by_user;
+            $devices = $user->devices_by_user;
         }
         foreach ($devices as $device) {
              $lastPacket = Packets_live::where('devices_id',$device->id)->orderBy('id','desc')->first();
@@ -88,8 +93,7 @@ class User extends Authenticatable
         }
         return $devices;
     }
-
-    public function getBoxes($user){ 
+        public function getBoxes2($user){ 
 
         $client_id = Auth::user()->client_id;
         $client = Clients::find($client_id);
@@ -103,7 +107,7 @@ class User extends Authenticatable
              
          }; 
          $device->lastpacket=$lastPacket;
-         $travel = Travels::where('box_id',$device->id)->first();
+         //$travel = Travels::where('box_id',$device->id)->first();
          
          
            /* if($device->geofences !=null){
@@ -128,6 +132,65 @@ class User extends Authenticatable
             
         }
         return $devices;
+    }
+
+
+
+
+    public function getAllDevices($user){
+        if($user->role_id==1){
+            
+            $user = User::find($user->id);
+        $client_id = $user->client_id;
+        $client = Clients::find($client_id);
+        $devices = $client->allDevices;
+
+        }else {
+            $devices = $user->all_devices_by_user;
+        }
+        foreach ($devices as $device) {
+             $lastPacket = Packets_live::where('devices_id',$device->id)->orderBy('id','desc')->first();
+            // dd($lastPacket);
+           if($lastPacket == null){
+             $lastPacket = Packets::where('devices_id',$device->id)->orderBy('id','desc')->first();
+             
+         }; 
+         $device->lastpacket=$lastPacket;
+        }
+        return $devices;
+    }
+
+        public function AllDevices($user){
+  
+            
+            $user = User::find($user->id);
+        $client_id = $user->client_id;
+        $client = Clients::find($client_id);
+        $devices = $client->allDevices;
+
+      
+        foreach ($devices as $device) {
+             $lastPacket = Packets_live::where('devices_id',$device->id)->orderBy('id','desc')->first();
+            // dd($lastPacket);
+           if($lastPacket == null){
+             $lastPacket = Packets::where('devices_id',$device->id)->orderBy('id','desc')->first();
+             
+         }; 
+         $device->lastpacket=$lastPacket;
+        }
+        return $devices;
+    }
+
+    public function permissions($user){
+        if($user->role->id==1 OR $user->role->id==2){
+            return 'all';
+        }
+        $permissions = json_decode($user->permissions,true);
+        if($permissions == null){
+            $o = array();
+            return $o;
+        }
+        return $permissions;
     }
 
 }

@@ -19,6 +19,15 @@ use App\Travels;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/clean_cron', 'CronsController@clean',function(){});
+
+Route::post('logingap',function(){
+//return view('welcome');
+return response()->json('{"res":ok}');
+
+});
+
 //Tracking
 Route::get('/tracking', 'TrackingController@index',function(){});
 Route::post('get_tracking','TrackingController@get_tracking',function(){});
@@ -196,7 +205,6 @@ use Faker\Factory as Faker;
 
 // SMS
 Route::post('/nexmo/send', 'NexmoController@send',function(){});
-//Route::get('/nexmo/send', 'NexmoController@send',function(){});
 
 
 //ADMIN ROUTES
@@ -239,8 +247,6 @@ Route::group(['middleware'=>'userRole:1,0,0,0,0,0'],function(){
     Route::post('dashboard/client/store', 'ClientsController@store',function(){});
     Route::get('dashboard/client/{id}', 'ClientsController@read',function(){});
     Route::post('dashboard/client/update', 'ClientsController@update',function(){});
-     
-
 
 
     //USUARIOS

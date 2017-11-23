@@ -6,17 +6,18 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <title>Digital Admin Tracking</title>
+        <title>Digital Admin Track</title>
         <!-- Styles -->
         <link href="/css/usamex.css" rel="stylesheet">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,900i" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700,700i" rel="stylesheet">
 
     </head>
-    <body>
-        <div id="preloader">
+    <body> 
+       <!-- <div id="preloader">
   <div id="status">&nbsp;</div>
-</div>
+</div>-->
         <nav class="navbar navbar-default">
             <div class="container-fluid">
                 <div class="navbar-header">
@@ -65,16 +66,16 @@
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="geo_show_button">
-                            <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>      <input type="checkbox" class="show_traffic" value="">
+                            <span class="glyphicon glyphicon-warning-sign topicon" aria-hidden="true"></span>      <input type="checkbox" class="show_traffic" value="">
                         </li>
                         <li class="geo_show_button">
-                            <span class="glyphicon glyphicon-adjust" aria-hidden="true"></span>      <input type="checkbox" class="show_all_geofence" value="">
+                            <span class="glyphicon glyphicon-adjust topicon" aria-hidden="true"></span>      <input type="checkbox" class="show_all_geofence" value="">
                         </li>
 
                         @if(  Auth::user()->role_id ==1  OR Auth::user()->role_id ==6 OR Auth::user()->role_id ==4 )
                         <li>
                             <a href="/orders" class="noti">
-                                <span class="glyphicon glyphicon-bookmark" style="font-size:18px;"></span>
+                                <span class="glyphicon glyphicon-bookmark topicon" style="font-size:18px;"></span>
                                 <span class="badge badge-notify-p">{{ $pending_orders }}</span>
                             </a>
                         </li>
@@ -83,8 +84,8 @@
 
                         
                         <li>
-                            <a href="" class="jewelButton noti "  >
-                                <span class="glyphicon comment-icon glyphicon-comment @if(Auth::user()->read == 1) blue @endif" style="font-size:18px;"></span>
+                            <a href="" class="jewelButton noti topicon"  >
+                                <span class="glyphicon comment-icon topicon glyphicon-comment @if(Auth::user()->read == 1) blue @endif" style="font-size:18px;"></span>
                                 <span class="badge
                                 @if(Auth::user()->read != 0)
                                 @if(Auth::user()->new_notifications > 0)
