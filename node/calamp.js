@@ -124,7 +124,7 @@ var Server = function(){
                     }
                     packet.device_id = rows[0].id
                     packet.device_name = rows[0].name 
-                    // console.log('NAME ' + packet.device_name + ' ->' + packet.updateTime + '-<PASO 1')
+                     console.log('NAME ' + packet.device_name + ' ->' + packet.updateTime + '-<PASO 1')
                     packet.client_id = rows[0].client_id
                     packet.travel_id = rows[0].travel_id
                     packet.actual_geofences = rows[0].geofences
@@ -144,6 +144,7 @@ var Server = function(){
                         if(err){  throw err; }
 
                         if(isEmpty(rows)){
+                            console.log(' caja?')
                             packet.movement = false
                                     packet.dstate_id = 1
                                     packet.odometro_reporte = null;
@@ -153,7 +154,23 @@ var Server = function(){
                                                
                                                 packet.geofence = '[]'
                                                 packet.stored = 0
-                                                callback(null,packet);
+
+                                                 s.mysql_link.query('SELECT *  FROM clients_devices WHERE devices_id='+packet.device_id, function(err, rows ,fields){
+                                                    
+                                                      var clients_emit = []
+                                                      console.log(' empieza ---<' + packet.device_name + ' SELECT *  FROM clients_devices WHERE devices_id='+packet.device_id)
+                                                      console.log(rows)
+                                                      console.log(' --')
+                                                        for (i = 0; i < rows.length; i++) { 
+                                                                
+                                                                clients_emit.push(rows[i].clients_id);
+                                                            }
+                                               
+                                                    console.log(' termino caja ' + packet.device_name)
+                                                    packet.clients_emit = clients_emit
+                                                    callback(null,packet);
+                                                })
+
                         }else{
                         if(moment(rows[0].updateTime).format('YYYY-MM-DD HH:mm:ss') == packet.updateTime)
                         {
@@ -287,12 +304,15 @@ var Server = function(){
                                                 s.mysql_link.query('SELECT *  FROM clients_devices WHERE devices_id='+packet.device_id, function(err, rows ,fields){
                                                     
                                                       var clients_emit = []
+                                                     /*  console.log(' empieza ---<' + packet.device_name + ' SELECT *  FROM clients_devices WHERE devices_id='+packet.device_id)
+                                                      console.log(rows)
+                                                      console.log(' --') */
                                                         for (i = 0; i < rows.length; i++) { 
                                                                 
                                                                 clients_emit.push(rows[i].clients_id);
                                                             }
                                                
-                                                    console.log(clients_emit)
+                                                    //console.log(' termino ' + packet.device_name)
                                                     packet.clients_emit = clients_emit
                                                     callback(null,packet);
                                                 })
@@ -418,7 +438,7 @@ var Server = function(){
                         }
 
                         
-                       // console.log('-> SIGUE VIVO 3 ' + packet.device_name)
+                        console.log('-> SIGUE VIVO 3 ' + packet.device_name + ' -> ' + packet.clients_emit + ' ' + packet.device_id)
                         for (h = 0; h < packet.clients_emit.length; h++) { 
                             io.sockets.emit('event'+packet.clients_emit[h],  {
                                         response:[

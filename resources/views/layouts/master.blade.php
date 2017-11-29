@@ -58,24 +58,25 @@
                         </li>
                         <li class="infoDevices">
               
-                            <span class="glyphicon glyphicon-road grey" aria-hidden="true"></span>&nbsp; <span class="grey"> {{ $total_devices }}</span>&nbsp;&nbsp;
+                            <img src="/images/trucks_.png">&nbsp; <span class="grey"> {{ $total_devices }}</span>&nbsp;&nbsp;
                             &nbsp;&nbsp;|&nbsp;&nbsp; 
-                            <span class="glyphicon glyphicon-stop grey" aria-hidden="true"></span>&nbsp; <span class="grey">{{ $available_boxes }}</span>&nbsp;&nbsp;
+                            <img src="/images/boxes_.png">&nbsp; <span class="grey">{{ $available_boxes }}</span>&nbsp;&nbsp;
 
                         </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="geo_show_button">
-                            <span class="glyphicon glyphicon-warning-sign topicon" aria-hidden="true"></span>      <input type="checkbox" class="show_traffic" value="">
+                        <img src="/images/1_.png">
+                            <input type="checkbox" class="show_traffic lebox" value="">
                         </li>
                         <li class="geo_show_button">
-                            <span class="glyphicon glyphicon-adjust topicon" aria-hidden="true"></span>      <input type="checkbox" class="show_all_geofence" value="">
+                            <img src="/images/2_.png">     <input type="checkbox" class="lebox show_all_geofence" value="">
                         </li>
 
                         @if(  Auth::user()->role_id ==1  OR Auth::user()->role_id ==6 OR Auth::user()->role_id ==4 )
                         <li>
                             <a href="/orders" class="noti">
-                                <span class="glyphicon glyphicon-bookmark topicon" style="font-size:18px;"></span>
+                                <img src="/images/tasks_.png">
                                 <span class="badge badge-notify-p">{{ $pending_orders }}</span>
                             </a>
                         </li>
@@ -85,7 +86,8 @@
                         
                         <li>
                             <a href="" class="jewelButton noti topicon"  >
-                                <span class="glyphicon comment-icon topicon glyphicon-comment @if(Auth::user()->read == 1) blue @endif" style="font-size:18px;"></span>
+                            <img src="/images/bell_.png" class="@if(Auth::user()->read == 1) blue @endif ">
+                                
                                 <span class="badge
                                 @if(Auth::user()->read != 0)
                                 @if(Auth::user()->new_notifications > 0)

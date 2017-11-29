@@ -2,6 +2,7 @@
     @section('content')
     <div class="row">
         <div class="col-md-3 devices-left">
+        <p class="asign_left">UNIDADES ASIGNADAS</p>
             <input type="text" id="search_left" style="width:100%" placeholder="  Buscar Unidad"></input>
             <span class="moveTop"></span>
             <?php $onroad_devices=0 ?>
@@ -148,10 +149,10 @@
                         <div class="content_devices none"></div>
                         <div class="one selectedone oneone select_type" dev="0"><a id="" class="  butonSelect  " >Equipos</a></div>
                         <div class="one select_type" dev="1"><a id="" class=" butonSelect  " >Cajas</a></div>
-                        
+                        <p class="asign">UNIDADES SIN ASIGNAR</p>
                         <input type="text" id="search_right" style="width:100%" placeholder="  Buscar Unidad"></input>
                     <span class="rightTop"></span>
-                        <p class="asign">UNIDADES SIN ASIGNAR</p>
+                        
                         @foreach($devices  as $device)
                         @if($device->status==0)
                         <?php $devices_availables++ ?>
@@ -215,19 +216,23 @@
                                     <span class="engine{{ $device->id }} icon-engine leicon shutdown" data-toggle="tooltip" data-placement="top" title="Unidad Apagada"></span> 
                                     @endif 
 
-
+                                    @if($device->unplugged == 0)  
+                                    
                                     @if($device->stop == 0)
                                     {{ $device->speed  }}<span class="icon-arrow-circle-up move{{ $device->id }} fa-rotate-{{ $device->lastpacket->heading }} leicon green" data-toggle="tooltip" data-placement="top" title="Unidad en movimiento"></span> 
                                     @else
                                      {{ $device->speed  }}<span class="icon-arrow-circle-up move{{ $device->id }} fa-rotate-{{ $device->lastpacket->heading }} leicon shutdown" data-toggle="tooltip" data-placement="top" title="Unidad Detenida"></span> 
                                     @endif
-                                    
+                                    @endif
+
+
                                     @if( $device->lastpacket->speed > 100)
                                     <span class="icon-speedometer leicon red  speed{{ $device->id }}" data-toggle="tooltip" data-placement="top" title="{{ $device->lastpacket->speed }} km/h"></span> <!--<span class="red speed{{ $device->id }}"> {{ $device->lastpacket->speed }} km/h</span>-->
                                     @else
                                     <span class="icon-speedometer leicon shutdown  speed{{ $device->id }}" data-toggle="tooltip" data-placement="top" title="{{ $device->lastpacket->speed }} km/h"></span> <!--<span class="red speed{{ $device->id }}"> {{ $device->lastpacket->speed }} km/h</span>-->
                                     @endif
                                     {!! $device->battery_alarm($config->battery_alarm,$device->lastpacket->power_bat) !!}
+                                    
                                     {!! $device->rssi_alarm($config->rssi_alarm,$device->lastpacket->rssi) !!}  
 
                                     @if($device->engine_block == 1)  
@@ -576,17 +581,20 @@ $('.finishPanic').click(function(){
         }
     })
     $("#search_right").on("keyup", function() {
+
     var value = $(this).val();
      
     var value = value.toLowerCase();
-
+     console.log(value)
     $(".devices-right .device").each(function(index) {
-        name = $(this).attr('name'); 
-
+        name = $(this).attr('name').toLowerCase(); 
+        console.log(name)
         if (name.indexOf(value) !== 0) {
+            console.log('no')
                 $(this).hide()
             }
             else {
+                console.log('si')
                 $(this).show()
             }
 
@@ -1436,10 +1444,7 @@ mo = []
                         .selectedone .butonSelect{
                             color: white
                         }
-                        .butonSelect{
-                            color: #717171;
-                            margin: 5px !important;
-                        }
+                     
                         .movement{
                             color: green;
                         }

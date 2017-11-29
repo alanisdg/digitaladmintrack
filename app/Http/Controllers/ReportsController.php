@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Devices;
 use App\Packets;
+use App\User;
 use Auth;
 use Carbon\Carbon;
 
@@ -19,7 +20,9 @@ class reportsController extends Controller
 
     public function index()
     {
-        $devices = Devices::where('client_id',Auth::user()->client_id)->where('type_id',1)->get();
+        $user = User::find(Auth::user()->id);
+        //$devices = Devices::where('client_id',Auth::user()->client_id)->where('type_id',1)->get();
+        $devices = $user->getAllDevices($user);
         return view('reports',compact('devices'));
     }
     public function get()
