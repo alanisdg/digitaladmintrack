@@ -792,7 +792,7 @@ $('.finishPanic').click(function(){
                  }
                  truck_image = 'truck3.png'
                   @if($device->stop == 0)
-                        truck_image = 'truck_green_.png'
+                        truck_image = 'green_dot.png'
                                     @else
                                     truck_image = 'truck_red_.png'
                         @endif
@@ -805,10 +805,9 @@ $('.finishPanic').click(function(){
                            @if($device->stop == 0)
                        var marker{{ $device->id }} = new google.maps.Marker({
                             position: myLatlng{{ $device->id }},
-                            zIndex:9999999,
+                            zIndex:888888,
                             icon:{
-                                url:'http://digitaladmintrack.com/images/truck_green_.png',
-                                labelOrigin: new google.maps.Point(15, 45)
+                                url:'http://digitaladmintrack.com/images/green_dot.png'
                             },
 
                             rotation:50,
@@ -818,10 +817,9 @@ $('.finishPanic').click(function(){
                                     @else
                                     var marker{{ $device->id }} = new google.maps.Marker({
                             position: myLatlng{{ $device->id }},
-                            zIndex:9999999,
+                            zIndex:888888,
                             icon:{
-                                url:'http://digitaladmintrack.com/images/red_truck_.png',
-                                labelOrigin: new google.maps.Point(15, 45)
+                                url:'http://digitaladmintrack.com/images/red_dot.png'
                             },
 
                             rotation:50,
@@ -834,7 +832,7 @@ $('.finishPanic').click(function(){
                           
 
                   boxText{{ $device->id }} = document.createElement("div");
-                        boxText{{ $device->id }}.style.cssText = "border: 1px solid grey;  padding: 5px;";
+                        boxText{{ $device->id }}.style.cssText = "background-color: #2e304a; color:white; padding: 10px; border-radius:10px";
 
 
                         //MOTOR PARA DESCRIPCION
@@ -884,9 +882,11 @@ $('.finishPanic').click(function(){
                             ,pixelOffset: new google.maps.Size(-140, 0)
                             ,zIndex: null
                             ,boxStyle: { 
-                              background: "white"
+                              background: "#2e304a"
                               ,width: "280px"
-                              ,borderRadius:"3px"
+                              ,borderRadius:"6px"
+                              ,color:'white'
+                              ,padding:'10px'
                               ,position:"relative"
                              }
                             ,closeBoxMargin: "2px 2px 2px 2px"
@@ -904,29 +904,37 @@ $('.finishPanic').click(function(){
                             ib{{ $device->id }}.open(map, this);
                         });
 
-                        
+                        shortName = '{{ $device->name }}'
+                        if(shortName.length > 5){
+                            console.log(' se paso {{ $device->name }}')
+                            shortName = shortName.substring(0, 5);
+                        }
                             @if($device->engine == 1)
 
-                                    var labelText = '{{$device->name}} -: {!! $heading !!} '
+                                    var labelText = '<img src="http://digitaladmintrack.com/images/truck_green_.png"> '+shortName+' {!! $heading !!} '
                                     @endif 
                                     @if($device->engine == 0)
-                                    var labelText = '{{$device->name}} -: {!! $heading !!} ' 
+                                    var labelText = '<img src="http://digitaladmintrack.com/images/red_truck_.png"> '+shortName+' {!! $heading !!} ' 
                             @endif 
                              
 
                             var myOptionsLabel = {
                                  content: labelText
                                 ,boxStyle: {
-                                    background: "white",
-                                    borderRadius:"3px",
-                                   border: "1px solid grey",
+                                    background: "#2e304a",
+                                    borderRadius:"6px",
+                                    color: 'white',
+                                    zIndex: 999999,
                                   textAlign: "center",
-                                  opacity:0.75
+                                  opacity:0.95,
+                                  padding:'10px 10px 10px 0px',
+                                  position:'absolute',
+                                  top:'30px'
                                   ,fontSize: "8pt"
-                                  ,width: "100px"
+                                  ,width: "110px"
                                  }
                                 ,disableAutoPan: true
-                                ,pixelOffset: new google.maps.Size(-25, 0)
+                                ,pixelOffset: new google.maps.Size(-30, -58)
                                 ,position: myLatlng{{ $device->id }}
                                 ,closeBoxURL: ""
                                 ,isHidden: false
@@ -1133,7 +1141,14 @@ mo = []
                                 $('.move'+id).removeClass('green')
                                 $('.move'+id).addClass('shutdown')
                                 $('.move'+id).attr('data-original-title','Unidad detenida n')
-                                icon_move =  '<span class="icon-arrow-circle-up move10 leicon shutdown  fa-rotate-'+heading+'" data-toggle="tooltip" data-placement="top" title="" data-original-title="Unidad en Movimiento n"></span>'
+
+                                // CAMBIAR ICONO EN MOVIMIENTO A VERDE
+
+                              
+
+
+                                $('.moveIcon'+id).attr('src','http://digitaladmintrack.com/images/red_truck_.png')
+                                icon_move =  '<span class="icon-arrow-circle-up  leicon shutdown  fa-rotate-'+heading+'" data-toggle="tooltip" data-placement="top" title="" data-original-title="Unidad en Movimiento n"></span>'
                            } 
                             if(stop==0){
                                 //poner rojo
@@ -1141,10 +1156,12 @@ mo = []
                                 $('.move'+id).addClass('green')
                                 $('.move'+id).addClass('sepusoverde')
                                 $('.move'+id).attr('data-original-title','Unidad en Movimiento n')
-                                icon_move =  '<span class="icon-arrow-circle-up move10 leicon green  fa-rotate-'+heading+'" data-toggle="tooltip" data-placement="top" title="" data-original-title="Unidad en Movimiento n"></span>'
+                                $('.moveIcon'+id).attr('src','http://digitaladmintrack.com/images/truck_green_.png')
+                                icon_move =  '<span class="icon-arrow-circle-up  leicon green  fa-rotate-'+heading+'" data-toggle="tooltip" data-placement="top" title="" data-original-title="Unidad en Movimiento n"></span>'
                             }
                             $(".uptime"+id).timer('remove');
                             $(".uptime"+id).css('color','#6d6d6d');
+                            console.log('timer'+id + ' removerlo')
                             $(".timer"+id).timer('remove');
                             $(".timer"+id).timer(); 
                             if(movement == true){
@@ -1191,16 +1208,27 @@ mo = []
                            this[buble].setContent(device_name + ' '+icon_move+ '<br> Fecha: '+updateTime+'<br> Velocidad-: '+speed+' K/h.<br> <span class="getdirections"  onclick="getdirection('+lat+','+lng+')">Obtener dirección</span>') 
                         }
 
-
+                        short_device_name = device_name
+                        if(short_device_name.length > 5){
+                            short_device_name = short_device_name.substring(0, 5);
+                        }
+                            if(stop == 0){
+                                leimage = 'http://digitaladmintrack.com/images/truck_green_.png'
+                                lalabelcontent = '<img src="http://digitaladmintrack.com/images/truck_green_.png"> ' + short_device_name + ' ' + icon_move;
+                            }
+                            if(stop == 1){
+                                leimage = 'http://digitaladmintrack.com/images/red_truck_.png'
+                                lalabelcontent = '<img src="http://digitaladmintrack.com/images/red_truck_.png"> ' + short_device_name + ' ' + icon_move;
+                            }
                             
-                            lalabelcontent = device_name + ' ' + icon_move;
+                            
                                
                             if(EventCode == 20){
                                 $('.engine'+id).removeClass('green')
                                 $('.engine'+id).addClass('shutdown')
                                 $('.engine'+id).attr('data-original-title','Unidad Apagada')
                                 elengine = '<span class="engine'+id+' glyphicon glyphicon-record shutdown" data-toggle="tooltip" data-placement="top" title="Unidad Apagada *"></span>'
-                                lalabelcontent = device_name + '*<span class="engine'+id+' glyphicon glyphicon-record shutdown" data-toggle="tooltip" data-placement="top" title="Unidad Encendida"></span>'
+                                lalabelcontent ='<img src="'+leimage+'">' + short_device_name + '<span class="engine'+id+' glyphicon glyphicon-record shutdown" data-toggle="tooltip" data-placement="top" title="Unidad Encendida"></span>'
                                  
                             }
      
@@ -1209,7 +1237,7 @@ mo = []
                                 $('.engine'+id).addClass('green') 
                                 $('.engine'+id).attr('data-original-title','Unidad Encendida')
                                 elengine = '*<span class="engine'+id+' glyphicon glyphicon-record green" data-toggle="tooltip" data-placement="top" title="Unidad Encendida *"></span>'
-                                lalabelcontent = device_name + '*<span class="engine'+id+' glyphicon glyphicon-record green" data-toggle="tooltip" data-placement="top" title="Unidad Encendida"></span>'
+                                lalabelcontent = '<img src="'+leimage+'">' + short_device_name  + '<span class="engine'+id+' glyphicon glyphicon-record green" data-toggle="tooltip" data-placement="top" title="Unidad Encendida"></span>'
                                 
                             } 
                             this[lalabel].setContent(lalabelcontent)
@@ -1225,13 +1253,22 @@ mo = []
                             this[akaname].setEasing('linear');
                             this[akaname].setPosition(myLatlng);
                             if(stop == 0){
-                                this[akaname].setIcon('http://digitaladmintrack.com/images/truck_green_.png');
+                                this[akaname].setIcon('http://digitaladmintrack.com/images/green_dot.png');
                             }else{
-                                this[akaname].setIcon('http://digitaladmintrack.com/images/red_truck_.png');
+                                this[akaname].setIcon('http://digitaladmintrack.com/images/red_dot.png');
                             }
                            
                             $('.speed'+id).attr('data-original-title',speed + ' km/h.')
+                            if(speed < 100){
+                                $('.speed'+id).removeClass('red')
+                                $('.speed'+id).addClass('shutdown')
 
+                            }
+                            if(speed >= 100){
+                                $('.speed'+id).removeClass('shutdown')
+                                $('.speed'+id).addClass('red')
+
+                            }
                             refresh(id)
                             $.ajax({
                                 url:'packet/refresh',

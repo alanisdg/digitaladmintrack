@@ -678,8 +678,9 @@ var Server = function(){
                         //console.log('-> SIGUE VIVO 5 ' + packet.device_name)
                         // EMIT PACKET
                       
-
+                        console.log('emitir')
                         for (h = 0; h < packet.clients_emit.length; h++) { 
+                            console.log(packet.clients_emit[h])
                             io.sockets.emit('message'+packet.clients_emit[h], packet);
                         }
 
