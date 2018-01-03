@@ -790,17 +790,24 @@ $('.finishPanic').click(function(){
 
                  }
                  }
-                 
+                 truck_image = 'truck3.png'
+                  @if($device->stop == 0)
+                        truck_image = 'truck_green_.png'
+                                    @else
+                                    truck_image = 'truck_red_.png'
+                        @endif
+
 
                    $(".timer"+{{$device->id}}).timer({ seconds: sec, });
 
                          var myLatlng{{ $device->id }}= new google.maps.LatLng({{ $device->lastpacket->lat   }},{{ $device->lastpacket->lng   }} );
                           
-                          var marker{{ $device->id }} = new google.maps.Marker({
+                           @if($device->stop == 0)
+                       var marker{{ $device->id }} = new google.maps.Marker({
                             position: myLatlng{{ $device->id }},
                             zIndex:9999999,
                             icon:{
-                                url:'http://usamexgps.com/images/truck3.png',
+                                url:'http://digitaladmintrack.com/images/truck_green_.png',
                                 labelOrigin: new google.maps.Point(15, 45)
                             },
 
@@ -808,6 +815,23 @@ $('.finishPanic').click(function(){
                             id:{{ $device->id }},
                             name: "{{$device->name}}"
                         });
+                                    @else
+                                    var marker{{ $device->id }} = new google.maps.Marker({
+                            position: myLatlng{{ $device->id }},
+                            zIndex:9999999,
+                            icon:{
+                                url:'http://digitaladmintrack.com/images/red_truck_.png',
+                                labelOrigin: new google.maps.Point(15, 45)
+                            },
+
+                            rotation:50,
+                            id:{{ $device->id }},
+                            name: "{{$device->name}}"
+                        });
+                        @endif
+
+
+                          
 
                   boxText{{ $device->id }} = document.createElement("div");
                         boxText{{ $device->id }}.style.cssText = "border: 1px solid grey;  padding: 5px;";
@@ -1200,6 +1224,11 @@ mo = []
                             this[akaname].setDuration(1000)
                             this[akaname].setEasing('linear');
                             this[akaname].setPosition(myLatlng);
+                            if(stop == 0){
+                                this[akaname].setIcon('http://digitaladmintrack.com/images/truck_green_.png');
+                            }else{
+                                this[akaname].setIcon('http://digitaladmintrack.com/images/red_truck_.png');
+                            }
                            
                             $('.speed'+id).attr('data-original-title',speed + ' km/h.')
 

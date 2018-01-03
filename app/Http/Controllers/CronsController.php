@@ -17,19 +17,18 @@ use DB;
  */
 
 
-class CronController extends Controller
+class CronsController extends Controller
 {
 
 
     
 
     public function clean(){
-      dd('clean');
-        $ayer = Carbon::yesterday();
-         $user = User::find(1);
-         $user->name = 'Horacio Cron 4';
+       $ayer = Carbon::yesterday();
+        /* $user = User::find(1);
+         $user->name = 'Horacio Cron 6';
             $user->save();
-            
+            */
         DB::table('packets_lives')->where('updateTime', '<', $ayer)->delete();
 
     }

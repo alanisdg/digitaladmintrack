@@ -10,7 +10,9 @@ use App\Devices;
 use App\Clients;
 use Auth;
 use App\Roles;
+use App\Configs;
 use Carbon\Carbon;
+use Session;
 
 
 class UserController extends Controller
@@ -172,7 +174,33 @@ foreach ($alldevices as $device) {
         return view('admin.users.add',compact('devices','roles','clients','devices','user'));
     }
 
+    public function guest($id){
+        $value = Auth::user()->id;
+        $user = User::find($id);
+    
+        Auth::login($user);
+        Session::set('guest', $value);
+        
+        $alldevices = $user->getAllDevices($user);
+        $devices = array();
+        $boxes= array();
+foreach ($alldevices as $device) {
+    if($device->type_id == 1){
+        array_push($devices, $device);
+    }
+    if($device->type_id == 2){
+        array_push($boxes, $device);
+    }
+}
 
+ 
+
+        // $boxes = $user->getBoxes($user);
+        $config = Configs::where('client_id',$user->client_id)->first();
+        $devices_availables =0;  
+       
+        return view('home', compact('user','devices','devices_availables','config','boxes','alldevices'));
+    }
 
 
     public function index(){

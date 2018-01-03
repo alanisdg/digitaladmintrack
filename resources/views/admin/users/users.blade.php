@@ -21,7 +21,7 @@
                         <td>{{ $user_->client->name }}</td>
                         <td><a href="/dashboard/user/read/{{ $user_->id}}">Administrar</a></td>
                         <td>
-
+                        <a href="/dashboard/user/guest/{{ $user_->id}}">Login</a></td>
                         </td>
                     </tr>
                     @endforeach

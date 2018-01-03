@@ -86,6 +86,10 @@ module.exports = {
                     }
                 }
                 geofence_in = geofence_in.substring(0, geofence_in.length - 1);
+
+                if(geofence_in == ''){ 
+                    geofence_in = '{'
+                }
                 geofence = geofence_in + '}';
                 ides_geofence = ides_geofence;
                  var ret = new Object();

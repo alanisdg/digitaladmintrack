@@ -20,7 +20,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/clean_cron', 'CronsController@clean',function(){});
+Route::get('/clean_cron', 'CronsController@clean',function(){
+    
+});
 
 Route::post('logingap',function(){
 //return view('welcome');
@@ -253,6 +255,7 @@ Route::group(['middleware'=>'userRole:1,0,0,0,0,0'],function(){
     Route::get('dashboard/users', 'UserController@users',function(){    });
     Route::get('dashboard/user/read/{id}', 'UserController@read',function(){});
     Route::get('dashboard/user/add', 'UserController@addClient',function(){});
+    Route::get('dashboard/user/guest/{id}', 'UserController@guest',function(){});
     // Route::post('dashboard/user/store', 'UserController@storeClient',function(){});
     Route::post('dashboard/user/store', 'UserController@create_user',function(){});
     Route::post('dashboard/user/edit', 'UserController@editinfo',function(){});
