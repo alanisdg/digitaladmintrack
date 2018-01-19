@@ -9,6 +9,8 @@
                     <td>Nombre</td>
                     <td>Imei</td>
                     <td>Rol</td>
+                    <td>Celular</td>
+                    <td>SMS</td>
                     <td>Cliente</td>
                 </thead>
                 <tbody>
@@ -18,6 +20,8 @@
                         <td>{{ $user_->name }}</td>
                         <td>{{ $user_->email }}</td>
                         <td>{{ $user_->role->name }}</td>
+                        <td>{{ $user_->cell }}</td>
+                        <td>@if($user_->cell_up == 1) si @endif</td>
                         <td>{{ $user_->client->name }}</td>
                         <td><a href="/dashboard/user/read/{{ $user_->id}}">Administrar</a></td>
                         <td>

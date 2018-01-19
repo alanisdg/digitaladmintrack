@@ -248,8 +248,13 @@ Route::group(['middleware'=>'userRole:1,0,0,0,0,0'],function(){
     Route::get('dashboard/clients/add', 'ClientsController@add',function(){});
     Route::post('dashboard/client/store', 'ClientsController@store',function(){});
     Route::get('dashboard/client/{id}', 'ClientsController@read',function(){});
+    Route::get('dashboard/invoice/{id}', 'ClientsController@invoice',function(){});
+    Route::get('dashboard/publicInvoice/{id}', 'ClientsController@publicInvoice',function(){});
     Route::post('dashboard/client/update', 'ClientsController@update',function(){});
 
+    //FACTURAS
+    Route::get('dashboard/invoices/{id}', 'InvoicesController@read',function(){});
+    Route::get('dashboard/invoice_read/{id}', 'InvoicesController@get',function(){});
 
     //USUARIOS
     Route::get('dashboard/users', 'UserController@users',function(){    });

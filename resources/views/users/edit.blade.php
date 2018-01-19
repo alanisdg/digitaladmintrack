@@ -19,6 +19,20 @@
                 <input type="text" class="form-control" name="password" value="">
             </div>
             <div class="form-group">
+                <label for="exampleInputEmail1">Celular</label>
+                <input type="text" class="form-control" name="cell" value="{{ $user->cell }}">
+            </div>
+            <div class="form-group">
+                <label for="exampleInputEmail1">Permiso SMS</label>
+                <input type="checkbox" class="" name="cell_up" @if($user->cell_up==1) checked @endif  >
+            </div>
+
+            
+            <div class="form-group">
+                <label for="exampleInputEmail1">Password</label>
+                <input type="text" class="form-control" name="password" value="">
+            </div>
+            <div class="form-group">
                 <label for="exampleInputEmail1">Rol</label>
                 <input type="hidden" class="form-control" name="client_id" value="{{ Auth::user()->id }}">
                 <select class="form-control" name="role">

@@ -291,15 +291,18 @@ class DevicesController extends Controller
 
 
     public function update(){
+    
             $device = Devices::find(request()->get('id'));
 
             $device->clients()->sync(request()->get('clients'));
             $device->name = request()->get('name');
+            $device->charge_from = request()->get('charge_from');
+            $device->stop_from = request()->get('stop_from');
             $device->imei = request()->get('imei');
             $device->plate = request()->get('plate');
             $device->type_id = request()->get('type_id');
             $device->number = request()->get('number');
-            $device->client_id = 1;
+            $device->client_id = request()->get('property');
             if(request()->get('virtual')==null){
             $device->virtual = 0;
             }else{

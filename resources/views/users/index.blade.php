@@ -30,6 +30,8 @@
                 <td>Nombre</td>
                 <td>Correo</td>
                 <td>Rol</td>
+                <td>Celular</td>
+                <td>Permiso SMS</td>
                 <td>Fecha de creacion</td>
                 <td></td>
                 <td></td>
@@ -48,6 +50,8 @@
                 <td>{{ $user->name }}</td>
                 <td>{{ $user->email }}</td>
                 <td> <img src="/images/{{ $user->role->name }}.svg" width="18"> {{ $user->role->name }}</td>
+                <td>{{ $user->cell }}</td>
+                <td>@if($user->cell_up ==1) si @endif</td>
                 <td>{{ $user->created_at }}</td>
                 <td><a class="btn btn-primary btn-xs" href="/user/edit/{{ $user->id }}">Editar</a></td>
                 <td><a class="btn btn-primary btn-xs" href="/user/{{ $user->id }}">ver</a></td>

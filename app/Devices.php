@@ -9,7 +9,7 @@ use DateTime;
 
 class Devices extends Model
 {
-    protected $fillable = ['name','imei','client_id','number','type_id','virtual','new','plate','block_engine','bbuton'];
+    protected $fillable = ['name','imei','charge_from','stop_from','client_id','number','type_id','virtual','new','plate','block_engine','bbuton'];
 
     public function User(){
         return $this->belongsTo(User::class);

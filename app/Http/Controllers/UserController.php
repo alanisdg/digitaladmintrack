@@ -132,6 +132,13 @@ foreach ($alldevices as $device) {
      
         $user->email = request()->get('email');
         $user->name = request()->get('name');
+        $user->cell = request()->get('cell');
+
+        if(request()->get('cell_up')==null){
+            $user->cell_up = 0;
+            }else{
+            $user->cell_up = 1;
+            }
 
         $user->role_id = request()->get('role_id');
         $user->save();
@@ -214,6 +221,7 @@ foreach ($alldevices as $device) {
         $user_read = User::find($id);
         $now = Carbon::now('America/Monterrey');
         $roles = Roles::pluck('name','id')->toArray();
+       
         $lastSession = new Carbon($user_read->lastlogin, 'America/Monterrey');
         $timeforhumans = $now->diffForHumans($lastSession);
         $lastSession = $timeforhumans;
@@ -280,6 +288,14 @@ foreach ($alldevices as $device) {
         if($password != ''){
             $user->password = bcrypt($password);
         }
+        $user->cell = request()->get('cell');
+
+        if(request()->get('cell_up')==null){
+            $user->cell_up = 0;
+            }else{
+            $user->cell_up = 1;
+            }
+            
         $user->save();
 
         $dev = array();

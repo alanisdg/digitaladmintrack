@@ -43,6 +43,39 @@
                 <input type="text" id="last-name"  name="plate" value="{{ $device->plate }}"   required="required" class="form-control col-md-7 col-xs-12">
             </div>
         </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Cobranza desde: <span class="required">*</span>
+            </label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <input type="date" id="last-name"  name="charge_from" value="{{ $device->charge_from }}"   required="required" class="form-control col-md-7 col-xs-12">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Detener Cobranza desde: <span class="required">*</span>
+            </label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <input type="date" id="last-name"  name="stop_from" value="{{ $device->stop_from }}"   required="required" class="form-control col-md-7 col-xs-12">
+            </div>
+        </div>
+
+                <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Propietario<span class="required">*</span>
+            </label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+            <select name="property">
+                
+            
+                @foreach($clients as $client)
+                <option value="{{ $client->id }}" @if($client->id == $device->client_id ) selected @endif> {{ $client->name }}</option>
+                 
+                @endforeach
+                </select>
+            </div>
+        </div> 
+
+
         <div class="form-group">
             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Bloqueo de motor<span class="required">*</span>
             </label>

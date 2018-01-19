@@ -15,8 +15,27 @@
             </div>
 
             <div class="form-group">
+            {{ Form::label('cell', 'Celular', ['class' => 'form-label']) }}
+            {{ Form::text('cell'  , $user_read->cell,['class' => 'form-control'] ) }}
+            </div>
+
+            <div class="form-group">
+            {{ Form::label('cell_up', 'Permiso de SMS', ['class' => 'form-label']) }}
+                            <input type="checkbox"  name="cell_up" @if($user_read->cell_up==1) checked @endif  class="">
+
+            </div>
+
+
+            <div class="form-group">
             {{ Form::label('role', 'role', ['class' => 'form-label']) }}
-            {{ Form::select('role_id', array('0' => 'Selecciona un rol de usuario') + $roles , $user->role->id, ['class' => 'form-control'] )  }}
+            <select class="form-control" name="role_id">
+            <?php 
+             foreach ($roles as $key => $value) {
+            ?> <option value="<?php echo $key;  ?>" <?php if($key == $user_read->role_id){ echo " selected"; } ?>><?php echo $value ?></option>  <?php
+        }
+            ?>
+            </select>
+      
             </div>
 
             <div class="form-group"> 
