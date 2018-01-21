@@ -13,9 +13,12 @@ class AddChargePriceToClients extends Migration
      */
     public function up()
     {
-        $table->integer('device_price')->default(0);
+        Schema::table('clients', function (Blueprint $table) {
+            $table->integer('device_price')->default(0);
         $table->integer('charge_at')->nullable();
-    }
+
+        });
+            }
 
     /**
      * Reverse the migrations.
@@ -24,6 +27,8 @@ class AddChargePriceToClients extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('clients', function (Blueprint $table) {
+            //
+        });
     }
 }

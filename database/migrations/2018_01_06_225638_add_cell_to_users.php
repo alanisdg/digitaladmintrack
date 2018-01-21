@@ -13,8 +13,11 @@ class AddCellToUsers extends Migration
      */
     public function up()
     {
-        $table->text('cell')->nullable();
-        $table->integer('cell_up')->default(0);
+    	Schema::table('users', function (Blueprint $table) {
+            $table->text('cell')->nullable();
+        	$table->integer('cell_up')->default(0);
+        });
+        
     }
 
     /**
@@ -24,6 +27,8 @@ class AddCellToUsers extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('users', function (Blueprint $table) {
+            //
+        });
     }
 }

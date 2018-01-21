@@ -15,8 +15,10 @@ use DB;
 /**
  *
  */
-
-
+namespace App\Http\Controllers;
+use Carbon\Carbon;
+use App\User;
+use DB;
 class CronsController extends Controller
 {
 
@@ -29,6 +31,9 @@ class CronsController extends Controller
          $user->name = 'Horacio Cron 6';
             $user->save();
             */
+        /*$user = User::find(1);
+        $user->name = 'h7';
+        $user->save();*/
         DB::table('packets_lives')->where('updateTime', '<', $ayer)->delete();
 
     }

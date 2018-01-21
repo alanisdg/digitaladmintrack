@@ -24,6 +24,10 @@ Route::get('/clean_cron', 'CronsController@clean',function(){
     
 });
 
+Route::get('/payment_alert', 'CronsController@payment_alert',function(){
+    
+});
+
 Route::post('logingap',function(){
 //return view('welcome');
 return response()->json('{"res":ok}');
