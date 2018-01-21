@@ -16,7 +16,8 @@
         "laravelrus/localized-carbon": "1.*",
         "intervention/image": "^2.3",
         "nexmo/laravel": "0.4.0",
-        "tymon/jwt-auth": "^0.5.12"
+        "tymon/jwt-auth": "^0.5.12",
+        "guzzlehttp/guzzle": "~5.3|~6.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
