@@ -8,6 +8,7 @@ use App\Locations;
 use App\Toclients;
 use App\Travels;
 use App\Devices;
+use App\Clients;
 use App\User;
 use Auth;
 
@@ -176,7 +177,8 @@ class GeofencesController extends Controller
     }
     public function geofences(){
         $user = User::find(Auth::user()->id);
-        $devices = $user->getDevices($user);
+        $client = Clients::find(Auth::user()->client_id);
+        $devices = $user->getDevices($user,$client);
 
 
 
@@ -188,7 +190,7 @@ class GeofencesController extends Controller
             }
 
         }
-        $devices = $user->getDevices($user);
+        $devices = $user->getDevices($user,$client);
 
         $geofences = Geofences::where('geofences.id_client',Auth::user()->client_id)
         ->where('gcat_id','!=',1)

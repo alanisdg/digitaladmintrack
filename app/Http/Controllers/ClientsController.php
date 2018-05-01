@@ -5,11 +5,13 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
 use App\Clients;
 use App\Devices;
+use App\Configs;
 use App\user;
 use Auth;
 use Carbon\Carbon;
 use Redirect;
 use App\Invoices;
+use DB;
 
 class ClientsController extends Controller
 {
@@ -31,9 +33,13 @@ class ClientsController extends Controller
         return view('admin.clients.add',compact('user') );
     }
 
-    public function store(){
+    public function store(){ 
         $user = request()->all();
-        Clients::create($user);
+        $client = Clients::create($user);
+ 
+        DB::table('configs')->insert([
+    ['rssi_alarm' => request()->get('rssi_alarm'), 'battery_alarm' => request()->get('rssi_alarm'),'client_id' => $client->id , 'supply_alarm' => 0.00]
+]);
         return redirect()->to('dashboard/clients');
     }
 

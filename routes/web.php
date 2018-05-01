@@ -246,6 +246,7 @@ Route::group(['middleware'=>'userRole:1,0,0,0,0,0'],function(){
     Route::post('dashboard/devices/store', 'DevicesController@store',function(){});
     Route::post('dashboard/devices/update', 'DevicesController@update',function(){});
     Route::post('dashboard/device/delete', 'DevicesController@delete',function(){});
+    Route::post('dashboard/devices/devices_by_client', 'DevicesController@getDevicesByClient',function(){});
 
 
     //PAQUETES
@@ -260,12 +261,37 @@ Route::group(['middleware'=>'userRole:1,0,0,0,0,0'],function(){
     Route::get('dashboard/publicInvoice/{id}', 'ClientsController@publicInvoice',function(){});
     Route::post('dashboard/client/update', 'ClientsController@update',function(){});
 
+    //BALANCE
+    Route::get('dashboard/balance', 'AdminController@balance',function(){});
+
+
+    //GASTOS
+    Route::get('dashboard/gastos', 'AdminController@index',function(){});
+    Route::get('dashboard/gastos/add', 'AdminController@add',function(){});
+    Route::post('dashboard/gastos/store', 'AdminController@store',function(){});
+
+    //COMISIONES
+    Route::get('dashboard/comisiones', 'AdminController@comisiones',function(){});
+    Route::get('dashboard/comisiones/add', 'AdminController@addcomision',function(){});
+    Route::post('dashboard/comisiones/store', 'AdminController@storecomision',function(){});
+
+    //INGRESOS
+    Route::get('dashboard/ingresos', 'AdminController@ingresos',function(){});
+    Route::get('dashboard/ingresos/add', 'AdminController@addingreso',function(){});
+    Route::post('dashboard/ingresos/store', 'AdminController@storeingreso',function(){});
+
+    //INVENTARIO
+    Route::get('dashboard/detail/client/{id}', 'AdminController@detailclient',function(){});
+    Route::get('dashboard/detail/{month}/{year}', 'AdminController@detail',function(){});
+    
+
     //FACTURAS
     Route::get('dashboard/invoices/{id}', 'InvoicesController@read',function(){});
     Route::get('dashboard/invoice_read/{id}', 'InvoicesController@get',function(){});
 
     //USUARIOS
     Route::get('dashboard/users', 'UserController@users',function(){    });
+     Route::get('dashboard/delete_user/{id}', 'UserController@delete_user',function($id){});
     Route::get('dashboard/user/read/{id}', 'UserController@read',function(){});
     Route::get('dashboard/user/add', 'UserController@addClient',function(){});
     Route::get('dashboard/user/guest/{id}', 'UserController@guest',function(){});

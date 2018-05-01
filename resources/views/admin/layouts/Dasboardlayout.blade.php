@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>Digital Admin Track</title>
     <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,900i" rel="stylesheet">
     <title>Gentelella Alela! | </title>
     <!-- Bootstrap -->
@@ -37,7 +37,7 @@
         <div class="col-md-3 left_col">
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
-              <a href="/dashboard" class="site_title"><i class="fa fa-paw"></i> <span>USAMEX ADMIN</span></a>
+              <a href="/dashboard" class="site_title"><span><img src="/images/logodat.png" alt="logo"></span></a>
             </div>
             <div class="clearfix"></div>
 
@@ -68,6 +68,26 @@
                         </li>
                         <li {{{ (Request::is('dashboard/users') ? 'class=current-page' : '') }}} >
                             <a href="/dashboard/users">Usuarios</a>
+                        </li>
+                       
+                    </ul>
+                  </li>
+                </ul>
+                <ul class="nav side-menu">
+                  <li><a><i class="fa fa-home"></i> Finanzas<span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                       
+                        <li {{{ (Request::is('dashboard/balance') ? 'class=current-page' : '') }}} >
+                            <a href="/dashboard/balance">Balance</a>
+                        </li>
+                        <li {{{ (Request::is('dashboard/gastos') ? 'class=current-page' : '') }}} >
+                            <a href="/dashboard/gastos">Gastos</a>
+                        </li>
+                        <li {{{ (Request::is('dashboard/ingresos') ? 'class=current-page' : '') }}} >
+                            <a href="/dashboard/ingresos">Ingresos</a>
+                        </li>
+                        <li {{{ (Request::is('dashboard/comisiones') ? 'class=current-page' : '') }}} >
+                            <a href="/dashboard/comisiones">Comisiones</a>
                         </li>
                     </ul>
                   </li>
@@ -115,7 +135,33 @@
 
       </div>
     </div>
+    <style type="text/css">
+        .left_col {
+    background: #001e38;
+}
+.site_title {
+     
+    height: auto;
+   
+}
 
+.nav_title {
+   height: auto;
+    background: #093e71;
+    
+}
+body{
+    background-image: url("https://www.toptal.com/designers/subtlepatterns/patterns/whirlpool.png");
+}
+body .container.body .right_col {
+    background: none;
+}
+.nav.side-menu>li.active>a {
+    text-shadow: rgba(0,0,0,.25) 0 -1px 0;
+    background: linear-gradient(#0083ff,#043767),#b4d0ec;
+    box-shadow: rgba(0,0,0,.25) 0 1px 0, inset rgba(255,255,255,.16) 0 1px 0;
+}
+    </style>
     <!-- jQuery -->
     <script src="/vendors/jquery/dist/jquery.min.js"></script>
     <!-- Bootstrap -->
@@ -163,5 +209,26 @@
     </script>
     @endif
 <script> window.Laravel = <?php echo json_encode(['csrfToken' => csrf_token(),]); ?> </script>
+<script>
+    $('.client_select').change(function(){
+        console.log($('.client_select').val())
+        $.ajax({ 
+        url:'/dashboard/devices/devices_by_client',
+        type:'POST',
+        dataType: 'json',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        data: { id: $('.client_select').val() },
+        success: function(r){
+            console.log(r)
+            $('.devices_table').html('')
+            $('.devices_table').html(r)
+        }
+    })
+    })
+
+</script>
+
   </body>
 </html>

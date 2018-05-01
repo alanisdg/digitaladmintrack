@@ -62,7 +62,7 @@ class DevicesController extends Controller
     public function getPanic(){
         $id = request()->get('id');
    
-        $packet = Packets::where('devices_id',$id)->where('eventCode',61)->limit(1)->orderBy('id', 'DESC')->get();
+        $packet = Packets::where('devices_id',$id)->where('eventCode',60)->limit(1)->orderBy('id', 'DESC')->get();
         return response()->json([
             'panic'=>$packet
         ]);
@@ -79,9 +79,11 @@ class DevicesController extends Controller
     }
     
     public function devices(){
-        $devices = Devices::all();
+        //$devices = Devices::all();
         $user = User::find(Auth::user()->id);
-        return view('admin.devices.devices', compact('devices','user'));
+        $clients = Clients::all();
+         
+        return view('admin.devices.devices', compact('devices','user','clients'));
     }
 
     public function device($id){
@@ -287,8 +289,59 @@ class DevicesController extends Controller
         $boxs = $user->getBoxes($user); 
          
         return view('devices/boxs', compact('boxs','geofences','patios'));
-    }
+    } 
 
+    public function getDevicesByClient(){
+        $id =  request()->get('id') ;
+        $devices = Devices::where('client_id',$id)->get();
+        $r = '';
+        $r= '<thead>
+                    <td>Id</td>
+                    <td>Nombre</td>
+                    <td>Imei</td>
+                    <td>Número</td>
+                    <td>Placa</td>
+                    <td>Cliente(s)</td> 
+                    <td>Estado</td>
+                    <td></td>
+                    <td></td>
+                    <td>Paquetes</td>
+                    <td>sms</td>
+                </thead>';
+        foreach($devices as $device){
+            $r .= '<tr class=>';
+            $r.= '<td>' . $device->id .'</td>';
+            $r.='<td>'. $device->name .'</td>
+                        <td>' . $device->imei .'</td>
+                        <td>' . $device->number .'</td>
+                        <td>' . $device->plate .'</td><td>' ;
+
+                         foreach($device->clients as $client){
+                            $r .= $client->name . ', ';
+                        } 
+                            
+                            
+                        $r .= '</td> ';
+
+                        $r.= '<td>' . $device->statusadmin($device) . '</td>';
+                        $r.='<td>
+                            <a href="/dashboard/devices/read/' . $device->id .'">ver</a>
+                        </td>
+                        <td>
+                            <a  class="delete_device btn btn-danger btn-xs" ide="' . $device->id .'" >Eliminar</a>
+
+                        </td>
+                        <td><a href="/dashboard/packets/'. $device->id .'">Ver</a></td>
+                        <td>
+                            <a href="/dashboard/devices/sms/'. $device->id .'">SMS</a>
+                        </td>';
+ 
+            $r.= '<tr>';
+        }
+                       
+                      
+        return response()->json($r);
+    }
 
     public function update(){
     

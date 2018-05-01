@@ -5,6 +5,8 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Auth;
+use DB;
+
 class User extends Authenticatable
 {
     use Notifiable;
@@ -48,19 +50,95 @@ class User extends Authenticatable
     public function client(){
         return $this->belongsto(Clients::class);
     }
+    public function comission($m,$y,$id){
+        
+        $total = '';
+        $comissions = Comissions::where( DB::raw('MONTH(date)'), '=', $m )->where( DB::raw('YEAR(date)'), '=', $y )->where('user_id',$id)->get();
+        foreach ($comissions as $comission) {
+            $total = $total + $comission->subtotal;
+        }
 
-    public function getDevices($user){
+        return $total;
+    }
+
+    public function commisions_by_month($m,$y,$id)
+    {
+        $comissions = Comissions::where( DB::raw('MONTH(date)'), '=', $m )->where( DB::raw('YEAR(date)'), '=', $y )->where('user_id',$id)->get();
+ 
+        return $comissions;
+    }
+
+        public function total_comission($id){
+        
+        $total = '';
+        $comissions = Comissions::where('user_id',$id)->get();
+        foreach ($comissions as $comission) {
+            $total = $total + $comission->subtotal;
+        }
+
+        return $total;
+    }
+
+    public function total_inversion($id){
+        
+        $total = '';
+        $comissions = Gastos::where('user_id_p',$id)->get();
+        foreach ($comissions as $comission) {
+            $total = $total + $comission->subtotal;
+        }
+
+        return $total;
+    }
+
+    public function ingreso_by_month($month,$year){
+        
+         $ingresos = Ingresos::where( DB::raw('MONTH(date)'), '=', $month )->where( DB::raw('YEAR(date)'), '=', $year )->get();
+         $total = '';
+         foreach ($ingresos as $ingreso) {
+            $total = $total + $ingreso->subtotal;
+         }
+        return $total;
+    }
+
+    public function gasto_by_month($month,$year){
+        
+         $ingresos = Gastos::where( DB::raw('MONTH(date)'), '=', $month )->where( DB::raw('YEAR(date)'), '=', $year )->get();
+         $total = '';
+         foreach ($ingresos as $ingreso) {
+            $total = $total + $ingreso->subtotal;
+         }
+        return $total;
+    }
+
+    public function getDevices($user,$client){
         if($user->role_id==1){
-            $devices = Devices::where('client_id',$user->client_id)->where('type_id',1)->orderBy('name','asc')->get();
-            $user = User::find($user->id);
-        $client_id = $user->client_id;
-        $client = Clients::find($client_id);
         $devices = $client->devices;
 
         }else {
             $devices = $user->devices_by_user;
         }
+        $ides = '';
         foreach ($devices as $device) {
+            $ides .= $device->id . ',';
+        }
+        
+        $ides = substr($ides, 0, -1);
+     
+        $p = DB::select('SELECT *
+FROM packets_lives
+WHERE updateTime IN (
+    SELECT MAX(updateTime) FROM packets_lives WHERE devices_id IN ('.$ides.') GROUP BY devices_id
+);');
+    
+        foreach ($devices as $device) {
+            foreach ($p as $packet) {
+                if($device->id == $packet->devices_id){
+                    $device->lastpacket = $packet;
+                }
+            }
+        }
+        //SELECT MAX(updateTime) FROM packets_lives WHERE devices_id IN (1,3) GROUP BY devices_id
+       /* foreach ($devices as $device) {
              $lastPacket = Packets_live::where('devices_id',$device->id)->orderBy('id','desc')->first();
             // dd($lastPacket);
            if($lastPacket == null){
@@ -68,15 +146,21 @@ class User extends Authenticatable
              
          }; 
          $device->lastpacket=$lastPacket;
-        }
+        } */
         return $devices;
+
+
+
+        
+
+
+
     }
-  public function getBoxes($user){
+  public function getBoxes($user,$client){
         if($user->role_id==1){
            
-            $user = User::find($user->id);
-        $client_id = $user->client_id;
-        $client = Clients::find($client_id);
+            
+        
         $devices = $client->boxes;
 
         }else {

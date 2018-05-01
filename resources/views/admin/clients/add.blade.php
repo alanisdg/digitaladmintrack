@@ -14,6 +14,16 @@
             </div>
 
             <div class="form-group">
+            {{ Form::label('rssi_alarm', 'Rssi Alarm', ['class' => 'form-label']) }}
+            {{ Form::text('rssi_alarm'  , -90,['class' => 'form-control'] ) }}
+            </div>
+
+            <div class="form-group">
+            {{ Form::label('baterry_alarm', 'Battery Alarm', ['class' => 'form-label']) }}
+            {{ Form::text('baterry_alarm'  , 3.8,['class' => 'form-control'] ) }}
+            </div>
+
+            <div class="form-group">
                 {{ Form::submit('Guardar' , ['class' => 'btn btn-primary'] )  }}
             </div>
 

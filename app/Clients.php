@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Clients extends Model
 {
-    protected $fillable = ['name','description','charge_at','device_price','phone','phone_2','client_id','boxs'];
+    protected $fillable = ['name','description','charge_at','device_price','phone','phone_2','client_id','boxs','client_id'];
 
     public function devices(){
         return $this->belongsToMany(Devices::class)->where('type_id',1)->orderBy('name','asc');;
@@ -24,6 +24,15 @@ class Clients extends Model
     }
     public function getBoxsAtrribute(){
         return $this->boxes()->pluck('devices_id')->toArray();
+    }
+
+    public function total_balance($id){
+        $ingresos = Ingresos::where('client_id',$id)->get();
+        $total = '';
+        foreach ($ingresos as $ingreso) {
+            $total  = $total + $ingreso->subtotal;
+        }
+        return $total;
     }
     public function device_price($device,$price){
         if($device->stop_charge == 1){

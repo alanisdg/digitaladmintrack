@@ -6,6 +6,7 @@ use App\User;
 use App\Travels;
 use App\Packets;
 use App\Packets_live;
+use App\Clients;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Auth;
@@ -22,8 +23,9 @@ class ToolsController extends Controller
     {
         $user = User::find(Auth::user()->id);
         $packet = Packets_live::find(1);
-        $devices = $user->getDevices($user);
-
+        $client = Clients::find(Auth::user()->client_id);
+        $devices = $user->getDevices($user,$client);
+        
 
 
         foreach ($devices as $device) {
@@ -37,7 +39,7 @@ class ToolsController extends Controller
             }
 
         }
-        $devices = $user->getDevices($user);
+        $devices = $user->getDevices($user,$client);
 
         $geofences = Geofences::where('geofences.id_client',Auth::user()->client_id)
                 ->orderBy('created_at', 'asc')

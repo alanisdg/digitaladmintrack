@@ -3,6 +3,9 @@
 <div class="container">
 <div class="row">
     <div class="col-md-8">
+        @if($errors->any())
+<h4 class="red">{{$errors->first()}}</h4>
+@endif
         <h1><img src="/images/{{ $user->role->name }}.svg" width="50"> | {{ $user->name }} </h1>
         <form class="" action="/user/editsave" method="post">
             {!! csrf_field() !!}

@@ -15,9 +15,9 @@
 
     </head>
     <body> 
-       <!-- <div id="preloader">
+       <div id="preloader">
   <div id="status">&nbsp;</div>
-</div>-->
+</div> 
         <nav class="navbar navbar-default">
             <div class="container-fluid">
                 <div class="navbar-header">
@@ -27,7 +27,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/home"><img width="120" src="{{$client_profile->logo}}"></a>
+                    <a class="navbar-brand" href="/home"><img style="height: inherit;" src="{{$client_profile->logo}}"></a>
                 </div>
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
@@ -46,7 +46,7 @@
                             <ul class="dropdown-menu">
                                 <li><a href="/drivers">Choferes  <span class="sr-only">(current)</span></a></li>
                                 <li><a href="/geofences">Geocercas  <span class="sr-only">(current)</span></a></li>
-                                @if(  Auth::user()->role_id ==1  )
+                                @if(  Auth::user()->role_id ==1  OR Auth::user()->role_id ==6 )
                                 <li>
                                     <a href="/users">Usuarios</a>
                                 </li>

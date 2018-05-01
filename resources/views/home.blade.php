@@ -97,9 +97,9 @@
                                     @endif
                                     
                                     @if( $device->lastpacket->speed > 100)
-                                    <span class="icon-speedometer leicon red  speed{{ $device->id }}" data-toggle="tooltip" data-placement="top" title="{{ $device->lastpacket->speed }} km/h"></span> <!--<span class="red"> {{ $device->lastpacket->speed }} km/h</span>-->
+                                    <span class="icon-speedometer leicon red  speed{{ $device->id }}" data-toggle="tooltip" data-placement="top" title="{{ $device->lastpacket->speed }} km/h | {{ number_format($device->lastpacket->odometro_total/1000, 1, '.', ',') }} kms"></span> <!--<span class="red"> {{ $device->lastpacket->speed }} km/h</span>-->
                                     @else
-                                    <span class="icon-speedometer leicon shutdown  speed{{ $device->id }}" data-toggle="tooltip" data-placement="top" title="{{ $device->lastpacket->speed }} km/h"></span> <!--<span class="red speed{{ $device->id }}"> {{ $device->lastpacket->speed }} km/h</span>-->
+                                    <span class="icon-speedometer leicon shutdown  speed{{ $device->id }}" data-toggle="tooltip" data-placement="top" title="{{ $device->lastpacket->speed }} km/h | {{ number_format($device->lastpacket->odometro_total/1000, 1, '.', ',') }} kms"></span> <!--<span class="red speed{{ $device->id }}"> {{ $device->lastpacket->speed }} km/h</span>-->
                                     @endif
 
                                     
@@ -227,9 +227,9 @@
 
 
                                     @if( $device->lastpacket->speed > 100)
-                                    <span class="icon-speedometer leicon red  speed{{ $device->id }}" data-toggle="tooltip" data-placement="top" title="{{ $device->lastpacket->speed }} km/h"></span> <!--<span class="red speed{{ $device->id }}"> {{ $device->lastpacket->speed }} km/h</span>-->
+                                    <span class="icon-speedometer leicon red  speed{{ $device->id }}" data-toggle="tooltip" data-placement="top" title="{{ $device->lastpacket->speed }} km/h | {{ $device->lastpacket->odometro_total/1000 }}"></span> <!--<span class="red speed{{ $device->id }}"> {{ $device->lastpacket->speed }} km/h</span>-->
                                     @else
-                                    <span class="icon-speedometer leicon shutdown  speed{{ $device->id }}" data-toggle="tooltip" data-placement="top" title="{{ $device->lastpacket->speed }} km/h"></span> <!--<span class="red speed{{ $device->id }}"> {{ $device->lastpacket->speed }} km/h</span>-->
+                                    <span class="icon-speedometer leicon shutdown  speed{{ $device->id }}" data-toggle="tooltip" data-placement="top" title="{{ $device->lastpacket->speed }} km/h | {{ number_format($device->lastpacket->odometro_total/1000, 1, '.', ',') }} kms"></span> <!--<span class="red speed{{ $device->id }}"> {{ $device->lastpacket->speed }} km/h</span>-->
                                     @endif
                                     {!! $device->battery_alarm($config->battery_alarm,$device->lastpacket->power_bat) !!}
                                     
@@ -339,10 +339,13 @@
                                      {{ $device->speed  }}<span class="icon-arrow-circle-up move{{ $device->id }} fa-rotate-{{ $device->lastpacket->heading }} leicon red" data-toggle="tooltip" data-placement="top" title="Unidad Detenida"></span> 
                                     @endif
                                     
-                                    <span class="icon-speedometer leicon " data-toggle="tooltip" data-placement="top" title="{{ $device->lastpacket->speed }}"></span> <span class="speed{{ $device->id }}"> {{ $device->lastpacket->speed }} </span>
+                                    <span class="icon-speedometer leicon " data-toggle="tooltip" data-placement="top" title="{{ $device->lastpacket->speed }} mas"></span> <span class="speed{{ $device->id }}"> {{ $device->lastpacket->speed }} </span>
                                     
                                     {!! $device->battery_alarm($config->battery_alarm,$device->lastpacket->power_bat) !!}
                                     {!! $device->rssi_alarm($config->rssi_alarm,$device->lastpacket->rssi) !!}  </a>
+
+                                    
+
 
                                     @if($device->engine_block == 1)
                                      <button id="blockEngine" ide="{{ $device->id }}" name="{{ $device->name }}" number="{{ $device->number }}">B</button>
@@ -387,14 +390,14 @@
                         </div>
                         <style>
                         .unlock {
-            width: 23px;
-        color: grey;
-        margin-left: 6px;
-        height: 16px;
-        padding: 1px 2px;
-        background: #ffffff;
-        border-radius: 4px;
-        border: 1px solid #bbbbbb;
+            width: 20px;
+    color: #c4e0fe;
+    margin-left: 6px;
+    height: 18px;
+    padding: 1px 2px;
+    background: #3b99fc;
+    border-radius: 10px;
+    border: none !important;
     }
 
  
@@ -435,14 +438,14 @@
     }
 
     .locked{
-            width: 23px;
+            width: 20px;
         color: #fc5454;
         margin-left: 6px;
         height: 16px;
         padding: 1px 2px;
-        background: #ffffff;
-        border-radius: 4px;
-        border: 1px solid #bbbbbb;
+        background: #efcbde;
+        border-radius: 10px;
+        border: none !important;
     }
     .modal-header {
     color: white; 
@@ -1128,7 +1131,7 @@ mo = []
                                 end = new Date().getTime();
                             }
                         }
-                        function go(id,lat,lng,geofence,dstate_id,speed,device_name,heading,movement,status,EventCode,updateTime,stop_time,stop,odometro,previous_heading){
+                        function go(id,lat,lng,geofence,dstate_id,speed,device_name,heading,movement,status,EventCode,updateTime,stop_time,stop,odometro,previous_heading,odometro_total){
                             
                             //HEADING
                                 $('.move'+id).removeClass('fa-rotate-'+previous_heading)
@@ -1148,16 +1151,16 @@ mo = []
 
 
                                 $('.moveIcon'+id).attr('src','http://digitaladmintrack.com/images/red_truck_.png')
-                                icon_move =  '<span class="icon-arrow-circle-up  leicon shutdown  fa-rotate-'+heading+'" data-toggle="tooltip" data-placement="top" title="" data-original-title="Unidad en Movimiento n"></span>'
+                                icon_move =  '<span class="icon-arrow-circle-up  leicon shutdown  fa-rotate-'+heading+'" data-toggle="tooltip" data-placement="top" title="" data-original-title="Unidad en Movimiento"></span>'
                            } 
                             if(stop==0){
                                 //poner rojo
                                 $('.move'+id).removeClass('shutdown')
                                 $('.move'+id).addClass('green')
                                 $('.move'+id).addClass('sepusoverde')
-                                $('.move'+id).attr('data-original-title','Unidad en Movimiento n')
+                                $('.move'+id).attr('data-original-title','Unidad en Movimiento')
                                 $('.moveIcon'+id).attr('src','http://digitaladmintrack.com/images/truck_green_.png')
-                                icon_move =  '<span class="icon-arrow-circle-up  leicon green  fa-rotate-'+heading+'" data-toggle="tooltip" data-placement="top" title="" data-original-title="Unidad en Movimiento n"></span>'
+                                icon_move =  '<span class="icon-arrow-circle-up  leicon green  fa-rotate-'+heading+'" data-toggle="tooltip" data-placement="top" title="" data-original-title="Unidad en Movimiento"></span>'
                             }
                             $(".uptime"+id).timer('remove');
                             $(".uptime"+id).css('color','#6d6d6d');
@@ -1257,8 +1260,10 @@ mo = []
                             }else{
                                 this[akaname].setIcon('http://digitaladmintrack.com/images/red_dot.png');
                             }
-                           
-                            $('.speed'+id).attr('data-original-title',speed + ' km/h.')
+                            
+                            var o  = odometro_total / 1000;
+                           	 b = parseFloat(o).toFixed(1);
+                            $('.speed'+id).attr('data-original-title',speed + ' km/h. | ' + b + ' kms')
                             if(speed < 100){
                                 $('.speed'+id).removeClass('red')
                                 $('.speed'+id).addClass('shutdown')
@@ -1309,7 +1314,7 @@ mo = []
                         socket.on("message<?php echo Auth::user()->client_id  ?>", function(data){
                       
                          
-                            go(data['device_id'],data['lat'], data['lng'],data['geofence'],data['dstate_id'],data['Speed'],data['device_name'],data['Heading'],data['movement'],data['status'],data['EventCode'],data['updateTime'],data['stop_time'],data['stop'],data['odometro'],data['previous_heading'])
+                            go(data['device_id'],data['lat'], data['lng'],data['geofence'],data['dstate_id'],data['Speed'],data['device_name'],data['Heading'],data['movement'],data['status'],data['EventCode'],data['updateTime'],data['stop_time'],data['stop'],data['odometro'],data['previous_heading'],data['odometro_total'])
                         })
 
                         socket.on("event<?php echo Auth::user()->client_id  ?>", function(data){

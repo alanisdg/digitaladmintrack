@@ -15,7 +15,42 @@
                 <input type="submit" value="enviar" class="btn btn-primary btn-xs">
             </div>
                 </form>
+        </div>
+
+        <div class="form-group">
+            <form class="form-horizontal form-label-left" action="/nexmo/send" method="post">
+        {!! csrf_field() !!}
+            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">!R3,49,129
+                <span class="required">*</span>
+            </label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <input type="hidden"  value="{{ $device->id }}" name="device_id" required="required" class="form-control col-md-7 col-xs-12">
+                <input type="hidden" id="first-name"value="{{ $device->number }}" name="number" required="required" class="form-control col-md-7 col-xs-12">
+                <input type="hidden" id="first-name"value="!R3,49,129" name="code" required="required" class="form-control col-md-7 col-xs-12">
+                <input type="submit" value="enviar" class="btn btn-primary btn-xs">
+            </div>
+                </form>
         </div> 
+
+
+         
+
+        <div class="form-group">
+            <form class="form-horizontal form-label-left" action="/nexmo/send" method="post">
+        {!! csrf_field() !!}
+            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Conexion !R3,49,129
+                <span class="required">*</span>
+            </label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <input type="hidden"  value="{{ $device->id }}" name="device_id" required="required" class="form-control col-md-7 col-xs-12">
+                <input type="hidden" id="first-name"value="{{ $device->number }}" name="number" required="required" class="form-control col-md-7 col-xs-12">
+                <input type="hidden" id="first-name"value="!R3,49,129" name="code" required="required" class="form-control col-md-7 col-xs-12">
+                <input type="submit" value="enviar" class="btn btn-primary btn-xs">
+            </div>
+                </form>
+        </div> 
+
+
         <div class="form-group">
             <form class="form-horizontal form-label-left" action="/nexmo/send" method="post">
         {!! csrf_field() !!}

@@ -41,7 +41,8 @@ class NexmoController extends Controller
             'from' => 'NEXMO SMS',
             'text' => $code
         ]); 
-          return response()->json('enviado');
+        dd($test);
+          return response()->json($test);
  
     }
 

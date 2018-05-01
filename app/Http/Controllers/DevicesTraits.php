@@ -203,8 +203,10 @@ trait DevicesTraits
         $head .='<td>Motor</td>';
         $head .='<td>RSSI</td>';
         $head .='<td>Evento</td>';
-        $head .='<td>odometro</td>';
-        $head .='<td>heading</td>';
+        $head .='<td>Odometro</td>';
+        $head .='<td>Heading</td>';
+        $head .='<td>Voltaje</td>';
+        $head .='<td>Bateria</td>';
         $head .='</tr>';
         $stoptruck = array();
         $coords = array();
@@ -287,6 +289,8 @@ trait DevicesTraits
             $body .='<td>'.$packet->parseEvent($packet->eventCode)."</td>";
             $body .='<td>'.$packet->odometro." mts</td>";
             $body .='<td>'.$packet->heading."</td>";
+            $body .='<td>'.$packet->power_supply."</td>";
+            $body .='<td>'.$packet->power_bat."</td>";
             $body .='<td><button lat="'.$packet->lat.'" lng="'.$packet->lng.'" class="btn btn-primary btn-xs panto goto">Ver</button></td>';
 
             

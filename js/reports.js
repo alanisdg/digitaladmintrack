@@ -339,6 +339,14 @@ $(".get_packets").submit(function(e){
             $('.titleReport').html(title);
             $('.reports_table thead').html(head);
             $('.reports_table tbody').html(body);
+            $('.panto').click(function(){
+            	map.setZoom(25);
+            	$("html, body").animate({ scrollTop: 0 }, "slow");
+            	lat = $(this).attr('lat'); 
+            	lng = $(this).attr('lng'); 
+            	dir = new google.maps.LatLng(lat,lng)
+            	map.panTo(dir)
+            }) 
             $('.errors').hide()
             }
         },

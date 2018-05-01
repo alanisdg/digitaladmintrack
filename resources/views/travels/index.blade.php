@@ -3,9 +3,10 @@
 <div class="container">
 <div class="row mt30">
     <div class="col-md-3 text-left ">
-
-        <ul class="list-unstyled leftlist">
-            <li><h4>Por fecha</h4>
+        <h2>Buscador de viajes</h2>
+        <ul class="list-unstyled leftlist lest">
+            <li><h4>Buscar por fecha</h4>
+                
                 <div class="form-group">
                     <label for="inputEmail3" class="control-label">Fecha Inicial</label>
                     <input name="init" class="datepicker_t init form-control" value="{{ old('init') }}" >
@@ -16,40 +17,56 @@
                     <input name="end" class="datepicker_t end form-control"  >
                 </div>
                 <div class="form-group">
-                    <input type="submit" value="Aceptar" class="btn get_travels_by_date btn-primary btn-xs">
+                    <input type="submit" value="Buscar" class="btn get_travels_by_date btn-primary btn-xs">
                 </div>
             </li>
             <li>
-                <h4>Por Referencia</h4>
-                <input type="text" class="reference_val">
-                <input type="submit" value="Aceptar" class="btn get_travels_by_reference  btn-primary btn-xs">
+                <hr>
+                <h4>Buscar por Referencia</h4>
+                <div class="form-group">
+                <input type="text" class="reference_val form-control">
+                </div>
+                <div class="form-group">
+                <input type="submit" value="Buscar" class="btn get_travels_by_reference  btn-primary btn-xs">
+            </div>
             </li>
-            <li>
-                <h4>Por chofer</h4>
-                <select id="driver_id"  name="driver_id">
+            <li><hr>
+                <h4>Buscar por chofer</h4>
+                <div class="form-group">
+                <select class="form-control" id="driver_id"  name="driver_id">
                 <option value="">Selecciona un chofer</option>
                 @foreach($drivers as $driver)
                     <option value="{{ $driver->id }}">{{ $driver->name }}</option>
                 @endforeach
             </select>
-                <input type="submit" value="Aceptar" class="btn get_travels_by_driver btn-primary btn-xs">
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Buscar" class="btn get_travels_by_driver btn-primary btn-xs">
+            </div>
             </li>
 
-            <li>
-                <h4>Por Unidad</h4>
-                <select id="device_id"  name="device_id">
+            <li><hr>
+                <h4>Buscar por Unidad</h4>
+                <div class="form-group">
+                <select class="form-control" id="device_id"  name="device_id">
                 <option value="">Selecciona una unidad</option>
                 @foreach($devices as $device)
                     <option value="{{ $device->id }}">{{ $device->name }}</option>
                 @endforeach
             </select>
-                <input type="submit" value="Aceptar" class="btn get_travels_by_device btn-primary btn-xs">
+        </div>
+        <div class="form-group">
+                <input type="submit" value="Buscar" class="btn get_travels_by_device btn-primary btn-xs">
+            </div>
             </li>
             <li>
+                <hr>
+                <h4>Buscar por Estado</h4>
                 <button by='route' description="'En ruta'" class="btn btn-primary get_travels_by_status btn-xs">En ruta</button>
                 <button by='togo' description="Por Salir" class="btn btn-primary get_travels_by_status btn-xs">Por Salir</button>
                 <button by='cancel' description="'Cancelados'"  class="btn btn-primary get_travels_by_status btn-xs">Cancelados</button>
-                <button by='end' description="'Terminado'"  class="btn btn-primary get_travels_by_status btn-xs">Terminados</button>
+                <button style="margin-top: 10px;" by='end' description="'Terminado'"  class="btn btn-primary get_travels_by_status btn-xs">Terminados</button>
             </li>
         </ul>
     </div>
@@ -135,6 +152,15 @@
     </div>
 </div>
 </div>
+<style type="text/css">
+    .lest{
+            border-radius: 3px;
+    border: 1px solid gainsboro;
+    background: #d6d6d6;
+    padding: 10px;
+    }
+
+</style>
 <script type="text/javascript">
 
 </script>

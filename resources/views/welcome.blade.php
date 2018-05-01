@@ -9,7 +9,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
         <!-- SITE TITLE -->
-        <title>Ovi - Digital Agency Bootstrap Template</title>          
+        <title>Digital Admin Track</title>          
         <!-- Latest Bootstrap min CSS -->
         <link rel="stylesheet" href="/css/bootstrap.min.css">       
         <!-- Google Font -->        
@@ -61,6 +61,7 @@
                                     <li><a class="page-scroll" href="#service">Servicios</a></li>
                                     <li><a class="page-scroll" href="#work">Aplicación</a></li>                         
                                     <li><a class="page-scroll" href="#contact">Contacto</a></li>
+                                    <li><a class="page-scroll" href="/login">Login</a></li>
                                 </ul>
                             </nav>
                         </div>

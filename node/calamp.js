@@ -8,6 +8,10 @@ var convertBase = require('./convertBase')
 var tracking = require('./tracking')
 var inside = require('point-in-polygon');
 var functions = require('./functions')
+var Nexmo = require('nexmo');
+const nodemailer = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
+
 
 var Server = function(){
     var s = this;
@@ -56,7 +60,13 @@ var Server = function(){
         this.parse_LatLng = function(v){
             d = parseInt(v,16); return (d < parseInt('7FFFFFFF', 16)) ? (d /  10000000) : 0 - ((parseInt('FFFFFFFF', 16) - d) / 10000000);
         }
- 
+        
+
+
+const nexmo = new Nexmo({
+  apiKey: '53d286f6',
+  apiSecret: 'ff9c473cf0261641'
+});
 
         this.packet = new Object();
         this.packet.OptionsByte = buffer_str.substring(0,2);
@@ -415,22 +425,178 @@ var Server = function(){
                         })
                         }
 
+                     
+
                         if(packet.EventCode == '68'){
-                             s.mysql_link.query('UPDATE devices set unplugged=1 WHERE id='+packet.device_id, function(err, rows, fields){
-                        })
+                            lemail = ''
+                            s.mysql_link.query('UPDATE devices set unplugged=1 WHERE id='+packet.device_id, function(err, rows, fields){})
+
+                            
+                            users_  = "SELECT cell,cell_up,mail_up,email FROM users  WHERE client_id="+packet.client_id;
+                            s.mysql_link.query(users_, function(err, rows, fields){if(err){throw err;} 
+                                console.log('rows del 68')
+                                console.log(rows) 
+                                for (var i = 0; i < rows.length; i++) {
+                                    //console.log(rows[i])
+                                    //console.log('user')
+                                    if (rows[i].cell_up == 1) {
+                                        //console.log('enviar')
+                                        
+                                        // ENVIAR SMS
+                                        const from = 'Digital Admin Track';
+                                        const to = '+521' + rows[i].cell;
+                                        const text = 'La unidad ' + packet.device_name + ' ha sido desconectada';
+                                        console.log(text + ' al ' + to)
+                                        /*
+                                        nexmo.message.sendSms(from, to, text, (error, response) => {
+                                          if(error) {
+                                            throw error;
+                                          } else if(response.messages[0].status != '0') {
+                                            console.error(response);
+                                            throw 'Nexmo returned back a non-zero status';
+                                          } else {
+                                            console.log(response);
+                                          }
+                                        });
+                                        */
+
+                                        
+
+                                    }
+                                    if(rows[i].mail_up == 1){
+                                        // ENVIAR CORREO
+                                        console.log(rows[i])
+                                        console.log('enviar mail a' + lemail)
+                                        lemail = lemail + rows[i].email + ',';
+                                        
+                                        // TERMINAR ENVIO DE CORREO
+                                    } // TERMINA IF MAIL UP
+                                }
+                                console.log(lemail + ' largo')
+                                lemail = lemail.slice(0, -1);
+                                console.log(lemail + ' corto')
+                                nodemailer.createTestAccount((err, account) => {
+                                            var transporter = nodemailer.createTransport({
+                                                host: 'smtp.gmail.com',
+                                                port: 587,
+                                                secure: false, // secure:true for port 465, secure:false for port 587
+                                                auth: {
+                                                    user: 'alanisdg@gmail.com',
+                                                    pass: '547aj154a2'
+                                                }
+                                            });
+
+
+                                            // setup email data with unicode symbols
+                                            console.log(lemail + ' le mail')
+                                            let mailOptions = {
+                                                from: 'DIGITAL ADMIN TRACK <no-reply@digitaladmintrack.com>', // sender address
+                                                to: lemail, // list of receivers
+                                                subject: 'Unidad ' + packet.device_name + ' desconectada', // Subject line
+                                                text: 'Alerta de desconexion', // plain text body
+                                                html: '<b>La unidad '+ packet.device_name+' ha sido desconectada</b><br> Fecha: '+ packet.updateTime+'  <a href="https://www.google.com/maps/search/?api=1&query='+packet.lat+','+packet.lng+'">Ubicación</a>' // html body
+                                            };
+
+                                            // send mail with defined transport object
+                                            transporter.sendMail(mailOptions, (error, info) => {
+                                                if (error) {
+                                                    return console.log(error);
+                                                }
+                                                console.log('Message sent: %s', info.messageId);
+                                                // Preview only available when sending through an Ethereal account
+                                                console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+
+                                                // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@blurdybloop.com>
+                                                // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+                                            });
+                                        });
+                                
+                            } )
                         }
 
                         if(packet.EventCode == '60'){
                             //console.log('panico')
-                             s.mysql_link.query('UPDATE devices set panic=1 WHERE id='+packet.device_id, function(err, rows, fields){
-                        })
+                            lemail = ''
+                             s.mysql_link.query('UPDATE devices set panic=1 WHERE id='+packet.device_id, function(err, rows, fields){})
+                             users_  = "SELECT cell,cell_up FROM users  WHERE client_id="+packet.client_id;
+                            s.mysql_link.query(users_, function(err, rows, fields){if(err){throw err;} 
+                                console.log('rows')
+                                console.log(rows) 
+                                for (var i = 0; i < rows.length; i++) {
+                                    //console.log(rows[i])
+                                    //console.log('user')
+                                    if (rows[i].cell_up == 1) {
+                                        //console.log('enviar')
+                                        const from = 'Digital Admin Track';
+                                        const to = '+521' + rows[i].cell;
+                                        const text = 'La unidad ' + packet.device_name + ' ha presionado el boton de pánico';
+                                        console.log(text + ' al ' + to)
+                                        nexmo.message.sendSms(from, to, text, (error, response) => {
+                                          if(error) {
+                                            throw error;
+                                          } else if(response.messages[0].status != '0') {
+                                            console.error(response);
+                                            throw 'Nexmo returned back a non-zero status';
+                                          } else {
+                                            console.log(response);
+                                          }
+                                        });
+                                    }
+                                    if(rows[i].mail_up == 1){
+                                        // ENVIAR CORREO
+                                        console.log(rows[i])
+                                        console.log('enviar mail') 
+                                        lemail = lemail + rows[i].email + ',';
+                                        
+                                        // TERMINAR ENVIO DE CORREO
+                                    } // TERMINA IF MAIL UP
+                                    lemail = lemail.slice(0, -1);
+                                    nodemailer.createTestAccount((err, account) => {
+                                            var transporter = nodemailer.createTransport({
+                                                host: 'smtp.gmail.com',
+                                                port: 587,
+                                                secure: false, // secure:true for port 465, secure:false for port 587
+                                                auth: {
+                                                    user: 'alanisdg@gmail.com',
+                                                    pass: '547aj154a2'
+                                                }
+                                            });
+
+
+                                            // setup email data with unicode symbols
+                                            console.log(lemail + ' le mail')
+                                            let mailOptions = {
+                                                from: 'DIGITAL ADMIN TRACK <no-reply@digitaladmintrack.com>', // sender address
+                                                to: lemail, // list of receivers
+                                                subject: 'Boton de Pánico presionado, unidad: ' + packet.device_name , // Subject line
+                                                text: 'Alerta de Boton de Pánico', // plain text body
+                                                html:  'La unidad ' + packet.device_name + ' ha presionado el boton de pánico' // html body
+                                            };
+
+                                            // send mail with defined transport object
+                                            transporter.sendMail(mailOptions, (error, info) => {
+                                                if (error) {
+                                                    return console.log(error);
+                                                }
+                                                console.log('Message sent: %s', info.messageId);
+                                                // Preview only available when sending through an Ethereal account
+                                                console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+
+                                                // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@blurdybloop.com>
+                                                // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+                                            });
+                                        });
+                                    
+                                }
+                                
+                            } )
                         }
 
                         if(packet.EventCode == '61'){
-                             s.mysql_link.query('UPDATE devices set panic=1 WHERE id='+packet.device_id, function(err, rows, fields){
-                        })
-                        }
+                             s.mysql_link.query('UPDATE devices set panic=1 WHERE id='+packet.device_id, function(err, rows, fields){})
 
+                        }
+             
 
                         if(packet.EventCode == '69'){
                              s.mysql_link.query('UPDATE devices set unplugged=0 WHERE id='+packet.device_id, function(err, rows, fields){

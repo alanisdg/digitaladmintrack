@@ -57,5 +57,12 @@
 @yield('content')
 @section('script')
 @show
+<script>
+    $('.client_select').change(function(){
+        console.log('cambio')
+    })
+
+</script>
+
 </body>
 </html>

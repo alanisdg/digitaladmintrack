@@ -8,6 +8,7 @@ use App\Devices;
 use App\Packets;
 use App\Configs;
 use App\Packets_live;
+use App\Clients;
 use App\Travels;
 use View;
 use Auth;
@@ -39,14 +40,24 @@ class HomeController extends BaseController
     
     public function index()
     {
-        $user = User::find(Auth::user()->id);
-        $devices = $user->getDevices($user);
-        $alldevices = $user->getAllDevices($user);
-        $boxes = $user->getBoxes($user);
-        $config = Configs::where('client_id',$user->client_id)->first();
-        $devices_availables =0;
+            $client_id = Auth::user()->client_id;
+        $client = Clients::find($client_id);
+        
+        $devices = Auth::user()->getDevices(Auth::user(),$client);
 
+        //$alldevices = Auth::user()->getAllDevices(Auth::user());
+        $boxes = Auth::user()->getBoxes(Auth::user(),$client);
+        //dd($boxes);
+        //$tdfw = array_merge($boxes, $devices);
+        $alldevices = $boxes->merge($devices);
+        //dd($devices,$alldevices,$boxes,$merged);
+        
+        
+        $config = Configs::where('client_id',Auth::user()->client_id)->first();
+        $devices_availables =0;
+        //return view('test', compact('user','devices','devices_availables','config','boxes','alldevices'));
         return view('home', compact('user','devices','devices_availables','config','boxes','alldevices'));
+        
     }
 
     public function mapa()

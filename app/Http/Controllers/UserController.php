@@ -7,13 +7,16 @@ use Redirect;
 use Validator;
 use App\User;
 use App\Devices;
+use App\Comments;
 use App\Clients;
 use Auth;
 use App\Roles;
+use App\Travels;
+use App\Notifications; 
 use App\Configs;
 use Carbon\Carbon;
 use Session;
-
+use DB;
 
 class UserController extends Controller
 {
@@ -103,6 +106,7 @@ class UserController extends Controller
         */
     }
     public function edit($id){
+
         $user = User::find($id);
         $client_id = $user->client_id;
         $client = Clients::find($client_id);
@@ -111,7 +115,7 @@ class UserController extends Controller
         $devices_by_user = $user->getAllDevices($user);
         //$devices_by_user = $user->getDevices($user); 
 
-
+ 
         $alldevices = $user->AllDevices($user);
         $devices = array();
         $boxes= array();
@@ -129,19 +133,39 @@ foreach ($alldevices as $device) {
     }
     public function editinfo(){
         $user = User::find(request()->get('user_id'));
-     
+        $devices = request()->get('devices');
         $user->email = request()->get('email');
         $user->name = request()->get('name');
         $user->cell = request()->get('cell');
+        $user->mail_up = request()->get('mail_up');
 
         if(request()->get('cell_up')==null){
             $user->cell_up = 0;
             }else{
             $user->cell_up = 1;
             }
+        if(request()->get('mail_up')==null){
+            $user->mail_up = 0;
+            }else{
+            $user->mail_up = 1;
+            }
 
         $user->role_id = request()->get('role_id');
         $user->save();
+
+        $dev = array();
+        // SE FORMA EL ARRAY DE USUARIOS
+        foreach ($devices as $device) {
+            array_push($dev,$device);
+        }
+
+        
+     
+
+        $user->devices_by_user()->sync($dev);
+        $user->boxes_by_user()->sync($dev);
+
+
         return redirect()->to('/dashboard/users');
          
     }
@@ -225,12 +249,36 @@ foreach ($alldevices as $device) {
         $lastSession = new Carbon($user_read->lastlogin, 'America/Monterrey');
         $timeforhumans = $now->diffForHumans($lastSession);
         $lastSession = $timeforhumans;
-        return view('admin.users.read', compact('user','user_read','lastSession','roles'));
+
+        $client_id = $user_read->client_id;
+        $client = Clients::find($client_id);
+        $devices = $client->devices;
+        //dd($devices);
+        $devices_by_user = $user->getAllDevices($user_read);
+        //$devices_by_user = $user->getDevices($user); 
+
+
+ 
+        $alldevices = $user->AllDevices($user_read);
+        $devices = array();
+        $boxes= array();
+foreach ($alldevices as $device) {
+    if($device->type_id == 1){
+        array_push($devices, $device);
+    }
+    if($device->type_id == 2){
+        array_push($boxes, $device);
+    }
+}
+
+
+
+        return view('admin.users.read', compact('user','user_read','lastSession','roles','devices','devices_by_user','boxes'));
     }
 
     public function storeClient(){
 
-        dd(request()->all());
+        
         $user = User::find(request()->get('id'));
         $user->name = request()->get('name');
         $user->email = request()->get('email');
@@ -269,9 +317,39 @@ foreach ($alldevices as $device) {
         return redirect()->to('/users');
     }
 
+    public  function delete_user($id)
+    {
+        //notificaciones
+        $noti = Notifications::where('user_id',$id)->delete();
+        $noti = Notifications::where('author_id',$id)->delete();
+
+        //comentarios
+        $coments = Comments::where('user_id',$id)->delete();
+        
+        //Equipos asignados
+        $dev_usr = DB::table('devices_user')->where('user_id',$id)->delete();
+        
+        $travels = Travels::where('user_id',$id)->get();
+
+        foreach ($travels as $travel) {
+            $t = Travels::find($travel->id);
+            $t->user_id = null;
+            $t->save();
+
+        } 
+     $user = User::find($id)->delete();
+        return redirect()->to('/dashboard/users');
+        //equipos
+         
+    }
     public function editsave(){ 
         $devices = request()->get('devices');
-       
+        if(empty($devices)){
+            return redirect()->to('/user/edit/39')->withErrors(['El usuario no se edito porque no se ha seleccionado ningun equipo', 'The Message']);
+            return Redirect::back()->withErrors(['msg', 'The Message']);
+        }
+        
+
         $permissions = request()->get('permissions');
         $p = json_encode($permissions);
 
