@@ -49,7 +49,6 @@
                                 <span class="icon-bar"></span>
                                 <span class="icon-bar"></span>
                                 <span class="icon-bar"></span>
-                                <span class="icon-bar"></span>
                             </button>
                             <a href="index.html" class="navbar-brand"><img src="/images/logodat.png" alt="logo"></a>
                         </div>
@@ -61,7 +60,6 @@
                                     <li><a class="page-scroll" href="#about">Nosotros</a></li>
                                     <li><a class="page-scroll" href="#service">Servicios</a></li>
                                     <li><a class="page-scroll" href="#work">Aplicación</a></li>
-                                    <li><a class="page-scroll" href="#devices">Equipos</a></li>
                                     <li><a class="page-scroll" href="#contact">Contacto</a></li>
                                 </ul>
                             </nav>
@@ -70,9 +68,8 @@
                     <div class="col-md-3">
                     <div class="menu_social">
                             <ul>
+                              <li><a href="#"><i class="fa fa-youtube"></i>youtube.com</a></li>
                                 <!--
-                                <li><a href="#"><i class="fa fa-youtube"></i></a></li>
-
                                 <li><a href="#"><i class="fas 500px"></i></a></li>
                                 <li><a href="#"><i class="fa fa-twitter"></i></a></li>
                                 <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
@@ -111,7 +108,7 @@
                         <div class="single_about about_one">
                             <h1>Nuestro Enfoque</h1>
                             <span></span>
-                            <p>Dar el mejor servicio de rastreo y Administracion de flotas desarrollando herramientas efectivas que agilicen el proceso logistico de tus activos moviles y ayuden a la prevención de incovenientes durante los trayectos</p>
+                            <p>Dar el mejor servicio de rastreo y Administracion de flotas desarrollando herramientas efectivas que agilicen el proceso logistico de tus activos</p>
                         </div>
                     </div><!-- END COL -->
                     <div class="col-lg-3 col-sm-6 col-xs-12 no-padding" data-aos="fade-up">
@@ -125,7 +122,7 @@
                         <div class="single_about about_three">
                             <h1>Quienes somos</h1>
                             <span class="about_three_span"></span>
-                            <p>Somos un grupo de desarrolladores de aplicaciones web y moviles, implementando una plataforma de rastreo satelital</p>
+                            <p>Somos un grupo de desarrolladores de aplicaciones digitales web y moviles, implementando una plataforma de rastreo satelital de transmision en vivo  </p>
                         </div>
                     </div><!-- END COL -->
                 </div><!-- END ROW -->
@@ -139,8 +136,8 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-6" data-aos="fade-up">
                         <div class="single_about_two">
-                            <p style="font-size: 45px;line-height: 50px;">Equipos con tecnologia 3G <br> <span style="font-weight: bold; font-size: 27px;">y la más amplia cobertura a nivel nacional e internacional</strong></p>
-                            <p>Reporte al momento e informacion de la unidad completa sobre su estado ubicacion exacta, tiempo detenida con motor encendido o apagado, direccion con liga externa a google maps y mucho mas !!!</p>
+                            <h3>Equipos con tecnologia 3G <br> <strong>mamalones</strong></h3>
+                            <p>Reporte al momento e informacion de la unidad completa sobre su estado ubicacion exacta, tiempo detenida con motor encendido o apagado, direccion con liga externa a google maps</p>
                         </div>
                     </div><!-- END COL-->
                     <div class="col-xs-12 col-sm-6" data-aos="fade-up">
@@ -179,15 +176,6 @@
                         <div class="serviceBox">
                             <div class="service-icon"><i class="fa fa-diamond"></i></div>
                             <div class="service-content">
-                                <h3>Monitoreo de temperatura</h3>
-                                <p>Monitoreo en todo momento de cargas refrigeradas y alertas de temperatura por SMS o Correo electronico</p>
-                            </div>
-                        </div>
-                    </div><!-- END COL  -->
-                    <div class="col-md-4 col-sm-4 col-xs-12" data-aos="fade-up">
-                        <div class="serviceBox">
-                            <div class="service-icon"><i class="fa fa-diamond"></i></div>
-                            <div class="service-content">
                                 <h3>Administración de viajes</h3>
                                 <p>Administrar viajes y tomar los tiempos de traslado controlar las horas de motor encendido y los tiempos muertos de las unidades </p>
                             </div>
@@ -197,7 +185,7 @@
                         <div class="serviceBox">
                             <div class="service-icon"><i class="fa fa-lightbulb-o"></i></div>
                             <div class="service-content">
-                                <h3>Boton de panico y Alerta de Jammer</h3>
+                                <h3>Boton de panico</h3>
                                 <p>En caso de alguna contigencia la alerta llega al momento en SMS y correo electronico</p>
                             </div>
                         </div>
@@ -209,6 +197,8 @@
         </section>
         <!-- END SERVICE -->
 
+
+
         <!-- START PORTFOLIO -->
         <section id="work" class="our_portfolio section-padding">
             <div class="container-fluid">
@@ -217,7 +207,7 @@
                         <div class="section-title">
                             <h1>Aplicacion web</h1>
                             <span></span>
-                            <p><strong>Capturas de la pagina</strong></p>
+                            <p><strong>Ejemplos de la pagina</strong></p>
                         </div>
                     </div>
                 </div>
@@ -226,9 +216,8 @@
                         <div class="box">
                             <img src="images/reportes.jpg" class="img-responsive" alt="image">
                             <div class="box-content">
-                                <h3 class="title">Reportes Detallados </h3>
+                                <h3 class="title">Reportes mamalones</h3>
                                 <ul class="icon">
-
                                     <li><a href="#" data-toggle="modal" data-target="#projectModal"><i class="fa fa-link"></i></a></li>
                                 </ul>
                             </div>
@@ -256,166 +245,67 @@
                             </div>
                         </div>
                     </div><!-- END COL-->
+
+
+
                     <div class="col-md-12">
-                         <!-- Overlay Modal  -->
-                         <div  tabindex="0" class="modal fade" id="projectModal">
-                             <div class="modal-dialog">
-                                 <div class="modal-content">
-                                     <div class="modal-header">
-                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                         <h4 class="modal-title">Reportes a detalle</h4>
-                                     </div>
-                                     <div class="modal-body">
-                                         <img src="images/reportes.jpg" class="img-responsive" alt=""/>
-                                         <p>Reportes detallados de solo lo que necesitas tiempos de recorrido y de motor encendido y apagado </p>
-
-                                   </div>
-                                 </div><!-- /.modal-content -->
-                             </div><!-- /.modal-dialog -->
-                         </div><!-- /.modal -->
-                         <!-- Overlay Modal  -->
-                         <div  tabindex="0" class="modal fade" id="projectModal2">
-                             <div class="modal-dialog">
-                                 <div class="modal-content">
-                                     <div class="modal-header">
-                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                         <h4 class="modal-title">Controles</h4>
-                                     </div>
-                                     <div class="modal-body">
-                                         <img src="images/controles.jpg" class="img-responsive" alt=""/>
-                                         <p>Notificaciones y Alertas en vivo asi como el envio de las mismas a tu correo o por SMS en tu celular  </p>
-
-                                   </div>
-                                 </div><!-- /.modal-content -->
-                             </div><!-- /.modal-dialog -->
-                         </div><!-- /.modal -->
-                         <!-- Overlay Modal  -->
-                         <div  tabindex="0" class="modal fade" id="projectModal3">
-                             <div class="modal-dialog">
-                                 <div class="modal-content">
-                                     <div class="modal-header">
-                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                         <h4 class="modal-title">Ubicacion, notificaciones y alertas en tiempo real</h4>
-                                     </div>
-                                     <div class="modal-body">
-                                         <img src="images/ubicacion.jpg" class="img-responsive" alt=""/>
-                                         <p>Visualizacion de tus unidades y alertas en tiempo real sin necesidad de recargar la pagina web </p>
-
-                                   </div>
-                                 </div><!-- /.modal-content -->
-                             </div><!-- /.modal-dialog -->
-                         </div><!-- /.modal -->
-
-
-                     </div>
-                 </div><!-- END ROW-->
-             </div><!-- END CONTAINER-->
-         </section>
-         <!-- END PORTFOLIO -->
-
-         <!-- START DEVICES -->
-         <section id="devices" class="our_devices section-padding">
-             <div class="container-fluid">
-                 <div class="row">
-                     <div class="col-md-12 text-center">
-                         <div class="section-title">
-                             <h1>Equipos CALAMP</h1>
-                             <span></span>
-                             <p><strong>Equipos mas vendidos </strong></p>
-                         </div>
-                     </div>
-                 </div>
-                 <div class="row">
-                     <div class="col-md-4 col-xs-12 col-sm-6 no-padding">
-                         <div class="box">
-                             <img src="images/reportes.jpg" class="img-responsive" alt="image">
-                             <div class="box-content">
-                                 <h3 class="title">LMU 330 3G</h3>
-                                 <ul class="icon">
-                                     <li><a href="#" data-toggle="modal" data-target="#projectModal11"><i class="fa fa-link"></i></a></li>
-                                 </ul>
-                             </div>
-                         </div>
-                     </div><!-- END COL-->
-                     <div class="col-md-4 col-xs-12 col-sm-6 no-padding">
-                         <div class="box">
-                             <img src="images/controles.jpg" class="img-responsive" alt="image">
-                             <div class="box-content">
-                                 <h3 class="title">LMU2630 3G el mas Robusto</h3>
-                                 <ul class="icon">
-                                     <li><a href="#" data-toggle="modal" data-target="#projectModal12"><i class="fa fa-link"></i></a></li>
-                                 </ul>
-                             </div>
-                         </div>
-                     </div><!-- END COL-->
-                     <div class="col-md-4 col-xs-12 col-sm-6 no-padding">
-                         <div class="box">
-                             <img src="images/ubicacion.jpg" class="img-responsive" alt="image">
-                             <div class="box-content">
-                                 <h3 class="title">TTU1230 3G bateria de larga duracion </h3>
-                                 <ul class="icon">
-                                     <li><a href="#" data-toggle="modal" data-target="#projectModal13"><i class="fa fa-link"></i></a></li>
-                                 </ul>
-                             </div>
-                         </div>
-                     </div><!-- END COL-->
-                     <div class="col-md-12">
-                          <!-- Overlay Modal  -->
-                          <div  tabindex="0" class="modal fade" id="projectModal11">
-                              <div class="modal-dialog">
-                                  <div class="modal-content">
-                                      <div class="modal-header">
-                                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                          <h4 class="modal-title">Especificaciones Tecnicas</h4>
-                                      </div>
-                                      <div class="modal-body">
-                                          <img src="images/reportes.jpg" class="img-responsive" alt=""/>
-                                          <p>Descargar PDF</p>
-
+                        <!-- Overlay Modal  -->
+                        <div  tabindex="0" class="modal fade" id="projectModal">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title">Reportes a detalle </h4>
                                     </div>
-                                  </div><!-- /.modal-content -->
-                              </div><!-- /.modal-dialog -->
-                          </div><!-- /.modal -->
-                          <!-- Overlay Modal  -->
-                          <div  tabindex="0" class="modal fade" id="projectModal12">
-                              <div class="modal-dialog">
-                                  <div class="modal-content">
-                                      <div class="modal-header">
-                                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                          <h4 class="modal-title">Especificaciones Tecnicas</h4>
-                                      </div>
-                                      <div class="modal-body">
-                                          <img src="images/controles.jpg" class="img-responsive" alt=""/>
-                                          <p>Descargar PDF</p>
+                                    <div class="modal-body">
+                                        <img src="images/reportes.jpg" class="img-responsive" alt=""/>
+                                        <p>Reportes detallados de solo lo que necesitas tiempos de recorrido y de motor encendido y apagado </p>
 
+                                  </div>
+                                </div><!-- /.modal-content -->
+                            </div><!-- /.modal-dialog -->
+                        </div><!-- /.modal -->
+                        <!-- Overlay Modal  -->
+                        <div  tabindex="0" class="modal fade" id="projectModal2">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title">Controles</h4>
                                     </div>
-                                  </div><!-- /.modal-content -->
-                              </div><!-- /.modal-dialog -->
-                          </div><!-- /.modal -->
-                          <!-- Overlay Modal  -->
-                          <div  tabindex="0" class="modal fade" id="projectModal13">
-                              <div class="modal-dialog">
-                                  <div class="modal-content">
-                                      <div class="modal-header">
-                                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                          <h4 class="modal-title">Especificaciones Tecnicas</h4>
-                                      </div>
-                                      <div class="modal-body">
-                                          <img src="images/ubicacion.jpg" class="img-responsive" alt=""/>
-                                          <p>Descargar PDF</p>
+                                    <div class="modal-body">
+                                        <img src="images/controles.jpg" class="img-responsive" alt=""/>
+                                        <p>Notificaciones y Alertas en vivo asi como el envio de las mismas a tu correo o por SMS en tu celular  </p>
 
+                                  </div>
+                                </div><!-- /.modal-content -->
+                            </div><!-- /.modal-dialog -->
+                        </div><!-- /.modal -->
+                        <!-- Overlay Modal  -->
+                        <div  tabindex="0" class="modal fade" id="projectModal3">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title">Ubicacion, notificaciones y alertas en tiempo real</h4>
                                     </div>
-                                  </div><!-- /.modal-content -->
-                              </div><!-- /.modal-dialog -->
-                          </div><!-- /.modal -->
+                                    <div class="modal-body">
+                                        <img src="images/ubicacion.jpg" class="img-responsive" alt=""/>
+                                        <p>Visualizacion de tus unidades en tiempo real sin necesidad de recargar la pagina web</p>
+
+                                  </div>
+                                </div><!-- /.modal-content -->
+                            </div><!-- /.modal-dialog -->
+                        </div><!-- /.modal -->
 
 
-                      </div>
-                  </div><!-- END ROW-->
-              </div><!-- END CONTAINER-->
-          </section>
-          <!-- END PORTFOLIO -->
-      <!-- START PROMOTION -->
+                    </div>
+                </div><!-- END ROW-->
+            </div><!-- END CONTAINER-->
+        </section>
+        <!-- END PORTFOLIO -->
+
+        <!-- START PROMOTION -->
         <section class="promotion_section" style="background-image: url(assets/img/bg/promotion-bg.jpg); background-size:cover; background-position: center center;">
             <div class="container">
                 <div class="row">
@@ -429,6 +319,8 @@
             </div><!-- END CONTAINER -->
         </section>
         <!-- END PROMOTION -->
+
+
 
         <!-- START BUY NOW -->
         <section class="buy_now">

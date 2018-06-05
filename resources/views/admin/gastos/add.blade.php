@@ -18,7 +18,7 @@
             {{ Form::date('date', '' , ['class' => 'form-control']) }}
             </div>
 
-            <select name="user_id" class="form-group">
+            <select name="user_id_p" class="form-group">
                   @foreach($contributors as $contributor)
                   <option value="{{ $contributor->id }}"> {{ $contributor->name }}</option>
                   @endforeach

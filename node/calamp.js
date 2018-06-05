@@ -45,6 +45,7 @@ var Server = function(){
 
                 io.sockets.emit('message1', 'sobres');
             }else{
+                io.sockets.emit('datatest', 'ok');
                 s.process_dgram(packet,guest);
             }
         });

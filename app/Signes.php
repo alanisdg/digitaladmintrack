@@ -12,4 +12,8 @@ class Signes extends Model
         return $this->belongsTo(Packets::class);
     }
 
+    public function geofence(){
+        return $this->belongsTo(Geofences::class);
+    }
+
 }

@@ -68,7 +68,24 @@ class User extends Authenticatable
         return $comissions;
     }
 
-        public function total_comission($id){
+        public function real_commission($id,$contributor){
+        
+        $total = '';
+        $comissions = Comissions::where('user_id',$id)->get();
+        foreach ($comissions as $comission) {
+            $total = $total + $comission->subtotal;
+        }
+
+        $total_inversion = $contributor->total_inversion($contributor->id);
+
+        $total = $total - $total_inversion;
+        if($id == 44){
+            $total = ' - ';
+        }
+        return $total;
+    }
+
+    public function total_comission($id){
         
         $total = '';
         $comissions = Comissions::where('user_id',$id)->get();
@@ -79,6 +96,7 @@ class User extends Authenticatable
         return $total;
     }
 
+
     public function total_inversion($id){
         
         $total = '';
@@ -88,6 +106,32 @@ class User extends Authenticatable
         }
 
         return $total;
+    }
+
+    public function deuda_total($id){
+        
+        $total = '';
+        $comissions = Gastos::where('user_id_p',$id)->get();
+        foreach ($comissions as $comission) {
+            $total = $total + $comission->subtotal;
+        }
+
+        $total_inversion = $total;
+        $total_comission = '';
+
+        $comissions = Comissions::where('user_id',$id)->get();
+        foreach ($comissions as $comission) {
+            $total_comission = $total_comission + $comission->subtotal;
+        }
+
+        $deuda_total = $total_inversion - $total_comission;
+
+        if($deuda_total < 0 OR $id==44){
+            $deuda_total = ' Sin deuda ';
+        }
+
+
+        return $deuda_total;
     }
 
     public function ingreso_by_month($month,$year){
@@ -222,9 +266,9 @@ WHERE updateTime IN (
 
 
     public function getAllDevices($user){
-        if($user->role_id==1){
-            
-            $user = User::find($user->id);
+               if($user->role_id==1){
+             
+                    $user = User::find($user->id);
         $client_id = $user->client_id;
         $client = Clients::find($client_id);
         $devices = $client->allDevices;
@@ -232,15 +276,41 @@ WHERE updateTime IN (
         }else {
             $devices = $user->all_devices_by_user;
         }
+        $ides = '';
         foreach ($devices as $device) {
-             $lastPacket = Packets_live::where('devices_id',$device->id)->orderBy('id','desc')->first();
-            // dd($lastPacket);
-           if($lastPacket == null){
-             $lastPacket = Packets::where('devices_id',$device->id)->orderBy('id','desc')->first();
-             
-         }; 
-         $device->lastpacket=$lastPacket;
+            $ides .= $device->id . ',';
         }
+        
+        $ides = substr($ides, 0, -1);
+        //dd($ides);
+        if($ides == false){
+
+            return false;
+        }
+        $p = DB::select('SELECT *
+FROM packets_lives
+WHERE updateTime IN (
+    SELECT MAX(updateTime) FROM packets_lives WHERE devices_id IN ('.$ides.') GROUP BY devices_id
+);');
+    
+        foreach ($devices as $device) {
+            foreach ($p as $packet) {
+                if($device->id == $packet->devices_id){
+                    $device->lastpacket = $packet;
+                    if(empty($device->lastpacket)){
+                        $lastPacket = Packets::where('devices_id',$device->id)->orderBy('id','desc')->first();
+                        $device->lastpacket =$lastPacket;
+                    }
+                }
+            } 
+        }
+        foreach ($devices as $device) {
+            if(empty($device->lastpacket)){
+                        $lastPacket = Packets::where('devices_id',$device->id)->orderBy('id','desc')->first();
+                        $device->lastpacket =$lastPacket;
+                    }
+        }
+        
         return $devices;
     }
 

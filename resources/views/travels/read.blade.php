@@ -107,7 +107,7 @@
                 <input class="btn btn-sm btn-primary" type="submit" name="" value="comentar">
             </form></div>
             <div role="tabpanel" class="tab-pane" id="stop_engine_tab">
-                    {!! $stop_parse !!}
+                    {!! $stop_parse !!} t
                     </div>
                   </div>
                 </div>

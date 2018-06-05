@@ -40,6 +40,33 @@ class HomeController extends BaseController
     
     public function index()
     {
+
+    	        $user = Auth::user()->id;
+        //$devices = $user->getDevices($user);
+
+
+        $alldevices = Auth::user()->getAllDevices(Auth::user());
+        $devices = array();
+        $boxes= array();
+foreach ($alldevices as $device) {
+    if($device->type_id == 1){
+        array_push($devices, $device);
+    }
+    if($device->type_id == 2){
+        array_push($boxes, $device);
+    }
+} 
+
+ 
+
+        // $boxes = $user->getBoxes($user);
+        $config = Configs::where('client_id',Auth::user()->client_id)->first();
+        $devices_availables =0;  
+       
+        return view('home', compact('user','devices','devices_availables','config','boxes','alldevices'));
+
+
+/*
             $client_id = Auth::user()->client_id;
         $client = Clients::find($client_id);
         
@@ -57,7 +84,7 @@ class HomeController extends BaseController
         $devices_availables =0;
         //return view('test', compact('user','devices','devices_availables','config','boxes','alldevices'));
         return view('home', compact('user','devices','devices_availables','config','boxes','alldevices'));
-        
+        */
     }
 
     public function mapa()

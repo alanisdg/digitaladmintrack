@@ -71,8 +71,9 @@ Route::post('user/jewel', 'UserController@jewel',function(){});
 
 //REPORTES
 Route::get('/reportes', 'ReportsController@index',function(){});
+Route::get('/reportesgeocercas', 'ReportsController@geocercas',function(){});
 Route::post('reports/get', 'ReportsController@get',function(){});
-
+Route::post('reports/get_geofences', 'ReportsController@get_geofences',function(){});
 
 //TRAVELS
 Route::get('/travels', 'TravelsController@index',function(){});
@@ -263,6 +264,7 @@ Route::group(['middleware'=>'userRole:1,0,0,0,0,0'],function(){
 
     //BALANCE
     Route::get('dashboard/balance', 'AdminController@balance',function(){});
+    Route::get('dashboard/detail/balance', 'AdminController@balance_detail',function(){});
 
 
     //GASTOS
@@ -283,11 +285,13 @@ Route::group(['middleware'=>'userRole:1,0,0,0,0,0'],function(){
     //INVENTARIO
     Route::get('dashboard/detail/client/{id}', 'AdminController@detailclient',function(){});
     Route::get('dashboard/detail/{month}/{year}', 'AdminController@detail',function(){});
-    
 
     //FACTURAS
     Route::get('dashboard/invoices/{id}', 'InvoicesController@read',function(){});
     Route::get('dashboard/invoice_read/{id}', 'InvoicesController@get',function(){});
+
+    //PROGRAMACION  
+    Route::get('dashboard/recuperacion', 'AdminController@recuperacion',function(){}); 
 
     //USUARIOS
     Route::get('dashboard/users', 'UserController@users',function(){    });

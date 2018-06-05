@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Devices;
 use App\Packets;
+use App\Packets_live;
 use App\Clients;
 use App\Travels;
 use Auth;
@@ -47,6 +48,7 @@ dd($send);
 */
         $user = User::find(Auth::user()->id);
         $packets = Packets::count();
+        $packets_live = Packets_live::count(); 
         $users = User::count();
         $devices  = Devices::count();
         $clients = Clients::count();
@@ -73,7 +75,7 @@ dd($send);
             $relax =1;
         }
 
-        return view('admin.home', compact('user','devices','packets','users','devices','clients','travels','travelsOnRoad','relax','timeforhumans'));
+        return view('admin.home', compact('user','devices','packets','users','devices','clients','travels','travelsOnRoad','relax','timeforhumans','packets_live'));
     }
 
 }

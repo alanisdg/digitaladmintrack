@@ -34,6 +34,9 @@ class Clients extends Model
         }
         return $total;
     }
+
+   
+
     public function device_price($device,$price){
         if($device->stop_charge == 1){
             return 'cancelado';

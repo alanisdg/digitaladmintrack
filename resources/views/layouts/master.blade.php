@@ -34,7 +34,18 @@
                         @if(  Auth::user()->role_id ==1  OR Auth::user()->role_id ==6 OR Auth::user()->role_id ==4 OR Auth::user()->role_id ==3 )
                         <li class="active"><a href="/tools">Herramientas <span class="sr-only">(current)</span></a></li>
                         @endif
-                        <li><a href="/reportes">Reportes <span class="sr-only">(current)</span></a></li>
+
+                         <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Reportes<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/reportes">Trayectoria  <span class="sr-only">(current)</span></a></li>
+                                <li><a href="/reportesgeocercas">Geocercas  <span class="sr-only">(current)</span></a></li>
+                                
+                            </ul>
+                        </li>
+
+
+                         
                         
                         <li><a href="/trucks">Unidades</a></li>
                         @if($client_profile->box == 1)

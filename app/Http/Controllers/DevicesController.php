@@ -350,7 +350,12 @@ class DevicesController extends Controller
             $device->clients()->sync(request()->get('clients'));
             $device->name = request()->get('name');
             $device->charge_from = request()->get('charge_from');
-            $device->stop_from = request()->get('stop_from');
+            if(request()->get('stop_from') == ''){
+                $device->stop_from = null;
+            }else{
+               $device->stop_from = request()->get('stop_from'); 
+            }
+            
             $device->imei = request()->get('imei');
             $device->plate = request()->get('plate');
             $device->type_id = request()->get('type_id');
@@ -366,8 +371,7 @@ class DevicesController extends Controller
             $device->engine_block = 0;
             }else{
             $device->engine_block = 1;
-            }
-
+            } 
 
             $device->save();
             $clients = Clients::all();

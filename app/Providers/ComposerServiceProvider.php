@@ -16,6 +16,7 @@ class ComposerServiceProvider extends ServiceProvider
     {
         View::composer(['home'],'App\Http\ViewComposers\HeaderComposer');
         View::composer(['reports'],'App\Http\ViewComposers\HeaderComposer');
+        View::composer(['reportesgeocercas'],'App\Http\ViewComposers\HeaderComposer');
         View::composer(['tools'],'App\Http\ViewComposers\HeaderComposer');
         View::composer(['users.*'],'App\Http\ViewComposers\HeaderComposer');
         View::composer(['clients.*'],'App\Http\ViewComposers\HeaderComposer');

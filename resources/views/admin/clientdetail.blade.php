@@ -3,7 +3,7 @@
 <div class="right_col" role="main">
  
            
-            <h3 class="title">Ingresos del cliente {{ $client->name }} </h3> 
+            <h3 class="title">Ingresos del cliente {{ $client->name }} - Precio por unidad  {{ $client->device_price }}</h3> 
             <table class="table table-hover table-striped white-table">
                 <thead>
                     <td>Concepto</td>

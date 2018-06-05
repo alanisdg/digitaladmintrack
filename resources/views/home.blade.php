@@ -29,6 +29,7 @@
             <?php $color_class = 'bg-purple'; $state = 'descargando';?>
             <!--descargando-->
             @endif
+            @if(isset($device->lastpacket->lat ))
             <div class="device device-off  animate device_{{ $device->id }}" name="{{ $device->name }}">
                 <div class="">
                     
@@ -133,7 +134,12 @@
 
                     </div>
                     
-
+@else
+                                <!--EQUIPO SIN PAQUETES-->
+                                <div class="device">
+                                {{ ucfirst($device->name) }} Equipo nuevo.
+                                </div>
+                                @endif
                         @endif
                         @endforeach
                         @if($onroad_devices==0   )

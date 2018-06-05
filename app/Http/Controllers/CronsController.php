@@ -42,9 +42,9 @@ class CronsController extends Controller
             */
         /*$user = User::find(1);
         $user->name = 'h7';
-        $user->save();*/
+        $user->save();*/ 
         DB::table('packets_lives')->where('updateTime', '<', $ayer)->delete();
-
+        
     }
 
     public function payment_alert(){

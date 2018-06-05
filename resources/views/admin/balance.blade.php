@@ -10,16 +10,16 @@
 </div>
 
 <div class="panel panel-default col-md-3" style="padding:0;margin-left:20px">
-  <div class="panel-heading">Gastos Totales</div>
+  <div class="panel-heading">Deuda Total</div>
   <div class="panel-body">
-    $ {{ $gastos_totales }}
+    $ {{ $deuda_total }}
   </div>
 </div>
 
 <div class="panel panel-default col-md-3" style="padding:0;margin-left:20px">
   <div class="panel-heading">Balance</div>
   <div class="panel-body">
-    <span class="price {{ $class }}">$ {{ $balance }}</span>
+    <span class="price {{ $class }}"><span class="price  "><a href="/dashboard/detail/balance" class="btn btn-primary">$ {{ $balance_general }}</a></span>
   </div>
 </div>
 
@@ -27,7 +27,7 @@
   <div class="panel-heading">Inversion por usuario</div>
   <div class="panel-body">
     <?php foreach ($contributors as $contributor) {
-           ?> <p > <?php echo $contributor->name . ': <span class="price2">$ ' . $contributor->total_inversion($contributor->id) ?></span></p> <?php } ?>
+           ?> <p ><span class="lename"> <?php echo $contributor->name . '</span>: Inversion <span class="price2">$ ' . $contributor->total_inversion($contributor->id) ?></span> - Deuda <span class="price2"><?php echo $contributor->deuda_total($contributor->id) ?></span></p> <?php } ?>
   </div>
 </div>
 
@@ -35,7 +35,7 @@
   <div class="panel-heading">Comisiones totales por usuario</div>
   <div class="panel-body">
     <?php foreach ($contributors as $contributor) {
-           ?> <p  > <?php echo $contributor->name . ': <span class="price2">$ ' . $contributor->total_comission($contributor->id) ?></span></p> <?php } ?>
+           ?> <p  ><span class="lename"> <?php echo $contributor->name . '</span>: Comision <span class="price2">$ ' . $contributor->total_comission($contributor->id) ?></span> - Real <span class="price2"><?php echo $contributor->real_commission($contributor->id,$contributor) ?></span></p> <?php } ?>
   </div>
 </div>
 
@@ -47,8 +47,96 @@
   </div>
 </div>
 
-      
+<div class="panel panel-default col-md-3" style="padding:0;margin-left:20px">
+  <div class="panel-heading">Ingresos mensuales por cliente</div>
+  <div class="panel-body">
+    <?php 
+    $total_mensualidad = '';
+    foreach ($cobranza as $client_) { 
+      $total_mensualidad = $total_mensualidad + $client_->invoice['total']
+ ?> <p  > <a href="/dashboard/invoice/{{ $client_->id }}" class="btn btn-primary btn-xs"><?php echo $client_->name . '</a>: <span class="price2"> ' ?>
 
+            <?php echo $client_->invoice['total'] / 1.16 ?></span></p> <?php } ?>
+              <p>Total: <?php echo $total_mensualidad / 1.16 ?></p>
+  </div>
+</div>
+
+      <div style="width:75%;">
+
+      	<canvas id="myChart" width="400" height="150"></canvas>
+      	<?php $totals = '' ?>
+      	@foreach($Currentmonths as $month)
+ <?php 
+ $son = $contributor->ingreso_by_month($month,'2018');
+ if($son == ''){
+ 	$son = 0;
+ }
+ $totals .= $son . ',' ?>
+        
+@endforeach 
+
+<?php 
+$totals = rtrim($totals,",");
+?>
+
+<?php $totals_2017 = '' ?>
+      	@foreach($Pasmonths as $month)
+ <?php 
+ $son = $contributor->ingreso_by_month($month,'2017');
+ if($son == ''){
+ 	$son = 0;
+ }
+ $totals_2017 .= $son . ',' ?>
+        
+@endforeach 
+
+<?php 
+$totals_2017 = rtrim($totals_2017,",");
+?>
+<script>
+
+var ctx = document.getElementById("myChart").getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+        datasets: [{
+            label: '2018',
+            data: [{{ $totals }}],
+            backgroundColor: [
+                '#29c9f93d'
+            ],
+            borderColor: [
+                'rgb(54, 162, 235)'
+            ],
+            borderWidth: 1
+        },{
+        	label: '2017',
+            data: [{{ $totals_2017 }}],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255,99,132,1)'
+            ],
+            borderWidth: 1
+        }
+        ]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        }
+    }
+});
+</script>
+
+
+		
 
 @foreach($Pasmonths as $month)
 <div class="lemont">
@@ -124,6 +212,9 @@
           font-weight: bold;
     color: #656565;
     font-size: 14px;
+    }
+    .lename{
+      font-weight: bold;
     }
     .letitle{
           font-size: 18px;
