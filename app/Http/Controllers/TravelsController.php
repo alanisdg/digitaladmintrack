@@ -1243,6 +1243,7 @@ class TravelsController extends Controller
               $hours = floor($total_travel / 60); // Get the number of whole hours
               $minutes = $total_travel % 60; // Get the remainder of the hours
               $mov = $hours . ":" .$minutes . " horas";
+
           }else{
               $mov = $total_travel . " mins";
           }
@@ -1291,19 +1292,23 @@ $descarga_time ='x';
         if($travel->tstate_id==9){
 
             $salida = new Carbon($real_departure, 'America/Monterrey');
-             $llegada = Carbon::now('America/Monterrey');
+            
+             $llegada = new Carbon($destination_arrival_time, 'America/Monterrey');
              $total_travel = $salida->diffInMinutes($llegada);
              if($total_travel > 60){
               $hours = floor($total_travel / 60); // Get the number of whole hours
               $minutes = $total_travel % 60; // Get the remainder of the hours
               $mov = $hours . ":" .$minutes . " horas";
+              $total_travel = $hours . ":" .$minutes . " horas";
           }else{
               $mov = $total_travel . " mins";
+              $total_travel = $total_travel . " mins";
           }
 
 
           $salida_ = new Carbon($destination_arrival_time, 'America/Monterrey');
              $llegada_ = Carbon::now('America/Monterrey');
+
              $total_travel_ = $salida_->diffInMinutes($llegada_);
              if($total_travel_ > 60){
               $hours = floor($total_travel_ / 60); // Get the number of whole hours
@@ -1313,7 +1318,7 @@ $descarga_time ='x';
               $mov_ = $total_travel_ . " mins";
           }
 
-
+         
               $descarga_time = $mov_; 
 
         }
@@ -1329,9 +1334,11 @@ $descarga_time ='x';
         $points  = $report[4]; 
         $max  = $report[9]; 
         $stop_parse = $report[10];
-            $bad_engine = $report[11];   
-
-        return view('travels.read',compact('travel','descarga_time','comments','head','body','title','real_departure','real_arrival','map_info','points','total_travel','max','origin_arrival_time','destination_arrival_time','descarga','carga','od_geofences','stop_parse','bad_engine'));
+            $bad_engine = $report[11]; 
+          
+            $engine_parse = $report[12];   
+ 
+        return view('travels.read',compact('travel','descarga_time','comments','head','body','title','real_departure','real_arrival','map_info','points','total_travel','max','origin_arrival_time','destination_arrival_time','descarga','carga','od_geofences','stop_parse','bad_engine','engine_parse'));
     }
     public function history($id)
     {

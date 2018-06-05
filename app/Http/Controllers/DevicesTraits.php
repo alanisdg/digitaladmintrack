@@ -120,15 +120,33 @@ trait DevicesTraits
         ->where('device_id',$device)
         ->whereBetween('updateTime',array($departure_date,$arrival_date))
         ->orderBy('id','desc')->first();
+
+
       
+
+        
+
+        $eldevice = Devices::find($device);
+        
+        $geofences = json_decode($eldevice->geofences,true);
+        
         if($search_origin == null){
             $code = 1;
+            // SI NO SE ENCONTRO ORIGEN BUSQUEMOS SI SE ENCUENTRA DENTRO DE UNA GEOCERCA
+            foreach ($geofences as $geofence => $id) {
+            //dd($geofence,$id);
+            if($id == 1){
+                if($geofence == $origin_id){
+                    $code = 8;
+                }
+            }
+        }
         }else{
             if($search_origin->status == 0){
             $code = 2;
             }
             if($search_origin->status == 1){
-            $code = 8;
+            
             }
         } 
         $search_destination = Signes::where('geofence_id',$destination_id)
@@ -191,24 +209,26 @@ trait DevicesTraits
             }
             
         }
-       
+       //dd($engine_stop);
         $body='';
         $head='';
         $tiempo='';
         $head .='<tr>';
-        $head .='<td>Fecha  </td>';
+        $head .='<td>Fecha  </td>'; 
         $head .='<td>Latitud</td>';
         $head .='<td>Longitud</td>';
+        $head .='<td>Bateria</td>';
+        $head .='<td>Bateria alimentacion</td>';
         $head .='<td>Velocidad</td>';
         $head .='<td>Motor</td>';
         $head .='<td>RSSI</td>';
         $head .='<td>Evento</td>';
-        $head .='<td>Odometro</td>';
-        $head .='<td>Heading</td>';
-        $head .='<td>Voltaje</td>';
-        $head .='<td>Bateria</td>';
+        $head .='<td>odometro</td>';
+        $head .='<td>heading</td>';
+        $head .='<td></td>';
         $head .='</tr>';
         $stoptruck = array();
+        $stoptruck_engine_on = array();
         $coords = array();
         $points = array();
         $previous_value = 0;
@@ -241,7 +261,7 @@ trait DevicesTraits
             if($i == $len - 1){
                 if($truck == 'off'){
                     $packet->truck = $truck;
-                    //$body .='<td>ultima'.$truck.'</td>';
+                    $body .='<td>ultima'.$truck.'</td>';
                     //array_push($stoptruck,$packet);  
                 }
             } 
@@ -254,6 +274,9 @@ trait DevicesTraits
                 
                 $packet->truck = $truck;
                 array_push($stoptruck,$packet);
+                if($packet->engine == 1){
+                    array_push($stoptruck_engine_on,$packet);
+                }
                 $truck_status = $truck;
             }else{
                 
@@ -280,17 +303,17 @@ trait DevicesTraits
             array_push($points,$point_data);
 
            
-            $body .='<td>'.$packet->updateTime."</td>";
+            $body .='<td>'.$packet->updateTime."</td>";  
             $body .='<td>'.$packet->lat."</td>";
             $body .='<td>'.$packet->lng."</td>";
+            $body .='<td>'.$packet->power_bat."</td>";
+            $body .='<td>'.$packet->power_supply."</td>";
             $body .='<td>'.$packet->speed."</td>";
             $body .='<td>'.$packet->engine."</td>";
             $body .='<td>'.$packet->rssi."</td>";
             $body .='<td>'.$packet->parseEvent($packet->eventCode)."</td>";
             $body .='<td>'.$packet->odometro." mts</td>";
             $body .='<td>'.$packet->heading."</td>";
-            $body .='<td>'.$packet->power_supply."</td>";
-            $body .='<td>'.$packet->power_bat."</td>";
             $body .='<td><button lat="'.$packet->lat.'" lng="'.$packet->lng.'" class="btn btn-primary btn-xs panto goto">Ver</button></td>';
 
             
@@ -382,6 +405,8 @@ trait DevicesTraits
               $det = $detenido . " mins";
           }
           $title ='';
+         // dd($stoptruck_engine_on);
+
           //DETERMINAR PARADAS POR VELOCIDAD
           $go = 1;
           $stop_map_info=array();
@@ -424,7 +449,50 @@ trait DevicesTraits
             }
             //PARADAS POR VELOCIDAD
             
-          }          
+          } 
+
+          $go = 1;
+          $stop_map_info_engine_off = array();
+          foreach ($stoptruck_engine_on as $packeta) {
+            $time = $packeta->updateTime;
+            if($packeta->truck == 'off'){
+                $lat = $packeta->lat;
+                $lng = $packeta->lng;
+                $de = $packeta->updateTime;
+            }else{
+                $a = $packeta->updateTime;
+            }
+            $go++;
+            if($go == 3){
+                $from = new Carbon($de, 'America/Monterrey');
+                    $to = new Carbon($a, 'America/Monterrey');
+                    $dif = $to->diffInMinutes($from);
+                    $detenido_por_velocidad  = $detenido_por_velocidad + $dif;
+
+
+                    if($dif > 60){
+                      $hours = floor($dif / 60); // Get the number of whole hours
+                      $minutes = $dif % 60; // Get the remainder of the hours
+
+                      $mov = $hours . ":" .$minutes . " horas";
+                  }else{
+                      $mov = $dif . " mins";
+                  }
+                  if($dif > $maxima){
+                    $max = array($lat,$lng,$mov);
+                    $maxima = $dif;
+                  }
+                    $va = array($lat,$lng,$mov,$de,$to,$from,$a);
+                    if($dif > 4){
+
+                    array_push($stop_map_info_engine_off, $va);
+                    }
+                $go=1;
+            }
+            //PARADAS POR VELOCIDAD
+            
+          } 
+          //dd($stop_map_info_engine_off);
           $kms = $kms/1000;
           if($detenido_por_velocidad > 60){
                       $hours = floor($detenido_por_velocidad / 60); // Get the number of whole hours
@@ -469,18 +537,21 @@ trait DevicesTraits
                   }
 
 
-        $engine_parse .= '<li class="list-group-item">Motor Encendido:'. $en_on .'</li>';
+        $engine_parse .= '<li class="list-group-item">Motor Encendido: '. $en_on .'</li>';
 
-        $engine_parse .= '<li class="list-group-item">Motor Apagado:'. $en_off .'</li>';
+        $engine_parse .= '<li class="list-group-item">Motor Apagado: '. $en_off .'</li>';
+        //dd($engine_stop);
                         foreach($engine_stop as $key => $stop){
+                             
                             if($stop[2] > 15){
+                                //dd($stop);
                                 $engine_parse .='<li class="list-group-item">';
                                 $engine_parse .='Detenido por <span class="goto" lat="'. $stop[0] .'" lng="' .$stop[1].'">'.$stop[3].'</span></li>'; 
                             }
                         }
                         $engine_parse .='</ul>';
-
-
+                        //dd($stop_map_info_engine_off);
+//dd($engine_parse);
         $response =array($head,$body,$title,$coords,$points,$stop,$fisrtLatLng,$stoptruck,$stop_map_info,$max,$stop_parse,$engine_stop,$engine_parse);
         return $response;
         

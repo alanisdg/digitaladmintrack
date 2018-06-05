@@ -9,10 +9,10 @@
                         {{ $travel->device->name }} 
                         @else
                           Sin unidad asignada 
-                        @endif  {{ $travel->tstate->name }}
+                        @endif  
 
                         @if($travel->tstate_id == 9)
-                            {{ $descarga_time }}
+                            <br><span class="bg-purple">{{ $travel->tstate->name }}</span> <span style="font-size: 16px; color:grey">{{ $descarga_time }}</span>
                         @endif
                     </h3>  
                     <ul class="nav nav-tabs" role="tablist">
@@ -58,7 +58,7 @@
                                 @if(isset($real_departure))
                                 
                                     <p><b>Hora de Salida</b> {{ $real_departure }}</p>
-                                    <p><b>Tiempo de carga:</b> <span class="badge ">{{ $carga }}</span></p>
+                                    <p><b>Tiempo de carga:</b> <span class="badge bg-blue ">{{ $carga }}</span></p>
                                 
                                 @endif
                                 </li>
@@ -70,7 +70,7 @@
                                 <p><b>Hora de llegada a destino</b> {{ $destination_arrival_time }}</p>
                                 @if(isset($real_arrival))
                                     <p><b>Hora de Salida</b> {{ $real_arrival }}</p>
-                                    <p><b>Tiempo de descarga:</b> <span class="badge ">{{ $descarga }}</span></p>
+                                    <p><b>Tiempo de descarga:</b> <span class="badge bg-blue">{{ $descarga }}</span></p>
                                 @endif 
                                 </li>
                                 
@@ -85,6 +85,9 @@
                             </li>  
                     
                         @endforeach
+
+                       
+
                         </ul> 
                     </div>
                     <div role="tabpanel" class="tab-pane" id="messages"><h4>Comentarios</h4>
@@ -107,7 +110,7 @@
                 <input class="btn btn-sm btn-primary" type="submit" name="" value="comentar">
             </form></div>
             <div role="tabpanel" class="tab-pane" id="stop_engine_tab">
-                    {!! $stop_parse !!} t
+                    {!! $engine_parse !!}
                     </div>
                   </div>
                 </div>
@@ -123,15 +126,22 @@
         <div class="col-md-8 comments">
             <div id="map" style="height: 600px" ></div>
         </div>
-        <div class="col-md-12" style="margin-top: 30px">
-            <h3><b>Reportes</b></h3>
-
-            <table class="table table-striped">
+        <div class="col-md-12" style="margin-top: 30px; padding-bottom: 50px">
+             
+            <a class="btn btn-primary" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+              REPORTES
+            </a>
+            <div class="collapse" id="collapseExample">
+              <div class="well">
+               <table class="table table-striped">
                 {!! $head !!}
                 <tbody>
                     {!! $body !!}
                 </tbody>
             </table>
+              </div>
+            </div>
+            
 
 
         </div>

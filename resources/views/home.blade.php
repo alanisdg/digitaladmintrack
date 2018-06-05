@@ -33,10 +33,10 @@
             <div class="device device-off  animate device_{{ $device->id }}" name="{{ $device->name }}">
                 <div class="">
                     
-                         <div class="byside2" style="width:25%"><input type="checkbox" class="showDevice" ide="{{ $device->id }}" checked>
+                         <div class="byside2" style="width:46%"><input type="checkbox" class="showDevice" ide="{{ $device->id }}" checked>
                             <a class="white goto text11 mb0" lat="{{ $device->lastpacket->lat }}"
                         lng = "{{ $device->lastpacket->lng }}" style="float:left">
-                        <span data-toggle="tooltip" data-placement="top" title="@if($device->boxs_id != null) -> {{ $device->boxs->name }} @endif">{{ ucfirst($device->name) }}  </span>
+                        <span data-toggle="tooltip" data-placement="top" title="@if($device->boxs_id != null) -> {{ $device->boxs->name }} @endif">{{ str_limit(ucfirst($device->name), $limit = 15, $end = '...') }}  </span>
                                         </a> </div>
 
                         <div class="byside2" style="width:46%">
@@ -110,7 +110,7 @@
                        
                             <div class="clear"></div>
                         </div>
-                        <div class="byside2" style="width:25%; font-size:10px;"><span class="<?php echo $color_class ?> device_{{ $device->id }}" id="state_{{ $device->id }}"><?php echo strtoupper($state) ?> </span></div>
+                         
                         <div class="clear"></div>
                         <div class="down">
                             <p class="text11 timerText" style="float:left">
@@ -122,8 +122,8 @@
                             </p>
                             <p class="text11" style="float:right">
                                 
-                               
-                                <a href="/travel/{{ $device->travel->tcode->id }}">{{ str_limit(ucfirst($device->travel->route->destination->name), $limit = 15, $end = '...') }} </a>
+                               <a href="/travel/{{ $device->travel->tcode->id }}">{{ str_limit(ucfirst($device->travel->route->destination->name), $limit = 15, $end = '...') }} </a>
+                                <span class="<?php echo $color_class ?> device_{{ $device->id }}" id="state_{{ $device->id }}"><?php echo strtoupper($state) ?> </span> 
                               
                             </p>
                             <div class="clear"></div>

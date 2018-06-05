@@ -107,15 +107,18 @@ class UserController extends Controller
     }
     public function edit($id){
 
-        $user = User::find($id);
+       $user = User::find($id); 
         $client_id = $user->client_id;
         $client = Clients::find($client_id);
         $devices = $client->devices;
         //dd($devices);
         $devices_by_user = $user->getAllDevices($user);
+        if($devices_by_user == false){
+            $devices_by_user = array();
+        }
         //$devices_by_user = $user->getDevices($user); 
 
- 
+
         $alldevices = $user->AllDevices($user);
         $devices = array();
         $boxes= array();

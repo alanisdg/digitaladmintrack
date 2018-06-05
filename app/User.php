@@ -181,18 +181,25 @@ WHERE updateTime IN (
                 }
             }
         }
-        //SELECT MAX(updateTime) FROM packets_lives WHERE devices_id IN (1,3) GROUP BY devices_id
-       /* foreach ($devices as $device) {
-             $lastPacket = Packets_live::where('devices_id',$device->id)->orderBy('id','desc')->first();
-            // dd($lastPacket);
-           if($lastPacket == null){
-             $lastPacket = Packets::where('devices_id',$device->id)->orderBy('id','desc')->first();
-             
-         }; 
-         $device->lastpacket=$lastPacket;
-        } */
+       foreach ($devices as $device) {
+            foreach ($p as $packet) {
+                if($device->id == $packet->devices_id){
+                    $device->lastpacket = $packet;
+                     
+                    if(empty($device->lastpacket)){
+                        $lastPacket = Packets::where('devices_id',$device->id)->orderBy('id','desc')->first();
+                        $device->lastpacket =$lastPacket;
+                    }
+                }
+            } 
+        }
+        foreach ($devices as $device) {
+            if(empty($device->lastpacket)){
+                        $lastPacket = Packets::where('devices_id',$device->id)->orderBy('id','desc')->first();
+                        $device->lastpacket =$lastPacket;
+                    }
+        }
         return $devices;
-
 
 
         
