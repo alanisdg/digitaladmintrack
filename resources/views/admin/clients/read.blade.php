@@ -42,6 +42,24 @@
         </div> 
 
         <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Cortar Servicio 
+                @if($client->access == 1)
+                   <span style="color:red; font-size: 10px;"> Este cliente tiene el servicio suspendido </span>
+                @endif
+                
+            </label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <select name="access" class="form-control col-md-7 col-xs-12">
+                    <option>Selecciona una opción</option>
+                    <option value="1">Cortar</option>
+                    <option value="0">Habilitar</option>
+                </select>
+            </div>
+        </div> 
+
+
+
+        <div class="form-group">
                 <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Logo</span> </label>
                      <div class="col-md-6 col-sm-6 col-xs-12">
                 {!! Form::file('logo') !!}

@@ -37,8 +37,9 @@ class HeaderComposer{
         */
 
         $total_notifications = Notifications::where('client_id',Auth::User()->client_id)->get()->count();
-        $notifications = Notifications::where('client_id',Auth::User()->client_id)->where('user_id',Auth::User()->id)->orderBy('created_at','desc')->take(5)->get();
-
+        $jammer_devices = Devices::where('jammer',1)->get();
+       
+        $notifications = Notifications::where('client_id',Auth::User()->client_id)->where('user_id',Auth::User()->id)->where('nde_id',2)->orderBy('created_at','desc')->take(5)->get();
         $view->with('total_devices',$total_devices);
         $view->with('client_profile',$client);
         //$view->with('onroad_devices',$onroad_devices);
@@ -49,5 +50,6 @@ class HeaderComposer{
         //$view->with('on_use_boxes',$on_use_boxes);
         $view->with('total_notifications',$total_notifications);
         $view->with('notifications',$notifications);
+        $view->with('jammer_devices',$jammer_devices);
     }
 }

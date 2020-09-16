@@ -10,6 +10,21 @@
             </label>
             <div class="col-md-6 col-sm-6 col-xs-12">
                 <input type="hidden"  value="{{ $device->id }}" name="device_id" required="required" class="form-control col-md-7 col-xs-12">
+                <input type="hidden" id="first-name" value="{{ $device->number }}" name="number" required="required" class="form-control col-md-7 col-xs-12">
+                <input type="text" id="first-name" placeholder="introduce un codigo" name="code" required="required" class="form-control col-md-7 col-xs-12">
+                <input type="submit" value="enviar" class="btn btn-primary btn-xs">
+            </div>
+                </form>
+        </div>
+
+                <div class="form-group">
+            <form class="form-horizontal form-label-left" action="/nexmo/send" method="post">
+        {!! csrf_field() !!}
+            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Conexion !R3,44,69
+                <span class="required">*</span>
+            </label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <input type="hidden"  value="{{ $device->id }}" name="device_id" required="required" class="form-control col-md-7 col-xs-12">
                 <input type="hidden" id="first-name"value="{{ $device->number }}" name="number" required="required" class="form-control col-md-7 col-xs-12">
                 <input type="hidden" id="first-name"value="!R3,44,69" name="code" required="required" class="form-control col-md-7 col-xs-12">
                 <input type="submit" value="enviar" class="btn btn-primary btn-xs">
@@ -75,6 +90,21 @@
                 <input type="hidden"  value="{{ $device->id }}" name="device_id" required="required" class="form-control col-md-7 col-xs-12">
                 <input type="hidden" id="first-name"value="{{ $device->number }}" name="number" required="required" class="form-control col-md-7 col-xs-12">
                 <input type="hidden" id="first-name"value="!R3,44,31" name="code" required="required" class="form-control col-md-7 col-xs-12">
+                <input type="submit" value="enviar" class="btn btn-primary btn-xs">
+            </div>
+                </form>
+        </div> 
+
+        <div class="form-group">
+            <form class="form-horizontal form-label-left" action="/nexmo/send" method="post">
+        {!! csrf_field() !!}
+            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Codigo !R3,44,33
+                <span class="required">*</span>
+            </label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <input type="hidden"  value="{{ $device->id }}" name="device_id" required="required" class="form-control col-md-7 col-xs-12">
+                <input type="hidden" id="first-name"value="{{ $device->number }}" name="number" required="required" class="form-control col-md-7 col-xs-12">
+                <input type="hidden" id="first-name"value="!R3,44,33" name="code" required="required" class="form-control col-md-7 col-xs-12">
                 <input type="submit" value="enviar" class="btn btn-primary btn-xs">
             </div>
                 </form>

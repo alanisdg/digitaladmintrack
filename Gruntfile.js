@@ -10,7 +10,7 @@ module.exports = function(grunt) {
         my_target1: {
             files: [
                 {
-                    'public/js/reports.js':
+                    'public/js/reports2.js':
                     [
                         
                         'js/jquery.easing.1.3.js',
@@ -23,8 +23,7 @@ module.exports = function(grunt) {
                         'js/socket.io.js',
                         'js/notify.min.js',
                         'js/notifications.js',
-                        'js/jewelbutton.js',
-                        'js/reports.js',
+                        'js/jewelbutton.js', 
                         'js/chosen.jquery.js'
 
 

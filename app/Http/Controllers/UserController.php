@@ -401,7 +401,8 @@ foreach ($alldevices as $device) {
         $role = request()->get('role_id');
         $password = request()->get('password');
         $client_id = request()->get('client_id');
-
+        $expiration = request()->get('expiration');
+       
         // SE CREA EL USUARIO
         $user = User::create([
             'name' => $name,

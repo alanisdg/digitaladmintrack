@@ -24,6 +24,18 @@ class InvoicesController extends Controller
         $user_auth = $this->user =  \Auth::User();
     }
 
+    public function pay($id){
+        $invoice = Invoices::find($id);
+        $invoice->payment = 1;
+        $invoice->save();
+
+        $client = Clients::find($invoice->client_id);
+        $now =  Carbon::now();
+        $client->payment=$now;
+        $client->save();
+        return redirect()->to('/dashboard/facturas');
+    }
+
     public function read($id){
     	$user = User::find(Auth::user()->id);
         $invoices = Invoices::where('client_id',$id)->orderby('year','desc')->orderby('month','desc')->get();
@@ -32,6 +44,13 @@ class InvoicesController extends Controller
         $client = Clients::find($id);
 
         return view('admin.invoices.invoices', compact('invoices','user','client'));
+    }
+
+    public function facturas(){
+        $user = User::find(Auth::user()->id);
+        $invoices = Invoices::all();
+
+        return view('admin.invoices.facturas', compact('invoices','user','client'));
     }
 
         public function get($id){

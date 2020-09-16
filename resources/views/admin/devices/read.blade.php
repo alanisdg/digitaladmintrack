@@ -84,6 +84,16 @@
             </div>
         </div> 
         <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Combustible<span class="required">*</span>
+            </label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <input type="checkbox"  name="fuel" @if($device->fuel==1) checked @endif  class="form-control col-md-7 col-xs-12">
+                <a href="/tank/calibration/{{ $device->id }}/1" class="btn btn-primary">Calibrar tanque 1 </a>
+                <a href="/tank/calibration/{{ $device->id }}/2" class="btn btn-primary">Calibrar tanque 2 </a>
+                <a href="/tank/calibration/{{ $device->id }}/3" class="btn btn-primary">Calibrar tanque 3 </a>
+            </div>
+        </div> 
+        <div class="form-group">
             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Equipo Virtual <span class="required">*</span>
             </label>
             <div class="col-md-6 col-sm-6 col-xs-12">

@@ -64,20 +64,30 @@ class reportsController extends Controller
         ]);
     }
 
+    public function long(){
+        dd('long');
+    }
     public function get()
     {
          
 
              
         //dd(request()->all());
+        
         $this->validate(request(),[
             'date_init' => ['required'],
             'date_end' => ['required']
         ]);
         $init = request()->get('date_init') . " " . request()->get('hour_init');
-        $end = request()->get('date_end') . " " . request()->get('hour_end');
+        $end = request()->get('date_end') . " " . request()->get('hour_end'); 
+
+        
+
+
 
  $device = Devices::where('imei',request()->get('imei'))->first();
+//        $device = Devices::find(13);
+
         $packets = Packets::where('devices_id',$device->id)
                     ->whereBetween('updateTime', array($init, $end))
                     ->get();
@@ -89,6 +99,7 @@ if(count($packets)==0){
         ]);
 }else{
 $report = $this->parseReport($packets,$device->id,$init,$end);
+//dd($report);
               return response()->json([
             'report'=>$report
         ]);

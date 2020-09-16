@@ -9,10 +9,137 @@ use DateTime;
 
 class Devices extends Model
 {
-    protected $fillable = ['name','imei','charge_from','stop_from','client_id','number','type_id','virtual','new','plate','block_engine','bbuton'];
+    protected $fillable = ['name','imei','charge_from','stop_from','client_id','number','type_id','virtual','new','plate','block_engine','bbuton','jammer','fuel','calibration1','calibration2','calibration3'];
 
+    public function battery_alarm_v2($alarm_value,$value){
+        if($value < $alarm_value){
+            return '<div class="icon iconred"><span class="glyphicon leicon glyphicon-oil white" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Batería baja: ' . $value . '"></span></div>' ;
+        }else{
+            return '';
+        }
+        
+    }
+
+    public function rssi_alarm_v2($alarm_value,$value){
+        if($value < $alarm_value){
+            return '<div class="icon iconred "><span class="glyphicon leicon glyphicon-signal white" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Señal baja: ' . $value . '"></span></div>' ;
+        }else{
+            return '';
+        }
+        
+    }
     public function User(){
         return $this->belongsTo(User::class);
+    }
+
+       public function getlts($tank,$device,$volt_report){
+
+        if($volt_report == 0){
+            $response = array(0,0);
+            return $response;
+        }
+       $voltmenor = 0;
+          $litrosmenor = 0;
+        //$tank = 1;
+        //$device = Devices::find(6);
+        //$volt_report = 4500;
+        //$volt_report = $volt_report / 1000;
+        if($tank == 1){
+            $calibration = json_decode($device->calibration1,true);
+        }
+        if($tank == 2){
+            $calibration = json_decode($device->calibration2,true);
+        }
+        if($tank == 3){
+            $calibration = json_decode($device->calibration3,true);
+        }
+
+
+        foreach ($calibration as $k => $value) {
+            foreach ($value as $volt => $lts) {
+                $lastlts = $lts;
+            }
+        }
+       
+        foreach ($calibration as $k => $value) {
+            foreach ($value as $volt => $lts) {
+                if($volt_report <= $volt){
+                    $voltmayor = $volt;
+                    $litrosmayor = $lts;
+
+                    $diferenciadevolts = $voltmayor - $voltmenor; 
+            $diferenciadelitros = $litrosmayor - $litrosmenor; 
+            $voltsporcalcular = $volt_report - $voltmenor; 
+
+            $a = $voltsporcalcular * $diferenciadelitros;
+            
+            $a = $a/$diferenciadevolts;
+            
+            $litros = $a + $litrosmenor;
+
+            
+            $p = $litros * 100;
+            $p = $p / $lastlts;
+ 
+            $response = array($p,$litros);
+         
+             return $response;
+                }
+
+                $voltmenor = $volt;
+          $litrosmenor = $lts;
+
+            }
+        }
+       
+        
+    }
+
+    public function get_volt($field,$device,$tank){
+        $field = $field - 1;
+        if($tank == 1){
+            $calibration = $device->calibration1;
+        }
+        if($tank == 2){
+            $calibration = $device->calibration1;
+        }
+        if($tank == 3){
+            $calibration = $device->calibration1;
+        }
+        $calibration = json_decode($calibration,true);
+        //dd($calibration[$field]);
+        foreach ($calibration as $key => $value) {
+            //dd($key,$value);
+            if($key == $field){
+                foreach ($value as $k => $v) {
+                    return $k;
+                }
+            }
+        }
+        //return $calibration[$field];
+    }
+    public function get_lts($field,$device,$tank){
+        $field = $field - 1;
+        if($tank == 1){
+            $calibration = $device->calibration1;
+        }
+        if($tank == 2){
+            $calibration = $device->calibration1;
+        }
+        if($tank == 3){
+            $calibration = $device->calibration1;
+        }
+        $calibration = json_decode($calibration,true);
+        //dd($calibration[$field]);
+        foreach ($calibration as $key => $value) {
+            //dd($key,$value);
+            if($key == $field){
+                foreach ($value as $k => $v) {
+                    return $v;
+                }
+            }
+        }
+        //return $calibration[$field];
     }
     public function battery_alarm($alarm_value,$value){
         if($value < $alarm_value){
@@ -194,7 +321,8 @@ class Devices extends Model
 
 
             if($timeforComputer > 30){
-                $data =  '<span style="color:#e25d5d" class="uptime'.$lastPacket->devices_id.'">'.$timeforhumans.'</span>';
+
+                $data =   '<span style="color:#e25d5d" class="uptime'.$lastPacket->devices_id.'">'.$timeforhumans .'</span>';
             }else{
                 $data =  '<span   class="badge uptime'.$lastPacket->devices_id.'">'.$timeforhumans.'</span>';
             }

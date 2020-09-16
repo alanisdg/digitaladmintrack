@@ -167,6 +167,7 @@ trait DevicesTraits
 
 
     function parseReport($packets,$device,$to,$from){
+
         $engine_on = '';
         $engine_off = ''; 
  
@@ -225,6 +226,9 @@ trait DevicesTraits
         $head .='<td>Evento</td>';
         $head .='<td>odometro</td>';
         $head .='<td>heading</td>';
+        $head .='<td>Combustible</td>';
+        $head .='<td>Fecha Servidor</td>';
+        $head .='<td>Fecha Creacion</td>';
         $head .='<td></td>';
         $head .='</tr>';
         $stoptruck = array();
@@ -243,7 +247,13 @@ trait DevicesTraits
         $truck_status = 'on';
         $fisrtLatLng = '';
         $max = '';
+        $diferencialts = 0;
+        $litrosAnterior = 0;
+
+        $lts_total = 0;
         foreach ($packets as $key => $packet) {
+        	
+        	 
              $body .='<tr>';
             if($packet->speed > 2){
                 $truck = 'on';
@@ -314,6 +324,504 @@ trait DevicesTraits
             $body .='<td>'.$packet->parseEvent($packet->eventCode)."</td>";
             $body .='<td>'.$packet->odometro." mts</td>";
             $body .='<td>'.$packet->heading."</td>";
+            $dev = Devices::find($device);
+            if($dev->fuel == 1){
+                 $lts = $packet->getlts('1',$dev,$packet->tank1);
+
+            $lts_total = $lts_total + $lts;
+            if($litrosAnterior == 0){
+                $litrosAnterior = $lts;
+                $diferencialts = 0;
+            }else{
+
+                $diferencialts = $lts - $litrosAnterior;
+                $litrosAnterior = $lts;
+            } 
+            $class_fuel = '';
+            if($diferencialts < -10 and $diferencialts < 0 ){
+                $class_fuel = 'fuelred';
+            }
+
+            if($diferencialts > 10 and $diferencialts > 0){
+                $class_fuel = 'fuelgreen';
+            }
+            $body .='<td class="'.$class_fuel.'">'. $packet->getlts('1',$dev,$packet->tank1)."</td>";
+            }
+            $body .='<td>'.$packet->serverTime."</td>";
+            $body .='<td>'.$packet->fixTime."</td>";
+            $body .='<td><button lat="'.$packet->lat.'" lng="'.$packet->lng.'" class="btn btn-primary btn-xs panto goto">Ver</button></td>';
+
+            
+
+            // DETERMINAR TIEMPO DETENIDO Y EN MARCHA
+
+
+            if($previous_value) {
+
+               
+                $tiempo .='<div>Fecha: '. $packet->updateTime." Velocidad" .$packet->speed ."- Evento: ".$packet->eventCode." - anterior: " . $previous_value->eventCode . "</div>";
+
+                $from = new Carbon($previous_value->updateTime, 'America/Monterrey');
+                    $to = new Carbon($packet->updateTime, 'America/Monterrey');
+                    $dif = $to->diffInMinutes($from);
+
+                    /*
+                     if($previous_value->speed !=0 AND $packet->speed ==0){
+                    // empieza periodo detenido
+                    $s = array($packet->lat,$packet->lng);
+                    array_push($stop,$s);
+                    $dif_stop  = $dif_stop + $dif;
+                    $body .= '<td> hubo cambio</d>';
+                    }
+                    if($previous_value->speed ==0 AND $packet->speed ==0){
+                        $dif_stop  = $dif_stop + $dif;
+                    }
+
+                    if($previous_value->speed ==0 AND $packet->speed !=0){
+                        // Termina periodo
+                        array_push($stop,$dif);
+                        $body .= '<td>b hubo cambio</d>';
+                    }*/
+
+                    // 24 comienza la marcha
+                    // 25 no moving
+
+                    /*
+                     if($previous_value->speed !=0 AND $packet->speed ==0){
+                        $body .= '<td> comienza detenido </d>';
+                     }elseif($previous_value->speed ==0 AND $packet->speed !=0){
+                        $body .= '<td> comienza movimiento </d>';
+                     }elseif($previous_value->speed ==0 AND $packet->speed ==0){
+                        $body .= '<td> sigue detenido </d>';
+                     }elseif($previous_value->speed ==0 AND $packet->speed !=0){
+                        $body .= '<td> sigue movimiento </d>';
+                     }
+                     */
+
+                    if($packet->speed == 0){
+                        $detenido = $detenido + $dif;
+                        
+                    }else{
+                        $movimiento = $movimiento + $dif; 
+                    }
+
+                
+
+            }else{
+                $tiempo .='<div>Fecha: '. $packet->updateTime." Velocidad" .$packet->speed ."- Evento: " . $packet->eventCode."</div>";
+            }
+
+            if($packet->speed == 0){
+                $mov_status = 0;
+                
+            }else{
+                $mov_status = 1;
+                
+            }
+            $previous_value = $packet;
+        }
+
+        $body .='</tr>';
+
+          // $hours = intdiv($movimiento, 60).':'. ($movimiento % 60);
+          if($movimiento > 60){
+              $hours = floor($movimiento / 60); // Get the number of whole hours
+              $minutes = $movimiento % 60; // Get the remainder of the hours
+              $mov = $hours . ":" .$minutes . " horas";
+          }else{
+              $mov = $movimiento . " mins";
+          }
+
+          if($detenido > 60){
+              $hours = floor($detenido / 60); // Get the number of whole hours
+              $minutes = $detenido % 60; // Get the remainder of the hours
+              $det = $hours . ":" .$minutes . " horas";
+          }else{
+              $det = $detenido . " mins";
+          }
+          $title ='';
+         // dd($stoptruck_engine_on);
+
+          //DETERMINAR PARADAS POR VELOCIDAD
+          $go = 1;
+          $stop_map_info=array();
+          $maxima = 0;
+
+           // dd($stoptruck);
+          foreach ($stoptruck as $packeta) {
+            //$time = $packeta->updateTime;
+            if($packeta->truck == 'off'){
+                $lat = $packeta->lat;
+                $lng = $packeta->lng;
+                $de = $packeta->updateTime;
+                //$de="ho";
+                $toid = $packeta->id;
+            }else{
+                $a = $packeta->updateTime;
+                $lastid = $packeta->id;
+            }
+            $go++;
+            if($go == 3){
+                $from = new Carbon($de, 'America/Monterrey');
+                    $to = new Carbon($a, 'America/Monterrey');
+                    $dif = $to->diffInMinutes($from);
+                    $detenido_por_velocidad  = $detenido_por_velocidad + $dif;
+
+
+                    if($dif > 60){
+                      $hours = floor($dif / 60); // Get the number of whole hours
+                      $minutes = $dif % 60; // Get the remainder of the hours
+
+                      $mov = $hours . ":" .$minutes . " horas";
+                  }else{
+                      $mov = $dif . " mins";
+                  }
+                  if($dif > $maxima){
+                    $max = array($lat,$lng,$mov);
+                    $maxima = $dif;
+                  }
+                    $va = array($lat,$lng,$mov,$de,$to,$from,$a,$toid,$packeta->id);
+                    if($dif > 4){
+
+                    array_push($stop_map_info, $va);
+                    }
+                $go=1;
+            }
+            //PARADAS POR VELOCIDAD
+            
+          } 
+          //dd($stop_map_info);
+          $go = 1;
+          $stop_map_info_engine_off = array();
+          foreach ($stoptruck_engine_on as $packeta) {
+            $time = $packeta->updateTime;
+            if($packeta->truck == 'off'){
+                $lat = $packeta->lat;
+                $lng = $packeta->lng;
+                $de = $packeta->updateTime;
+            }else{
+                $a = $packeta->updateTime;
+            }
+            $go++;
+            if($go == 3){
+                $from = new Carbon($de, 'America/Monterrey');
+                    $to = new Carbon($a, 'America/Monterrey');
+                    $dif = $to->diffInMinutes($from);
+                    $detenido_por_velocidad  = $detenido_por_velocidad + $dif;
+
+
+                    if($dif > 60){
+                      $hours = floor($dif / 60); // Get the number of whole hours
+                      $minutes = $dif % 60; // Get the remainder of the hours
+
+                      $mov = $hours . ":" .$minutes . " horas";
+                  }else{
+                      $mov = $dif . " mins";
+                  }
+                  if($dif > $maxima){
+                    $max = array($lat,$lng,$mov);
+                    $maxima = $dif;
+                  }
+                    $va = array($lat,$lng,$mov,$de,$to,$from,$a);
+                    if($dif > 4){
+
+                    array_push($stop_map_info_engine_off, $va);
+                    }
+                $go=1;
+            }
+            //PARADAS POR VELOCIDAD
+            
+          } 
+          //dd($stop_map_info_engine_off);
+          $kms = $kms/1000;
+          if($detenido_por_velocidad > 60){
+                      $hours = floor($detenido_por_velocidad / 60); // Get the number of whole hours
+                      $minutes = $detenido_por_velocidad % 60; // Get the remainder of the hours
+
+                      $deti = $hours . ":" .$minutes . " horas";
+                  }else{
+                      $deti = $detenido_por_velocidad . " mins";
+                  }
+
+
+        $title .= '<li class="list-group-item"><b>Tiempo total detenido:</b> '.$deti . "</li>";
+       // $title .= '<br> Odometro inicial: '.$first_odometer.'  <br>Odometro final:' . $last_odometer ;
+       // $kms = 100;
+        $title .= ' <li class="list-group-item"><b>Kilometros recorridos:</b> ' . $kms  . ' kms </li>';
+       $stop_parse = '<ul class="list-group">';
+       					
+                        $packetid = 0;
+                        $init = 0;
+                        foreach($stop_map_info as $key => $stop){
+                        	 
+                        		 
+                        			$stop_parse .='<li class="list-group-item"><table><tr><td>';
+                            $kmsentre= 0;
+                            
+                        			 foreach ($packets as $keyt => $pack) {
+                                         if($pack->id > $init AND $pack->id < $stop[7] ){
+                                            //dd($pack->id);
+                                            $kmsentre = $kmsentre + $pack->odometro;
+                                         }
+                                         
+                                     }
+                                     $init = $stop[8];
+                        				$kmsentre =  $kmsentre / 1000;
+	                             $stop_parse .='Detenido por <span class="goto" key="'.$key.'" lat="'. $stop[0] .'" lng="' .$stop[1].'">'.$stop[2].' </td><td> '. $stop[3].' </td><td> - '. $kmsentre.' kms</span> </td><td> <span class="dir'.$key.'"></span></td></table></li>'; 
+	                            
+		                              
+                        		 
+                        	
+                            
+                            
+                                
+                            
+                    
+                         }
+                        $stop_parse .='</ul>';
+                    
+                        if($dev->fuel == 1){
+                        $title .= '<li class="list-group-item"><b>Litros consumidos:</b> '.$lts_total . "</li>"; 
+
+                        if($kms == 0){
+                        	$rendimiento = 'N/D';
+                        }else{
+                        	$rendimiento = $lts_total / $kms;
+                        	$rendimiento = $rendimiento . ' lts x km';
+                        }
+                        
+                        $title .= '<li class="list-group-item"><b>Rendimiento por litro:</b> '.$rendimiento . " </li>"; 
+                    }
+        $engine_parse = '<ul class="list-group">';
+    
+
+        if($engine_on > 60){
+ 
+                      $hours = floor($engine_on / 60); // Get the number of whole hours
+                      $minutes = $engine_on % 60; // Get the remainder of the hours
+
+                      $en_on = $hours . " horas con " .$minutes . " minutos";
+ 
+                  }else{
+                      $en_on = $engine_on . " minutos";
+                  }
+
+        if($engine_off > 60){
+                      $hours = floor($engine_off / 60); // Get the number of whole hours
+                      $minutes = $engine_off % 60; // Get the remainder of the hours
+
+                      $en_off = $hours . " horas con " .$minutes . " minutos";
+                  }else{
+                      $en_off = $engine_off . " mins";
+                  }
+
+
+        $engine_parse .= '<li class="list-group-item">Motor Encendido: '. $en_on .'</li>';
+
+        $engine_parse .= '<li class="list-group-item">Motor Apagado: '. $en_off .'</li>';
+        //dd($engine_stop);
+                        foreach($engine_stop as $key => $stop){
+                             
+                            if($stop[2] > 15){
+                                //dd($stop);
+                                $engine_parse .='<li class="list-group-item">';
+                                $engine_parse .='Detenido por <span class="goto" lat="'. $stop[0] .'" lng="' .$stop[1].'">'.$stop[3].'</span></li>'; 
+                            }
+                        }
+                        $engine_parse .='</ul>';
+                        //dd($stop_map_info_engine_off);
+//dd($engine_parse);
+        $response =array($head,$body,$title,$coords,$points,$stop,$fisrtLatLng,$stoptruck,$stop_map_info,$max,$stop_parse,$engine_stop,$engine_parse);
+        return $response;
+        
+    }
+    function parseReport2($packets,$device,$to,$from){
+
+        $engine_on = '';
+        $engine_off = ''; 
+ 
+        $bengines = Bengines::where('device_id',$device)->whereBetween('updateTime', array($to, $from))->get();
+        
+   
+        $go =false;
+        $engine_stop = array();
+        foreach ($bengines as $bengines) {
+            $status = $bengines->bad;
+            if($status == 1){
+                $go=true;
+            }
+            if($go==true){
+                if($status == 1){
+                    $starttime = $bengines->updateTime;
+                    $lat = $bengines->lat;
+                    $lng = $bengines->lng;
+                    $go=true;
+                }
+                if($status == 0){
+                    $endtime = $bengines->updateTime;
+                    $go=false;
+                    $from = new Carbon($starttime, 'America/Monterrey');
+                    $to = new Carbon($endtime, 'America/Monterrey');
+                    $dif = $to->diffInMinutes($from);
+
+                    if($dif > 60){
+                      $hours = floor($dif / 60); // Get the number of whole hours
+                      $minutes = $dif % 60; // Get the remainder of the hours
+
+                      $mov = $hours . ":" .$minutes . " horas";
+                  }else{
+                      $mov = $dif . " mins";
+                  }
+
+                    $stop = array($lat,$lng,$dif,$mov,$starttime,$endtime);
+                    array_push($engine_stop,$stop);
+                }
+            }
+            
+        }
+       //dd($engine_stop);
+        $body='';
+        $head='';
+        $tiempo='';
+        $head .='<tr>';
+        $head .='<td>Fecha  </td>'; 
+        $head .='<td>Latitud</td>';
+        $head .='<td>Longitud</td>';
+        $head .='<td>Bateria</td>';
+        $head .='<td>Bateria alimentacion</td>';
+        $head .='<td>Velocidad</td>';
+        $head .='<td>Motor</td>';
+        $head .='<td>RSSI</td>';
+        $head .='<td>Evento</td>';
+        $head .='<td>odometro</td>';
+        $head .='<td>heading</td>';
+        $head .='<td>Combustible</td>';
+        $head .='<td>Fecha Servidor</td>';
+        $head .='<td>Fecha Creacion</td>';
+        $head .='<td></td>';
+        $head .='</tr>';
+        $stoptruck = array();
+        $stoptruck_engine_on = array();
+        $coords = array();
+        $points = array();
+        $previous_value = 0;
+        $movimiento = 0;
+        $detenido = 0;
+        $detenido_por_velocidad = 0;
+        $i = 0;
+        $len = count($packets);
+        $stop = array();
+        $dif_stop = 0;
+        $kms = 0;
+        $kmsentrestops = 0;
+        $truck_status = 'on';
+        $fisrtLatLng = '';
+        $max = '';
+        $diferencialts = 0;
+        $litrosAnterior = 0;
+
+        $lts_total = 0;
+        foreach ($packets as $key => $packet) {
+        	
+        	 
+             $body .='<tr>';
+            if($packet->speed > 2){
+                $truck = 'on';
+            }else if($packet->speed <= 2){
+                $truck = 'off';
+            }
+
+            if($packet->engine == 0){
+                $engine_off = $engine_off + $packet->Timebetween;
+            }
+            if($packet->engine == 1){
+                $engine_on = $engine_on + $packet->Timebetween;
+            }
+
+            if($i == $len - 1){
+                if($truck == 'off'){
+                    $packet->truck = $truck;
+                    $body .='<td>ultima'.$truck.'</td>';
+                    //array_push($stoptruck,$packet);  
+                }
+            } 
+
+            if($truck_status != $truck){
+                //hubo cambio
+                if($truck == 'off'){
+
+                }
+                
+                $packet->truck = $truck;
+                array_push($stoptruck,$packet);
+                if($packet->engine == 1){
+                    array_push($stoptruck_engine_on,$packet);
+                }
+                $truck_status = $truck;
+            }else{
+                
+            }
+            $kms = $kms + $packet->odometro;
+            $kmsentrestops = $kmsentrestops + $packet->odometro; 
+
+
+            if ($i == 0) {
+                $fisrtLatLng = array($packet->lat,$packet->lng);
+            $first_odometer = $packet->odometro;
+            if($packet->speed==0){
+                $s = array($packet->lat,$packet->lng);
+                array_push($stop, $s);
+                
+            }
+            
+        } else if ($i == $len - 1) {
+        $last_odometer = $packet->odometro;
+        }
+
+            $i++;
+            $point= array('lat'=>$packet->lat,'lng'=>$packet->lng);
+            array_push($coords,$point);
+
+            $point_data= array('lat'=>$packet->lat,'lng'=>$packet->lng,'speed'=>$packet->speed,'updateTime'=>$packet->updateTime,'eventCode'=>$packet->eventCode,'rssi'=>$packet->rssi,'id'=>$packet->id,'heading'=>$packet->heading);
+            array_push($points,$point_data);
+
+           
+            $body .='<td>'.$packet->updateTime."</td>";  
+            $body .='<td>'.$packet->lat."</td>";
+            $body .='<td>'.$packet->lng."</td>";
+            $body .='<td>'.$packet->power_bat."</td>";
+            $body .='<td>'.$packet->power_supply."</td>";
+            $body .='<td>'.$packet->speed."</td>";
+            $body .='<td>'.$packet->engine."</td>";
+            $body .='<td>'.$packet->rssi."</td>";
+            $body .='<td>'.$packet->parseEvent($packet->eventCode)."</td>";
+            $body .='<td>'.$packet->odometro." mts</td>";
+            $body .='<td>'.$packet->heading."</td>";
+            $dev = Devices::find($device);
+            if($dev->fuel == 1){
+                 $lts = $packet->getlts('1',$dev,$packet->tank1);
+
+            $lts_total = $lts_total + $lts;
+            if($litrosAnterior == 0){
+                $litrosAnterior = $lts;
+                $diferencialts = 0;
+            }else{
+
+                $diferencialts = $lts - $litrosAnterior;
+                $litrosAnterior = $lts;
+            } 
+            $class_fuel = '';
+            if($diferencialts < -10 and $diferencialts < 0 ){
+                $class_fuel = 'fuelred';
+            }
+
+            if($diferencialts > 10 and $diferencialts > 0){
+                $class_fuel = 'fuelgreen';
+            }
+            $body .='<td class="'.$class_fuel.'">'. $packet->getlts('1',$dev,$packet->tank1)."</td>";
+            }
+            $body .='<td>'.$packet->serverTime."</td>";
+            $body .='<td>'.$packet->fixTime."</td>";
             $body .='<td><button lat="'.$packet->lat.'" lng="'.$packet->lng.'" class="btn btn-primary btn-xs panto goto">Ver</button></td>';
 
             
@@ -506,17 +1014,31 @@ trait DevicesTraits
 
         $title .= '<li class="list-group-item"><b>Tiempo total detenido:</b> '.$deti . "</li>";
        // $title .= '<br> Odometro inicial: '.$first_odometer.'  <br>Odometro final:' . $last_odometer ;
+       // $kms = 100;
         $title .= ' <li class="list-group-item"><b>Kilometros recorridos:</b> ' . $kms  . ' kms </li>';
+
        $stop_parse = '<ul class="list-group">';
                         foreach($stop_map_info as $key => $stop){
                             $stop_parse .='<li class="list-group-item">';
                                 $stop_parse .='Detenido por <span class="goto" lat="'. $stop[0] .'" lng="' .$stop[1].'">'.$stop[2].' - '. $stop[3].'</span></li>'; 
                     
-                        }
+                         }
                         $stop_parse .='</ul>';
 
-        $engine_parse = '<ul class="list-group">';
+                        if($dev->fuel == 1){
+                        $title .= '<li class="list-group-item"><b>Litros consumidos:</b> '.$lts_total . "</li>"; 
 
+                        if($kms == 0){
+                        	$rendimiento = 'N/D';
+                        }else{
+                        	$rendimiento = $lts_total / $kms;
+                        	$rendimiento = $rendimiento . ' lts x km';
+                        }
+                        
+                        $title .= '<li class="list-group-item"><b>Rendimiento por litro:</b> '.$rendimiento . " </li>"; 
+                    }
+        $engine_parse = '<ul class="list-group">';
+    
 
         if($engine_on > 60){
                       $hours = floor($engine_on / 60); // Get the number of whole hours

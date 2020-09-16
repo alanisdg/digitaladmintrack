@@ -2,11 +2,14 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Geofences;
+use Illuminate\Support\Facades\Input;
+use Validator;
 use App\Travels;
 use App\Drivers;
 use App\Notifications;
 use App\Devices;
 use App\Gastos;
+use App\Balances;
 use App\Locations;
 use App\Toclients;
 use App\Moneys;
@@ -37,7 +40,8 @@ class AdminController extends Controller
 
     public function index(){
     	$user = User::find(Auth::user()->id);
-        $gastos = Gastos::where( DB::raw('MONTH(date)'), '=', date('n') )->get();
+
+        $gastos = Gastos::where( DB::raw('MONTH(date)'), '=', date('n') )->where(DB::raw('YEAR(date)'), '=', date('Y'))->get();
         return view('admin.gastos.index', compact('gastos','user')); 
     }
 
@@ -205,8 +209,10 @@ class AdminController extends Controller
     }
 
     public function balance_detail(){
+
         $user = User::find(Auth::user()->id);
-        $ingresos = Ingresos::where( DB::raw('MONTH(date)'), '=', date('n') )->get();
+        $balances = Balances::all()->sortByDesc('id');
+        /*$ingresos = Ingresos::where( DB::raw('MONTH(date)'), '=', date('n') )->get();
         $clients = Clients::all();
 
 
@@ -226,7 +232,7 @@ class AdminController extends Controller
         } 
         $deuda_total = '';
         foreach($gast as $gasto){
-            if($gasto->user_id_p != 44){
+            if($gasto->user_id_p != 51){
                 $deuda_total = $deuda_total + $gasto->subtotal;
             }
             
@@ -256,15 +262,38 @@ class AdminController extends Controller
         }else{
             $class="good";
         }
-        $dat = User::find(44);
+        $dat = User::find(51);
         $dat_gastos = $dat->total_inversion($dat->id);
-        //dd($dat_gastos);
+ 
+        
         $balance_general = $ingresos_totales - $comisiones_totales - $dat_gastos; 
-        return view('admin.balance_detail', compact('balance_general','user','ingresos_totales','comisiones_totales','dat_gastos')); 
+
+        */
+        foreach ($balances as $balance) {
+            if($balance->name == 'Ingreso'){
+                $ingreso = Ingresos::find($balance->idname);
+                $balance->detail = $ingreso;
+
+            }
+            if($balance->name == 'Gasto'){
+                $gasto = Gastos::find($balance->idname);
+                $balance->detail = $gasto; 
+            }
+            if($balance->name == 'Comision'){
+                $ingreso = Comissions::find($balance->idname);
+                $balance->detail = $ingreso;
+            }
+        }
+
+        //dd($balances);
+        return view('admin.balance_detail', compact('user','balances')); 
     }
     public function balance(){
+        $balance_ = Balances::latest()->first();
+        
         $user = User::find(Auth::user()->id);
         $ingresos = Ingresos::where( DB::raw('MONTH(date)'), '=', date('n') )->get();
+
         $clients = Clients::all();
         $cobranza  = array();
         foreach ($clients as $client) {
@@ -290,7 +319,7 @@ class AdminController extends Controller
         } 
         $deuda_total = '';
         foreach($gast as $gasto){
-            if($gasto->user_id_p != 44){
+            if($gasto->user_id_p != 51){
                 $deuda_total = $deuda_total + $gasto->subtotal;
             }
             
@@ -304,12 +333,17 @@ class AdminController extends Controller
                 $contributors->forget($key); 
             }else{
                 $comisiones_totales = $comisiones_totales + $user_->total_comission($user_->id);
-                $deuda_total = $deuda_total + $user_->deuda_total($user_->id);
+                if($user_->id != 51){
+                    $deuda_total = $deuda_total + $user_->deuda_total($user_->id);
+                }
+                
             }
         } 
        
         $balance = $ingresos_totales - $gastos_totales;
         $total_comisiones = Comissions::all();
+        //dd($total_comisiones);
+
         $total_com = '';
         foreach ($total_comisiones as $comision){
             $total_com = $total_com + $comision->subtotal;
@@ -320,17 +354,18 @@ class AdminController extends Controller
         }else{
             $class="good";
         }
-        $dat = User::find(44);
+        $dat = User::find(51);
+       // dd($dat);
         $dat_gastos = $dat->total_inversion($dat->id);
-        //dd($dat_gastos);
-        $balance_general = $ingresos_totales - $comisiones_totales - $dat_gastos;
+        
+        $balance_general = $balance_->total;;
         return view('admin.balance', compact('balance','balance_general','class','cobranza','ingresos','ingresos_totales','gastos_totales','user','Currentmonths','Pasmonths','contributors','clients','deuda_total')); 
     }
     public function ingresos(){
     	$user = User::find(Auth::user()->id);
-        $ingresos = Ingresos::where( DB::raw('MONTH(date)'), '=', date('n') )->get();
+        $ingresos = Ingresos::where( DB::raw('MONTH(date)'), '=', date('n') )->where(DB::raw('YEAR(date)'), '=', date('Y'))->get();
 
-      
+        
       
 
 
@@ -340,6 +375,7 @@ class AdminController extends Controller
     public function detailclient($id){
          
         $user = User::find(Auth::user()->id);
+
         $ingresos = Ingresos::where('client_id', $id )->get();
         $client = Clients::find($id);
         return view('admin.clientdetail', compact('user','ingresos','client')); 
@@ -347,13 +383,14 @@ class AdminController extends Controller
     public function detail($m,$y){
 
         $user = User::find(Auth::user()->id);
+
         $gastos = Gastos::where( DB::raw('MONTH(date)'), '=', $m )->where( DB::raw('YEAR(date)'), '=', $y )->get();
         $ingresos = Ingresos::where( DB::raw('MONTH(date)'), '=', $m )->where( DB::raw('YEAR(date)'), '=', $y )->get();
         $contributors = User::all();
         //dd($users); 
-        foreach ($contributors as $key => $user) {
+        foreach ($contributors as $key => $user_) {
             //dd($user);
-            if($user->role_id != 1){
+            if($user_->role_id != 1){
                 //dd($key);
                 $contributors->forget($key);
                 //array_push($contributors, $user);
@@ -428,6 +465,11 @@ $monthName = date('F', mktime(0, 0, 0, $monthNum, 10));
     }
     public function store(){
     	// dd(request()->all()); 
+
+        $balance = Balances::latest()->first();
+        $newbalance = $balance->total - request()->get('subtotal');
+
+
     	$gasto = Gastos::create([
             'subtotal' => request()->get('subtotal'),
             'concepto' => request()->get('concepto'),
@@ -435,6 +477,14 @@ $monthName = date('F', mktime(0, 0, 0, $monthNum, 10));
             'user_id' => request()->get('user_id'),
             'user_id_p' => request()->get('user_id_p')
         ]); 
+
+        $bal = Balances::create([
+            'total' => $newbalance,
+            'name' => 'Gasto',
+            'idname' => $gasto->id
+        ]);
+
+
         $user = User::find(Auth::user()->id);
         $gastos = Gastos::where( DB::raw('MONTH(date)'), '=', date('n') )->get();
         return view('admin.gastos.index', compact('user','gastos')); 
@@ -442,6 +492,27 @@ $monthName = date('F', mktime(0, 0, 0, $monthNum, 10));
 
     public function storeingreso(){
     	// dd(request()->all()); 
+        $user = User::find(Auth::user()->id);
+        $balance = Balances::latest()->first();
+        $newbalance = $balance->total + request()->get('subtotal');
+        
+         /* $file = array('image' => Input::file('image'));
+
+         $rules = array('image' => 'required');
+        $validator = Validator::make($file, $rules);
+
+        if (Input::file('image')->isValid()) {
+            $file = Input::file('image');
+                $path = public_path().'/facturas/';
+                $image = \Image::make(Input::file('image'));
+
+                $extension = Input::file('image')->getClientOriginalExtension(); // getting image extension
+                $fileName = $user->id.'_'.rand(11111,99999).'.'.$extension; // renameing image
+                dd($fileName);
+                $image->fit(600);
+                $image->save($path.$fileName);
+                
+        } */
     	$ingresos = Ingresos::create([
             'subtotal' => request()->get('subtotal'),
             'concepto' => request()->get('concepto'),
@@ -449,6 +520,14 @@ $monthName = date('F', mktime(0, 0, 0, $monthNum, 10));
             'user_id' => request()->get('user_id'),
             'client_id' => request()->get('client_id')
         ]);
+
+        $bal = Balances::create([
+            'total' => $newbalance,
+            'name' => 'Ingreso',
+            'idname' => $ingresos->id
+        ]);
+
+
         $user = User::find(Auth::user()->id);
         $ingresos = Ingresos::where( DB::raw('MONTH(date)'), '=', date('n') )->get();
         return redirect()->to('/dashboard/ingresos');
@@ -457,12 +536,25 @@ $monthName = date('F', mktime(0, 0, 0, $monthNum, 10));
 
     public function storecomision(){
          //dd(request()->all()); 
+
+        $balance = Balances::latest()->first();
+        $newbalance = $balance->total - request()->get('subtotal');
+
+
         $ingresos = Comissions::create([
             'subtotal' => request()->get('subtotal'),
             'motivo' => request()->get('concepto'),
             'date' => request()->get('date'),
             'user_id' => request()->get('user_id')
         ]);
+
+        $bal = Balances::create([
+            'total' => $newbalance,
+            'name' => 'Comision',
+            'idname' => $ingresos->id
+        ]);
+
+
         $user = User::find(Auth::user()->id);
         $comisiones = Comissions::where( DB::raw('MONTH(date)'), '=', date('n') )->get();
         return view('admin.comisiones.index', compact('user','comisiones')); 

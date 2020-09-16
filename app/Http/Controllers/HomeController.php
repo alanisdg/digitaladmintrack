@@ -87,6 +87,47 @@ foreach ($alldevices as $device) {
         */
     }
 
+
+        public function home2()
+    {
+
+        $user = Auth::user()->id;
+        //$devices = $user->getDevices($user);
+
+
+        $response = Auth::user()->getAllDevicesTest(Auth::user());
+        $alldevices  = $response[1];
+        $groups = $response[0];
+        $groups_cajas = $response[2];
+        $devices = array();
+        $boxes= array();
+        foreach ($alldevices as $device) {
+           
+            if($device->type_id == 1){
+                array_push($devices, $device);
+            }
+            if($device->type_id == 2){
+                array_push($boxes, $device);
+            }
+        }
+
+
+ 
+
+        // $boxes = $user->getBoxes($user);
+        $config = Configs::where('client_id',Auth::user()->client_id)->first();
+        $devices_availables =0;  
+         
+        if(Auth::user()->role_id == 7){ 
+            //dd('es guardia');
+            return redirect()->to('/guardia');
+        }
+        return view('home2', compact('user','devices','devices_availables','config','boxes','alldevices','groups','groups_cajas'));
+
+    }
+
+
+
     public function mapa()
     {
         return view('mapa');

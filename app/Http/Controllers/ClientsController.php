@@ -49,6 +49,11 @@ class ClientsController extends Controller
          $id = request()->get('client_id');
         $client = Clients::find($id);
         $client->name=request()->get('name');
+        if (request()->get('access') == 1) {
+            $client->access=1;
+        }else{
+            $client->access=0;
+        }
         $client->device_price=request()->get('device_price');
         $client->charge_at=request()->get('charge_at');
         if($file['logo'] != null){
@@ -286,8 +291,8 @@ class ClientsController extends Controller
             $inv['year']=$invoice['year'];
             
             $in = Invoices::create($inv);
-            
-            return redirect()->to('/dashboard/invoices/'.$client->id);
+            return true;
+           // return redirect()->to('/dashboard/invoices/'.$client->id);
             //return view('admin.clients.index');
     }
 

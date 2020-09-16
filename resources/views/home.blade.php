@@ -114,6 +114,7 @@
                         <div class="clear"></div>
                         <div class="down">
                             <p class="text11 timerText" style="float:left">
+
                                 <?php  if( $device->status($device->lastpacket) > 60){
                                     echo $device->statusForHumans($device->lastpacket);
                                 }else{
@@ -135,8 +136,8 @@
                     </div>
                     
 @else
-                                <!--EQUIPO SIN PAQUETES-->
-                                <div class="device">
+                                <!--EQUIPO SIN PAQUETESuu-->
+                                <div class="device" name="{{ $device->name }}">
                                 {{ ucfirst($device->name) }} Equipo nuevo.
                                 </div>
                                 @endif
@@ -282,7 +283,9 @@
                                     </div>
                                     <div class="down"> 
                                         <p class="text11 timerText" style="float:left">
+
                                             <?php  if( $device->status($device->lastpacket) > 60){
+                                                  
                                                 echo $device->statusForHumans($device->lastpacket);
                                             }else{
                                                 ?><span class="timer{{ $device->id }}"></span><?php
@@ -292,6 +295,15 @@
                                         </p>
                                         <div class="clear"></div> 
                                     </div>
+                                    @if($device->fuel == 1)
+                                        <div >
+                                            <div class="progress">
+  <div class="progress-bar percent{{  $device->id }}" role="progressbar " aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{  $device->percent }}%;">
+    <span class=" litros{{  $device->id }} tank1{{ $device->id }}"> {{  $device->lts }} lts </span>
+  </div>
+</div>
+                                        </div>
+                                    @endif
                                     <div class="clear"></div>
                                 </div>
                                 @else
@@ -377,8 +389,8 @@
                                     <div class="clear"></div>
                                 </div>
                                 @else
-                                <!--EQUIPO SIN PAQUETES-->
-                                <div class="device">
+                                <!--EQUIPO SIN PAQUETESmm-->
+                                <div class="device" name="{{ $device->name }}">
                                 {{ ucfirst($device->name) }} Equipo nuevo.
                                 </div>
                                 @endif
@@ -498,6 +510,21 @@
 }
 h4, .h4, h5, .h5, h6, .h6 {
     font-family: Roboto !important
+}
+
+
+.progress-bar {
+    float: left;
+    width: 0;
+    height: 100%;
+    font-size: 10px;
+    line-height: 10px;
+  
+}
+
+.progress {
+    height: 9px;
+    margin-bottom: 6px;
 }
                         </style>
                         @endsection
@@ -1137,7 +1164,7 @@ mo = []
                                 end = new Date().getTime();
                             }
                         }
-                        function go(id,lat,lng,geofence,dstate_id,speed,device_name,heading,movement,status,EventCode,updateTime,stop_time,stop,odometro,previous_heading,odometro_total){
+                        function go(id,lat,lng,geofence,dstate_id,speed,device_name,heading,movement,status,EventCode,updateTime,stop_time,stop,odometro,previous_heading,odometro_total,tank1){
                             
                             //HEADING
                                 $('.move'+id).removeClass('fa-rotate-'+previous_heading)
@@ -1298,6 +1325,33 @@ mo = []
                                     
                                 }
                             })
+
+                        
+                            console.log( device_name)
+                             
+                             /*
+                            $.ajax({
+                                url:'getlts',
+                                type:'POST',
+                                dataType: 'json',
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                },
+                                data: { device_id: id ,volts:tank1,tank:1},
+                                success: function(r){ 
+                                    console.log(r);
+                                       console.log(r['litros']);
+                                          console.log(r['percent']);
+                                     $('.percent'+id).css('width',r['percent']+'%')
+                                     $('.litros'+id).html(r['litros'] + 'lts')
+                                },
+                                error: function(data){
+                                    var errors = data.responseJSON;
+                                    
+                                }
+                            }) */
+
+
                         }
                         function refresh(id){ 
                             //ANTES
@@ -1318,10 +1372,72 @@ mo = []
                         var socket = io(':3000');
                         //var socket = io(':3004');
                         socket.on("message<?php echo Auth::user()->client_id  ?>", function(data){
-                      
+                    
                          
-                            go(data['device_id'],data['lat'], data['lng'],data['geofence'],data['dstate_id'],data['Speed'],data['device_name'],data['Heading'],data['movement'],data['status'],data['EventCode'],data['updateTime'],data['stop_time'],data['stop'],data['odometro'],data['previous_heading'],data['odometro_total'])
+                            go(data['device_id'],data['lat'], data['lng'],data['geofence'],data['dstate_id'],data['Speed'],data['device_name'],data['Heading'],data['movement'],data['status'],data['EventCode'],data['updateTime'],data['stop_time'],data['stop'],data['odometro'],data['previous_heading'],data['odometro_total'],data['Accum2'])
                         })
+
+                        socket.on("jammer<?php echo Auth::user()->client_id  ?>", function(data){
+                            console.log('jammer')
+                            console.log(data) 
+                            $('.jammer').show();
+                            $('.jammer').html('El equipo de la unidad '+ data['response'][1] + ' ha detectado un intento de robo <button id="pause" class="btn btn-danger stopJammer" ide="'+data['response'][2]+'">Terminar Alerta</button>')
+
+                            var audioElement = document.createElement('audio');
+                            audioElement.setAttribute('src', 'http://www.soundjay.com/misc/sounds/bell-ringing-01.mp3');
+                            
+                            audioElement.addEventListener('ended', function() {
+                                this.play();
+                            }, false);
+
+                            audioElement.play();
+        $("#status").text("Status: Playing");
+
+        $('#pause').click(function() {
+        audioElement.pause();
+        $("#status").text("Status: Paused");
+    });
+ 
+
+                            $('.stopJammer').click(function(){
+                                ide = $('.stopJammer').attr('ide');
+                                console.log('parar al ' + ide)
+                                    $('.jammer').hide()
+                                 $.ajax({
+                                url:'/stop/jammer',
+                                type:'POST',
+                                dataType: 'json',
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                },
+                                data: { id: ide },
+                                success: function(r){
+                                    console.log(r)
+                                }
+                            })
+
+                            })
+                        })
+$('.stopJammer').click(function(){
+    $('.jammer').hide()
+                                ide = $(this).attr('ide');
+                                 $.ajax({
+                                url:'/stop/jammer',
+                                type:'POST',
+                                dataType: 'json',
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                },
+                                data: { id: ide },
+                                success: function(r){
+                                    console.log(r)
+                                }
+                            })
+
+                                console.log('parar al ' + ide)
+
+                            })
+
 
                         socket.on("event<?php echo Auth::user()->client_id  ?>", function(data){
                        
@@ -1514,6 +1630,12 @@ mo = []
                         <script> window.Laravel = <?php echo json_encode(['csrfToken' => csrf_token(),]); ?> </script>
                         @endsection
                         <style>
+                        .jammer{
+                                text-align: center;
+    color: white;
+    padding: 9px;
+    background-color: #dc4343;
+                        }
                         .panicMap{
                             width: 100%;
                             height: 300px;

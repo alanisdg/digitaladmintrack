@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Clients extends Model
 {
-    protected $fillable = ['name','description','charge_at','device_price','phone','phone_2','client_id','boxs','client_id'];
+    protected $fillable = ['name','access','description','charge_at','device_price','phone','phone_2','client_id','boxs','client_id'];
 
     public function devices(){
         return $this->belongsToMany(Devices::class)->where('type_id',1)->orderBy('name','asc');;

@@ -2,7 +2,18 @@
 @section('content') 
 <div class="right_col" role="main">
             <h3 class="title">Agregar nuevo ingreso </h3>
-            {!! Form::open(['url' => 'dashboard/ingresos/store']) !!}
+            {!! Form::open(['url' => 'dashboard/ingresos/store', 'files' => true]) !!}
+
+            <div class="form-group">
+                <label for="">Subir Factura</label>
+                {!! Form::file('image') !!}
+                <p class="errors">{!!$errors->first('image')!!}</p>
+                @if(Session::has('error'))
+                <p class="errors">{!! Session::get('error') !!}</p>
+                @endif
+            </div>
+
+
             <div class="form-group">
             {{ Form::label('email', 'Concepto', ['class' => 'form-label']) }}
             {{ Form::text('concepto', '' , ['class' => 'form-control']) }}

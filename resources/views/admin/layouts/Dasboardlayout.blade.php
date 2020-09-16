@@ -91,6 +91,9 @@
                         <li {{{ (Request::is('dashboard/comisiones') ? 'class=current-page' : '') }}} >
                             <a href="/dashboard/comisiones">Comisiones</a>
                         </li>
+                        <li {{{ (Request::is('dashboard/facturas') ? 'class=current-page' : '') }}} >
+                            <a href="/dashboard/facturas">Facturas</a>
+                        </li>
                     </ul>
                   </li>
                 </ul>

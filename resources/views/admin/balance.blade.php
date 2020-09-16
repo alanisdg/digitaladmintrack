@@ -79,19 +79,19 @@
 $totals = rtrim($totals,",");
 ?>
 
-<?php $totals_2017 = '' ?>
+<?php $totals_2019 = '' ?>
       	@foreach($Pasmonths as $month)
  <?php 
- $son = $contributor->ingreso_by_month($month,'2017');
+ $son = $contributor->ingreso_by_month($month,'2019');
  if($son == ''){
  	$son = 0;
  }
- $totals_2017 .= $son . ',' ?>
+ $totals_2019 .= $son . ',' ?>
         
 @endforeach 
 
 <?php 
-$totals_2017 = rtrim($totals_2017,",");
+$totals_2019 = rtrim($totals_2019,",");
 ?>
 <script>
 
@@ -111,8 +111,8 @@ var myChart = new Chart(ctx, {
             ],
             borderWidth: 1
         },{
-        	label: '2017',
-            data: [{{ $totals_2017 }}],
+        	label: '2019',
+            data: [{{ $totals_2019 }}],
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)'
             ],
@@ -140,16 +140,16 @@ var myChart = new Chart(ctx, {
 
 @foreach($Pasmonths as $month)
 <div class="lemont">
-    <h4><a class="btn btn-success btn-xs" href="/dashboard/detail/{{ $month }}/2017"><?php echo $monthName = date('F', mktime(0, 0, 0, $month, 10)); ?> 2017</a></h4>
+    <h4><a class="btn btn-success btn-xs" href="/dashboard/detail/{{ $month }}/2019"><?php echo $monthName = date('F', mktime(0, 0, 0, $month, 10)); ?> 2019</a></h4>
     <table class="table table-striped">
       <tr>
         <td>
-          <p>Ingreso: <span class="price3">$ {{ $contributor->ingreso_by_month($month,'2017') }}</span></p>
-          <p>Gasto: <span class="price3">$ {{ $contributor->gasto_by_month($month,'2017') }} </span></p>
+          <p>Ingreso: <span class="price3">$ {{ $contributor->ingreso_by_month($month,'2019') }}</span></p>
+          <p>Gasto: <span class="price3">$ {{ $contributor->gasto_by_month($month,'2019') }} </span></p>
         </td>
         <td>
           <?php foreach ($contributors as $contributor) {
-           ?> <p> <?php echo $contributor->name . ':<span class="price3"> ' . $contributor->comission($month,'2017',$contributor->id) ?></span></p> <?php } ?>
+           ?> <p> <?php echo $contributor->name . ':<span class="price3"> ' . $contributor->comission($month,'2019',$contributor->id) ?></span></p> <?php } ?>
         </td>
       </tr>
     </table> 

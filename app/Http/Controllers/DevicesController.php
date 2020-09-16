@@ -2,13 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Illuminate\Http\Request; 
 use App\Devices;
 use App\Clients;
-use App\Packets;
+use App\Pops;
+use App\Wheels;
+use App\Packets; 
+use App\Packets_history; 
 use App\Routes;
+use App\Signes;
 use App\Geofences;
 use App\User;
+use App\Notifications;
+use App\Alerts;
+use App\Reports_day;
+use App\States;
 use Carbon\Carbon;
 use Auth;
 use DB;
@@ -36,6 +44,62 @@ class DevicesController extends Controller
 
     }
 
+    public function insertcoment(){ 
+
+        $coment['comentario'] =  'hola';
+        $coment['user_id'] = 1;
+        $coment['devices_id'] = 26;
+
+
+        $user = User::find(1);
+        $coment['user_name'] = $user->name;
+
+
+         
+         
+        $coment['comentario'] =  request()->get('message');
+        $coment['user_id'] = request()->get('user_id');
+        $coment['devices_id'] = request()->get('id');
+
+
+        $user = User::find(request()->get('user_id'));
+        $coment['user_name'] = $user->name;
+        
+        
+
+
+        $pop = Pops::create($coment);
+         //dd($pop->id);
+        $users = User::where('id','!=',Auth::user()->id)->where('client_id',Auth::user()->client_id)->get();
+        foreach($users as $user){
+            $user->read=1;
+            $new_notification = $user->new_notifications + 1;
+            $user->new_notifications = $new_notification;
+            $user->save();
+
+            $notification = Notifications::create([
+                'client_id' =>Auth::user()->client_id,
+                'nde_id'=>2,
+                'user_id'=>$user->id,
+                'author_id'=>Auth::user()->id,
+                'device_id' => request()->get('id'),
+                'pop_id' => $pop->id
+            ]);
+        }
+
+
+
+        $user  = $pop->user;
+        $coment['user'] = $user; 
+        $coment['updateTime'] = $pop->timeago($pop->created_at);
+        
+        //$coment = 0;
+        //$device->save();
+        return response()->json([
+            $coment
+        ]);
+
+    }
     public function clean(){
       
         $ayer = Carbon::yesterday();
@@ -77,7 +141,16 @@ class DevicesController extends Controller
             'panic'=>'finish'
         ]);
     }
-    
+    public function stopJammer(){
+      
+        $device = Devices::find(request()->get('id'));
+        $device->jammer=0;
+        $device->save();
+        return response()->json([
+            $device
+        ]);
+
+    }
     public function devices(){
         //$devices = Devices::all();
         $user = User::find(Auth::user()->id);
@@ -343,8 +416,136 @@ class DevicesController extends Controller
         return response()->json($r);
     }
 
+    public function getlts(){
+
+        $voltmenor = 0;
+          $litrosmenor = 0;
+        $tank = request()->get('tank'); 
+        $device_id = request()->get('device_id');
+
+        $device = Devices::find($device_id);
+        $volt_report = request()->get('volts');  
+       if($volt_report == 0){
+            return response()->json(0);
+        }
+        //$volt_report = $volt_report / 1000;
+        if($tank == 1){
+            $calibration = json_decode($device->calibration1,true);
+        }
+        if($tank == 2){
+            $calibration = json_decode($device->calibration2,true);
+        }
+        if($tank == 3){
+            $calibration = json_decode($device->calibration3,true);
+        }
+        //dd($calibration);
+foreach ($calibration as $k => $value) {
+            foreach ($value as $volt => $lts) {
+                $lastlts = $lts;
+            }
+        }
+       
+        foreach ($calibration as $k => $value) {
+            foreach ($value as $volt => $lts) {
+                if($volt_report <= $volt){
+                    $voltmayor = $volt;
+                    //dd($voltmenor);
+                    $litrosmayor = $lts;
+
+                    $diferenciadevolts = $voltmayor - $voltmenor; 
+            $diferenciadelitros = $litrosmayor - $litrosmenor; 
+            $voltsporcalcular = $volt_report - $voltmenor; 
+
+            $a = $voltsporcalcular * $diferenciadelitros;
+            
+            $a = $a/$diferenciadevolts;
+            
+            $litros = $a + $litrosmenor;
+             
+$p = $litros * 100;
+            $percent = $p / $lastlts;
+            return response()->json([
+            'litros' =>$litros,
+            'percent' =>$percent
+        ]); 
+
+
+                }
+
+                $voltmenor = $volt;
+          $litrosmenor = $lts;
+
+            }
+        }
+
+
+        
+         
+    }
+    public function calibration($device_id,$tank_){
+        $device = Devices::find($device_id);
+        $tank = $tank_;
+        $user = User::find(Auth::user()->id);
+        return view('admin.devices.calibration', compact('device','tank','user'));
+    }
+
+    public function insertCalibration(){
+        //dd(request()->all());
+        $calibration = array();
+        $par = 1;
+        foreach (request()->all() as $key => $value) {
+            if($key == '_token' OR $key == 'device_id' OR $key == 'tank'){
+                continue;
+            }
+            if($value == ''){
+                continue;
+            }
+
+            if($par == 1){
+                $volt = $value;
+
+                $par = 2;
+                continue;
+            }
+            if($par == 2){
+                $litros = $value;
+                $field[$volt] = $litros;
+                array_push($calibration, $field);
+                $field = '';
+                $litros = '';
+                $volt = '';
+                $par = 1;
+                //dd($litros);
+            }
+           
+           /* $field[$key] = $value;
+
+            array_push($calibration, $field);*/
+
+             
+            
+        }
+
+       
+
+        $calibration  = json_encode($calibration);
+        $device_id = request()->get('device_id');
+        $device = Devices::find($device_id);
+        if(request()->get('tank') == 1){
+            $device->calibration1 = $calibration;
+        }
+        if(request()->get('tank') == 2){
+            $device->calibration2 = $calibration;
+        }
+        if(request()->get('tank') == 3){
+            $device->calibration3 = $calibration;
+        }
+        $device->save();
+        return redirect()->to('dashboard/devices/read/'.$device_id);
+    }
+
     public function update(){
-    
+            
             $device = Devices::find(request()->get('id'));
 
             $device->clients()->sync(request()->get('clients'));
@@ -365,6 +566,12 @@ class DevicesController extends Controller
             $device->virtual = 0;
             }else{
             $device->virtual = 1;
+            }
+
+            if(request()->get('fuel')==null){
+            $device->fuel = 0;
+            }else{
+            $device->fuel = 1;
             }
 
             if(request()->get('engine_block')==null){

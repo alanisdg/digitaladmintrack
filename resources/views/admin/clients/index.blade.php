@@ -13,7 +13,11 @@
                 <tbody>
                     @foreach($clients as $client)
                     <tr>
-                        <td>{{ $client->name }}</td>
+                        <td>{{ $client->name }} @if($client->access == 1) <span style="    color: white;
+    background: red;
+    border-radius: 10px;
+    font-size: 10px;
+    padding: 3px 6px;">Suspendido</span>@endif</td>
                         <td>{{ $client->devices->count() }}</td>
                         <td><a href="/dashboard/client/{{ $client->id }}" class="btn btn-xs">Editar</a></td>
                         <td>{{ $client->charge_at }}</td>

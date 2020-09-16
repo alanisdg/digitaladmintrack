@@ -598,22 +598,23 @@ margin-top: 96px;
 text-align: center;
 }
 .serviceBox .service-icon{
-    width:100px;
-    height:100px;
+     width: 112px;
+    height: 111px;
     border: 1px solid #b9b9b9;
     text-align: center;
     line-height: 100px;
     font-size: 40px;
     background: #fff;
-    transform: rotate(-45deg);
-    margin: -75px auto -20px;
+    /* transform: rotate(-45deg); */
+    margin: 0 auto;
+
 }
 .serviceBox .service-icon i{
     transform: rotate(45deg);
     transition:all 0.3s ease-out;
 }
 .serviceBox .service-content{
-    margin-top: 60px;
+    margin-top: 25px;
 }
 .serviceBox .service-content h3{
 color: #fff;

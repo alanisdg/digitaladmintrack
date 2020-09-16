@@ -8,12 +8,12 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>Digital Admin Track</title>
 
     <!-- Styles -->
     <link href="/css/app.css" rel="stylesheet">
     <link href="/css/usamex.css" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,900i" rel="stylesheet">
     <!-- Scripts -->
     <script>
         window.Laravel = <?php echo json_encode([
@@ -21,12 +21,17 @@
         ]); ?>
     </script>
 </head>
-<body style="background: #2c2c2c;">
+<body style="background: #005ddc;">
     <div id="app">
      
 
         @yield('content')
     </div>
+    <style type="text/css">
+        body{
+            font-family: Raleway !important;
+        }
+    </style>
 
     <!-- Scripts -->
     <script src="/js/app.js"></script>

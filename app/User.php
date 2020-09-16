@@ -100,7 +100,7 @@ class User extends Authenticatable
     public function total_inversion($id){
         
         $total = '';
-        $comissions = Gastos::where('user_id_p',$id)->get();
+        $comissions = Gastos::all();
         foreach ($comissions as $comission) {
             $total = $total + $comission->subtotal;
         }
@@ -207,6 +207,133 @@ WHERE updateTime IN (
 
 
     }
+
+    public function getAllDevicesTest($user){
+        if($user->role_id==1){
+             
+                    $user = User::find($user->id);
+        $client_id = $user->client_id;
+        $client = Clients::find($client_id);
+        $devices = $client->allDevices;
+
+        }else {
+            $devices = $user->all_devices_by_user;
+        }
+
+        $ides = '';
+        foreach ($devices as $device) {
+            $ides .= $device->id . ',';
+        }
+        
+        $ides = substr($ides, 0, -1);
+        //dd($ides);
+        if($ides == false){
+
+            return false;
+        }
+        $p = DB::select('SELECT *
+FROM packets_lives
+WHERE updateTime IN (
+    SELECT MAX(updateTime) FROM packets_lives WHERE devices_id IN ('.$ides.') GROUP BY devices_id
+);');
+    
+        foreach ($devices as $device) {
+            $pop =  Pops::where('devices_id',$device->id)->orderBy('id','desc')->first();
+            $device->pop = $pop;
+            foreach ($p as $packet) {
+                if($device->id == $packet->devices_id){
+                    $device->lastpacket = $packet;
+
+                    if(empty($device->lastpacket)){
+                        $lastPacket = Packets::where('devices_id',$device->id)->orderBy('id','desc')->first();
+                        $device->lastpacket =$lastPacket;
+                    }
+                }
+            } 
+        }
+        foreach ($devices as $device) {
+            if(empty($device->lastpacket)){
+                        $lastPacket = Packets::where('devices_id',$device->id)->orderBy('id','desc')->first();
+                        $device->lastpacket =$lastPacket;
+                    }
+        }
+        $groups = Groups::where('user_id',$user->id)->get();
+        //dd($groups);
+
+        $g['general'][0] = array();
+        $cajasg['general'][1] = array();
+        $devsingroup = array();
+        foreach ($groups as $group) {
+            if($group->type == 1){
+                $g[$group->name][$group->id] = array();
+            }
+            if($group->type == 2){
+                $cajasg[$group->name][$group->id] = array();
+            }
+            
+            
+            $devices_group = json_decode($group->devices,true);
+            foreach ($devices_group as $dev_group) {
+                 foreach ($devices as $dev) {
+                     if($dev->id == $dev_group){
+                        if($dev->type_id == 1){
+                            array_push($g[$group->name][$group->id], $dev);
+                            array_push($devsingroup, $dev);
+                        }
+                        if($dev->type_id == 2){
+                            array_push($cajasg[$group->name][$group->id], $dev);
+                            array_push($devsingroup, $dev);
+                        }
+                        
+                        continue;
+                     }
+                    
+                 }
+            }
+        } 
+    
+    //dd($devsingroup);
+        foreach ($devices as $d) {
+            if($d->type_id == 1){
+               if( in_array($d, $devsingroup)){
+                //dd('si');
+               }else{
+                array_push($g['general'][0], $d);
+               }
+            }
+            if($d->type_id == 2){
+               if( in_array($d, $devsingroup)){
+                //dd('si');
+               }else{
+                array_push($cajasg['general'][1], $d);
+               }
+            }
+        }  
+
+       // dd($g);
+        foreach ($g as $groupname => $arraydevs) {
+            
+            foreach($arraydevs as $idgroup => $devicess){
+                
+                foreach ($devicess as $key => $device) {
+               //     dd($groupname, $idgroup,$value);
+                }
+            }
+        }
+
+        foreach ($cajasg as $groupname => $arraydevs) {
+            
+            foreach($arraydevs as $idgroup => $devicess){
+                
+                foreach ($devicess as $key => $device) {
+               //     dd($groupname, $idgroup,$value);
+                }
+            }
+        }
+
+        $response = array($g,$devices,$cajasg);
+        return $response;
+    }
   public function getBoxes($user,$client){
         if($user->role_id==1){
            
@@ -273,6 +400,7 @@ WHERE updateTime IN (
 
 
     public function getAllDevices($user){
+
                if($user->role_id==1){
              
                     $user = User::find($user->id);
@@ -304,8 +432,20 @@ WHERE updateTime IN (
             foreach ($p as $packet) {
                 if($device->id == $packet->devices_id){
                     $device->lastpacket = $packet;
+                    if($device->fuel == 1){
+
+                        $lts = $device->getlts(1,$device,$packet->tank1);
+ //$lts = $device->getlts(1,$device,4900);
+                        $device->lts = $lts[1];
+                        $device->percent = $lts[0];
+                    }
+                    
                     if(empty($device->lastpacket)){
                         $lastPacket = Packets::where('devices_id',$device->id)->orderBy('id','desc')->first();
+                         
+                        $lts = $device->getlts(1,$device,$lastPacket->tank1);
+                        $device->lts = $lts[1];
+                        $device->percent = $lts[0];
                         $device->lastpacket =$lastPacket;
                     }
                 }

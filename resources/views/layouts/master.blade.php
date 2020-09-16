@@ -14,7 +14,12 @@
         <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700,700i" rel="stylesheet">
 
     </head>
-    <body> 
+    <body>
+        @foreach($jammer_devices as $jammer)
+            
+        <div   class="jammer">El equipo de la unidad {{ $jammer->name }} ha detectado un intento de robo <button id="pause" class="btn btn-danger stopJammer" ide="{{ $jammer->id }}">Terminar Alerta</button></div>
+        @endforeach
+        <div style="display: none" class="jammer">EL EQUIPO </div>
        <div id="preloader">
   <div id="status">&nbsp;</div>
 </div> 
@@ -119,30 +124,7 @@
                                     <p>Notificaciones</p>
                                 </div>
                                 <span class="live"></span>
-                                @foreach($notifications as $notification)
-
-                                <div class="notification not @if($notification->read==1 ) readed @endif ">
-                                    <a ide="{{ $notification->id }}" class="nlink not" to="{{ $notification->link }}">
-                                    <div class="not" style="float:left">
-                                        @if($notification->author->thumb_image != null)
-                                        <img src="{{ $notification->author->thumb_image }}" alt="..." class="img-circle">
-                                        @else
-                                        <img src="/profile/user.png" alt="..." class="img-circle">
-                                        @endif
-                                    </div>
-                                    <div class="not" style="float:left;     padding: 0px 5px; width: 240px;">
-                                        <b> {{ $notification->author->name }}</b> 
-                                        <span class="black"> {{ $notification->nde->description }} {{ $notification->tcode->code }}</span> 
-                                        <br>
-                                        <span class="grey">{{ $notification->timeago($notification->created_at) }}</span>
-                                        </div>
-                                    <div class="not" style="clear:both">
-
-                                    </div>
-    </a>
-                                </div>
-
-                                @endforeach
+                                
                                 <div style="clear:both">
 
                                 </div>

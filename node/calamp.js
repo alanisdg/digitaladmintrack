@@ -111,6 +111,8 @@ const nexmo = new Nexmo({
         power_bat = power_bat/1000;
         this.packet.power_bat = parseFloat(power_bat).toFixed(2);
         this.packet.Accum2 = this.get_decimal(buffer_str.substring(128,136));
+        console.log(this.packet.Accum2 + ' acum 2' )
+        this.packet.tank1 = this.packet.Accum2;
         this.packet.Accum3 = this.get_decimal(buffer_str.substring(136,144));
         this.packet.odometro_total = this.packet.Accum3;
         this.packet.Accum4 = this.get_decimal(buffer_str.substring(144,152));
@@ -330,6 +332,17 @@ const nexmo = new Nexmo({
 
                                                 
                                         }) //: TERMINA REVISION DE GEOCERCAS
+                                         s.mysql_link.query('SELECT id,polydata  FROM states', function(err, rows ,fields){
+                                            if(err){  throw err; }
+
+                                            //console.log('PASO 7 checar geocercas')
+
+                                                state = functions.state(rows,packet.lat,packet.lng,inside);
+                                                console.log('state_' + state)
+                                                packet.state = state
+
+                                                
+                                        })
                             }) //: termina revisar reporte anterior
                         }
 
@@ -361,6 +374,7 @@ const nexmo = new Nexmo({
 
                 s.query_insert = functions.build_query(packet,'packets',packet.device_id,packet.device_name);
                 s.query_insert_live = functions.build_query(packet,'packets_lives',packet.device_id,packet.device_name);
+                s.query_histories = functions.build_query(packet,'packets_histories',packet.device_id,packet.device_name);
 
                 if(packet.boxs_id != false){
                     s.query_insert_box = functions.build_query(packet,'packets_lives',packet.boxs_id);
@@ -426,7 +440,56 @@ const nexmo = new Nexmo({
                         })
                         }
 
-                     
+                         if(packet.EventCode =='33'){
+                            s.mysql_link.query('UPDATE devices set jammer=1 WHERE id='+packet.device_id, function(err, rows, fields){})
+                            for (h = 0; h < packet.clients_emit.length; h++) { 
+                            io.sockets.emit('jammer'+packet.clients_emit[h],  {
+                                        response:[
+                                            packet.EventCode,
+                                            packet.device_name,
+                                            packet.device_id
+                                        ]
+                                    });
+                            }
+
+                            nodemailer.createTestAccount((err, account) => {
+                             var transporter = nodemailer.createTransport({
+                              host: 'smtp.gmail.com',
+                              port: 587,
+                              secure: false, // secure:true for port 465, secure:false for port 587
+                              auth: {
+                                user: 'alertasdat@gmail.com',
+                                pass: '547aj154'
+                              }  
+                            });
+
+
+                                // setup email data with unicode symbols
+                                let mailOptions = {
+                                    from: 'USAMEXGPS <alertas@usamexgps.com>', // sender address
+                                    to: 'alanisdg@gmail.com, nestor.sandoval@usamexgps.com', // list of receivers
+                                    subject: 'Unidad ' + packet.device_name + ' ha detectado un intento de robo', // Subject line
+                                    text: 'Alerta de robo', // plain text body
+                                    html: '<b>La unidad '+ packet.device_name+' ha detectado un intento de robo </b><br> Fecha: '+ packet.updateTime+'  <a href="https://www.google.com/maps/search/?api=1&query='+packet.lat+','+packet.lng+'">Ubicación</a>' // html body
+                                };
+
+                                // send mail with defined transport object
+                                transporter.sendMail(mailOptions, (error, info) => {
+                                    if (error) {
+                                        return console.log(error);
+                                    }
+                                    console.log('Message sent: %s', info.messageId);
+                                    // Preview only available when sending through an Ethereal account
+                                    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+
+                                    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@blurdybloop.com>
+                                    // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+                                });
+                            });
+
+
+
+                        }
 
                         if(packet.EventCode == '68'){
                             lemail = ''
@@ -482,8 +545,8 @@ const nexmo = new Nexmo({
                                                 port: 587,
                                                 secure: false, // secure:true for port 465, secure:false for port 587
                                                 auth: {
-                                                    user: 'alanisdg@gmail.com',
-                                                    pass: '547aj154a2'
+                                                    user: 'alertasdat@gmail.com',
+                                                    pass: '547aj154'
                                                 }
                                             });
 
@@ -558,8 +621,8 @@ const nexmo = new Nexmo({
                                                 port: 587,
                                                 secure: false, // secure:true for port 465, secure:false for port 587
                                                 auth: {
-                                                    user: 'alanisdg@gmail.com',
-                                                    pass: '547aj154a2'
+                                                    user: 'alertasdat@gmail.com',
+                                                    pass: '547aj154'
                                                 }
                                             });
 
@@ -864,6 +927,13 @@ const nexmo = new Nexmo({
                             s.return_ack(packet,guest.port,guest.address,'live');
                         })
                        // console.log('-> SIGUE VIVO 6 *** ' + packet.device_name)
+
+                       s.mysql_link.query(s.query_histories, function(err, rows, fields){
+                            if(err){ console.log("MySQL ERROR 'query_insert' "); throw err; }
+                         //   console.log(packet.device_name + ' -> INSERTADO EN VIVO** ' + packet.LastupdateTime + ' - ' + packet.updateTime)
+                            // REGRESA ACK 
+                        })
+
 
                         // INSERTA BOX
                         if(packet.boxs_id != false){

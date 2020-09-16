@@ -32,6 +32,21 @@ module.exports = {
             return odo;                    
         }
     },
+    state:function(rows,lat,lng){ 
+        for (index = 0; index < rows.length; ++index) {
+             points = rows[index].polydata;
+                points = JSON.parse(points)
+                var points_polygon = []
+                for (i = 0; i < points.length; ++i) {
+                points_polygon.push([ points[i].lat,points[i].lng ])
+                }
+                var isinside = inside([ lat, lng ], points_polygon)
+                if(isinside==true){
+                    //console.log(' dentro de ' + rows[index].id)
+                    return rows[index].id;
+                }
+        }
+    },
     geofences:function(rows,lat,lng){
         geofence_in = '{'
         ides_geofence = []
@@ -98,7 +113,7 @@ module.exports = {
                 return ret;
     },
     build_query:function(packet,table,device_id){ 
-        query = 'INSERT INTO '+table+' (imei,devices_id,buffer,lat,lng,altitude,created_at,fixTime,updateTime,serverTime,serviceType,messageType,speed,heading,sat,rssi,eventIndex, eventCode,acumCount,power_supply,power_bat,odometro_total,odometro_reporte,odometro,engine,Timebetween) VALUES';
+        query = 'INSERT INTO '+table+' (imei,devices_id,buffer,lat,lng,altitude,created_at,fixTime,updateTime,serverTime,serviceType,messageType,speed,heading,sat,rssi,eventIndex, eventCode,acumCount,power_supply,power_bat,odometro_total,odometro_reporte,odometro,engine,Timebetween,tank1,state) VALUES';
                 query += ' (';
                 query += '"'+packet.MobileID+'",';
                 query += '"'+device_id+'",';
@@ -125,7 +140,9 @@ module.exports = {
                 query += '"'+packet.odometro_reporte+'",';
                 query += '"'+packet.odometro+'",';
                 query += '"'+packet.engine+'",';
-                query += '"'+packet.timeBeetween+'"';
+                query += '"'+packet.timeBeetween+'",';
+                query += '"'+packet.tank1+'",';
+                query += '"'+packet.state+'"';
                 query += ')';
                 return query;
     }

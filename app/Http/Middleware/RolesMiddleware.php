@@ -18,6 +18,7 @@ class RolesMiddleware
         $url = request()->route()->uri();
         $role = Auth::user()->role_id;
         
+   
         // developer-> 1
         // cliente-> 2
         // monitorista-> 3
